@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="12.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <type>com.umlet.element.SequenceDiagram</type>
+    <coordinates>
+      <x>0</x>
+      <y>70</y>
+      <w>1010</w>
+      <h>230</h>
+    </coordinates>
+    <panel_attributes>title: sample
+_PhotoIndexer:i~i_|_DatabaseEngine:db~db_|_FaceIndexer:fi~fi_|_LBPIndexer:lbp~lbp_|_CIDetector:dtc~dtc_
+i-&gt;db:i,db:indexImage
+db-&gt;fi:db,fi:index
+fi-&gt;dtc:fi,dtc:featuresInImage
+fi-&gt;lbp:fi,lbp:applyToRects</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
