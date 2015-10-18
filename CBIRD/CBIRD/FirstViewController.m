@@ -50,7 +50,10 @@
         
         NSLog(@"FirstViewController: progressUpdated to %f retain count: %ld", blockProgress, filteredImage.CGImage ? CFGetRetainCount(filteredImage.CGImage) : 0);
         
-        self.previewImage.image = filteredImage;
+        if ( filteredImage ) {
+            self.previewImage.image = filteredImage;
+        }
+        
         self.indexerProgressView.progress = blockProgress;
         //self.progressLabel.text = [NSString stringWithFormat:@"%f %%", progress * 100];
     });

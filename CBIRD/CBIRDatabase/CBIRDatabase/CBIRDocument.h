@@ -21,7 +21,7 @@ enum PERSISTANCE_ID_TYPE {
 /**
  * The image resource associated with the CBIRDocument.
  */
-@property (nonatomic, readonly) CGImageRef imageResource;
+@property (nonatomic, readonly) CIImage * imageResource;
 
 /**
  * The unique identifier of the CBIRDocument object.
@@ -32,6 +32,6 @@ enum PERSISTANCE_ID_TYPE {
 @property (nonatomic, readonly) enum PERSISTANCE_ID_TYPE persistentIDType;
 
 
--(instancetype)initWithCGImage:(CGImageRef)image persistentID:(NSString *)persistentID type:(enum PERSISTANCE_ID_TYPE)persistentIDType;
+-(instancetype)initWithCIImage:(CIImage *)image persistentID:(NSString *)persistentID type:(enum PERSISTANCE_ID_TYPE)persistentIDType;
 
 @end

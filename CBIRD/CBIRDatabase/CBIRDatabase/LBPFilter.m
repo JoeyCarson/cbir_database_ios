@@ -114,7 +114,7 @@ NSString * kern = @" kernel vec4 moveUpTwoPixels (sampler image) {"
 
 @implementation LBPFilter
 {
-    NSMutableArray * _rectanglesToApply;
+    CGRect _extent;
 }
 
 @synthesize inputImage = _inputImage;
@@ -124,9 +124,8 @@ NSString * kern = @" kernel vec4 moveUpTwoPixels (sampler image) {"
 {
     self = [super init];
     if ( self ) {
-        _rectanglesToApply = [[NSMutableArray alloc] init];
+        _extent = CGRectNull;
     }
-    
     return self;
 }
 
@@ -146,7 +145,7 @@ NSString * kern = @" kernel vec4 moveUpTwoPixels (sampler image) {"
 
 -(void)applyToExtent:(CGRect)extent
 {
-    [_rectanglesToApply addObject:[NSValue valueWithRect:extent]];
+    _extent = extent;
 }
 
 - (void)setInputImage:(CIImage *)inputImage
@@ -164,15 +163,14 @@ NSString * kern = @" kernel vec4 moveUpTwoPixels (sampler image) {"
         else return destRect;
     };
     
-    // TODO: It would be super smart to make a multiple extent base type of CIFilter, to
-    // make a filter that applies filters.  But for now, let it be.
+    // It would be super cool to override CIFilter to do something similar.
     CIImage * returnImage = nil;
-    if ( _rectanglesToApply.count > 0 ) {
-        for ( NSUInteger i = 0; i < _rectanglesToApply.count; i++ ) {
-            NSValue * rectValue = _rectanglesToApply[i];
-            returnImage = [self.kernel applyWithExtent:rectValue.rectValue roiCallback:[roi copy] arguments:@[self.inputImage]];
-        }
+
+    if ( !CGRectEqualToRect(_extent, CGRectNull) ) {
+        // If the extent was overridden from default null value, then use it.
+        returnImage = [self.kernel applyWithExtent:_extent roiCallback:[roi copy] arguments:@[self.inputImage]];
     } else {
+        // Otherwise the default extent wasn't overridden.  Use the image's entire extent.
         returnImage = [self.kernel applyWithExtent:self.inputImage.extent roiCallback:[roi copy] arguments:@[self.inputImage]];
     }
     

@@ -42,28 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/CBIRDatabaseEngine.m"
-            timestampString = "465755893.153485"
+            timestampString = "466622483.146032"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
             landmarkName = "+sharedEngine"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CBIRDatabase/CBIRDatabase/LBPFilter.m"
-            timestampString = "466478354.339507"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "108"
-            endingLineNumber = "108"
-            landmarkName = "-setDefaults"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -73,12 +57,26 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CBIRDatabase/CBIRDatabase/CBIRDatabaseEngine.m"
-            timestampString = "465876186.968174"
+            filePath = "CBIRDatabase/CBIRDatabase/LBPFilter.m"
+            timestampString = "466478354.339507"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "184"
-            endingLineNumber = "184"
+            startingLineNumber = "108"
+            endingLineNumber = "108">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CBIRDatabase/CBIRDatabase/CBIRDatabaseEngine.m"
+            timestampString = "466622483.146032"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "183"
+            endingLineNumber = "183"
             landmarkName = "-deleteDatabaseNamed:"
             landmarkType = "5">
          </BreakpointContent>
@@ -90,11 +88,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/CBIRDatabaseEngine.m"
-            timestampString = "465876186.968174"
+            timestampString = "466622483.146032"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "170"
-            endingLineNumber = "170"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
             landmarkName = "-databaseForName:"
             landmarkType = "5">
          </BreakpointContent>
@@ -106,11 +104,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/CBIRDatabaseEngine.m"
-            timestampString = "465876186.968174"
+            timestampString = "466622483.146032"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
             landmarkName = "-indexImage:"
             landmarkType = "5">
          </BreakpointContent>
@@ -122,11 +120,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/CBIRDatabaseEngine.m"
-            timestampString = "465876186.968174"
+            timestampString = "466622483.146032"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
             landmarkName = "-indexImage:"
             landmarkType = "5">
          </BreakpointContent>
@@ -138,11 +136,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/PhotoIndexer.m"
-            timestampString = "465880523.921292"
+            timestampString = "466816146.383478"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "+fetchAndIndexAssetsWithOptions:delegate:"
             landmarkType = "5">
          </BreakpointContent>
@@ -175,7 +173,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "123"
             endingLineNumber = "123"
-            landmarkName = "-outputImage"
+            landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -191,8 +189,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "121"
             endingLineNumber = "121"
-            landmarkName = "-outputImage"
-            landmarkType = "5">
+            landmarkName = "kernel"
+            landmarkType = "19">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -201,14 +199,44 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CBIRDatabase/CBIRDatabase/LBPFilter.m"
-            timestampString = "466572519.256393"
+            filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.m"
+            timestampString = "466816376.808372"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "-applyToExtent:"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "+detectFaces:"
             landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.m"
+            timestampString = "466816146.383478"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "-generateFilteredImages:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CBIRDatabase/CBIRDatabase/LBPFilter.m"
+            timestampString = "466622810.331141"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "109"
+            endingLineNumber = "109">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

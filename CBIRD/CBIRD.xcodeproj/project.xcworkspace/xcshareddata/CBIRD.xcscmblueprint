@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "CC71B3B858AE2F4E5A517BA31D7DE0A3277C4267",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "E609DD15689CC93D8F4D219EB393F30F9F726178" : 0,
+    "CC71B3B858AE2F4E5A517BA31D7DE0A3277C4267" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "973BF9E2-ACA3-426E-A532-825D894029F8",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "E609DD15689CC93D8F4D219EB393F30F9F726178" : "cbir_database_ios\/CBIRD\/CBIRDatabase\/GPUImage\/",
+    "CC71B3B858AE2F4E5A517BA31D7DE0A3277C4267" : "cbir_database_ios\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "CBIRD",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "CBIRD\/CBIRD.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/JoeyCarson\/cbir_database_ios.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CC71B3B858AE2F4E5A517BA31D7DE0A3277C4267"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/BradLarson\/GPUImage.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "E609DD15689CC93D8F4D219EB393F30F9F726178"
+    }
+  ]
+}

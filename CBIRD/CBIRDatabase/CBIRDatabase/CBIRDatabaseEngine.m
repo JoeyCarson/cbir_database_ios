@@ -9,8 +9,7 @@
 #import "CBIRDatabaseEngine.h"
 #import "CBIRDocument.h"
 #import "CBIRIndexer.h"
-
-#import "LBPIndexer.h"
+#import "FaceIndexer.h"
 
 #import <CouchbaseLite/CouchbaseLite.h>
 
@@ -107,7 +106,7 @@ CBIRDatabaseEngine * _singletonEngine;
         m_indexers = [[NSMutableDictionary alloc] init];
         
         // Register an LBPIndexer.
-        [self registerIndexer:[[LBPIndexer alloc] init]];
+        [self registerIndexer:[[FaceIndexer alloc] init]];
     }
 }
 
@@ -136,7 +135,9 @@ CBIRDatabaseEngine * _singletonEngine;
 {
     __block CBIRDocument * doc = imgDoc;
     __block CBIRIndexResult * result = nil;
-    // Create an NSBlockOperation to perform indexing and ensure that we wait until all operations are complete.
+    
+    // Create an NSBlockOperation to perform indexing and ensure
+    // that we wait until all operations are complete.
     void (^indexBlock)(void) = ^void(void) {
         
         NSLog(@"running index block");
@@ -170,9 +171,9 @@ CBIRDatabaseEngine * _singletonEngine;
     CBLDatabase * dbRef = [m_cblManager databaseNamed:name error:&error];
     
     if ( error ) {
-        NSLog(@"Database could not be resolved by name: %@ error: %@", name, error);
+        NSLog(@"databaseForName: Database could not be resolved by name: %@ error: %@", name, error);
     } else {
-        NSLog(@"Database %@ resolved.", name);
+        NSLog(@"databaseForName: Database %@ resolved.", name);
     }
     
     return dbRef;

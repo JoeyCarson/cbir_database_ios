@@ -18,34 +18,35 @@
 -(CBIRIndexResult *)indexImage:(CBIRDocument *)document
 {
     // 1.  Filter the image using the LBP filter.
-    CIImage * filteredImage = [self generateFilteredImage:document.imageResource];
+    NSArray<CIImage *> * filteredImages = [self generateFilteredImages:document.imageResource];
     
     // 2.  Generate the index by computing and stringing histograms.
-    CGImageRef imageRef = [ImageUtil renderCIImage:filteredImage];
-    CGImageRelease(imageRef);
+//    CGImageRef imageRef = [ImageUtil renderCIImage:filteredImage];
+//    CGImageRelease(imageRef);
     
     // 3.  Return the result with a preview of the filtered image for the UI to use for funzies.
-    UIImage * i = [UIImage imageWithCIImage:filteredImage scale:1.0 orientation:UIImageOrientationUp];
+    UIImage * i = [UIImage imageWithCIImage:(filteredImages.count ? filteredImages[0] : nil) scale:1.0 orientation:UIImageOrientationUp];
     CBIRIndexResult * result = [[CBIRIndexResult alloc] initWithResult:YES filteredImage:i];
     return result;
 }
 
 
--(CIImage *) generateFilteredImage:(CGImageRef)imgRef
+-(NSArray<CIImage *> *) generateFilteredImages:(CIImage *)image
 {
-    // First hand the image to the a CIImage instance so that we can input it into the filter.
-    CIImage * image = [[CIImage alloc] initWithCGImage: imgRef];
-    
-    NSLog(@"generateFilteredImage: after %ld", CFGetRetainCount(imgRef));
+    NSMutableArray * lbpFaceImages = [[NSMutableArray alloc] init];
     
     // Instantiate the filter and set the input image to the instance we just created.
     LBPFilter * lbpf = [[LBPFilter alloc] init];
     lbpf.inputImage = image;
     
-    // Generate the output image from the filter.
-    image = lbpf.outputImage;
+    // Apply the LBP filter only to face rectangles in the image, or the whole thing if none are there.
+    NSArray * faceFeatures = [ImageUtil detectFaces:image];
+    for ( CIFaceFeature * feature in faceFeatures ) {
+        [lbpf applyToExtent:feature.bounds];
+        [lbpFaceImages addObject:lbpf.outputImage];
+    }
     
-    return image;
+    return lbpFaceImages;
 }
 
 @end

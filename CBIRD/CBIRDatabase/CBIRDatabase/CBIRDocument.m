@@ -21,11 +21,11 @@
 
 // Initialize the document with the image resource and persistent identifier.
 // The CBIRDocument shall take ownership of the given CGImageRef.
--(instancetype)initWithCGImage:(CGImageRef)image persistentID:(NSString *)persistentID type:(enum PERSISTANCE_ID_TYPE)persistentIDType
+-(instancetype)initWithCIImage:(CIImage *)image persistentID:(NSString *)persistentID type:(enum PERSISTANCE_ID_TYPE)persistentIDType
 {
     self = [super init];
     if ( self ) {
-        self->_imageResource = CGImageRetain(image);
+        self->_imageResource = image;
         self->_persistentID = persistentID;
         self->_persistentIDType = persistentIDType;
     }
@@ -38,7 +38,7 @@
     if ( _imageResource ) {
         // In cases of memory drain, it might be a good idea to check the retain count on the image resource.
         //NSLog(@"CBIRDocument releasing CGImage with retain count: %ld", CFGetRetainCount(_imageResource));
-        CGImageRelease(_imageResource);
+        //CGImageRelease(_imageResource);
     }
 }
 

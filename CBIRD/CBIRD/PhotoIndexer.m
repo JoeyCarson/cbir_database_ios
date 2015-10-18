@@ -29,7 +29,7 @@
         [blockDelegate progressUpdated:progress filteredImage:nil];
         
         // Determine how much is left to get to 100% and the percentage of
-        // completion for each document.
+        // completion for each document (progressStep).
         NSUInteger total = result.count;
         CGFloat progressLeft = 1.0 - progress;
         CGFloat progressStep = progressLeft / total;
@@ -60,12 +60,14 @@
                     size.width = asset.pixelWidth;
                     size.height = asset.pixelHeight;
                     
+                    
                     PHImageRequestOptions * options = [[PHImageRequestOptions alloc] init];
                     options.synchronous = YES;
                     
                     // Extract the local asset ID to name the document with.
                     NSString * localID = asset.localIdentifier;
                     
+                    /*
                     PHAssetResponseHandler indexBlock = ^void(UIImage * _Nullable result, NSDictionary * _Nullable info) {
                         CGImageRef imageCopy = result.CGImage;
                         CBIRDocument * doc = [[CBIRDocument alloc] initWithCGImage:imageCopy persistentID:localID type:PH_ASSET];
@@ -78,6 +80,18 @@
                                                               contentMode:PHImageContentModeDefault
                                                                   options:options
                                                             resultHandler:indexBlock];
+                    */
+                    
+                    PHAssetContentEditingResponseHandler indexBlock = ^void(PHContentEditingInput * contentEditingInput, NSDictionary * info) {
+                        CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+                        //NSLog(@"metadata: %@", image.properties.description);
+                        CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:image persistentID:localID type:PH_ASSET];
+                        indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
+                    };
+                    
+                    PHContentEditingInputRequestOptions *opts = [[PHContentEditingInputRequestOptions alloc] init];
+                    opts.networkAccessAllowed = NO;
+                    [asset requestContentEditingInputWithOptions:opts completionHandler:indexBlock];
                 }
                 
                 // Uncomment the sleep when you want to display images.

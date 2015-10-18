@@ -8,7 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
+@class PHContentEditingInput;
+
+// Callback style for PHImageManager to retrieve image.  No metadata though...
 typedef void (^PHAssetResponseHandler)(UIImage * _Nullable result, NSDictionary * _Nullable info);
+
+typedef void (^PHAssetContentEditingResponseHandler)(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nullable info);
 
 @class PHFetchOptions;
 

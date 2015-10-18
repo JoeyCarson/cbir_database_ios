@@ -13,5 +13,6 @@
 @interface ImageUtil : NSObject
 
 + (CGImageRef)renderCIImage:(CIImage *)img;
++ (NSArray *) detectFaces:(CIImage *)img;
 
 @end
