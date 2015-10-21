@@ -20,7 +20,7 @@ typedef void (^PHAssetContentEditingResponseHandler)(PHContentEditingInput * _Nu
 
 @protocol PhotoIndexerDelegate
 
--(void)progressUpdated:(CGFloat)progress filteredImage:(UIImage *)filteredImage;
+-(void)progressUpdated:(CGFloat)progress filteredImage:(UIImage * _Nullable)filteredImage;
 
 @end
 

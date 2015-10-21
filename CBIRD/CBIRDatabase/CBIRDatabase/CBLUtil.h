@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-NSString * MIME_TYPE_OCTET_STREAM = @"application/octet-stream";
+static NSString * MIME_TYPE_OCTET_STREAM = @"application/octet-stream";;
 
 @interface CBLUtil : NSObject
 

@@ -53,7 +53,7 @@ CBIRDatabaseEngine * _singletonEngine;
     self = [super init];
 
     if ( self ) {
-        
+        NSLog(@"initPrivate!!");
         // Create the serial dispatch queue.  It seems plausible that the underlying queue is released during dealloc.
         dispatch_queue_t eng_queue = dispatch_queue_create(CBIRD_ENGINE_QUEUE_NAME, DISPATCH_QUEUE_SERIAL);
         m_engQueue = [[NSOperationQueue alloc] init];
@@ -79,7 +79,9 @@ CBIRDatabaseEngine * _singletonEngine;
             }
         };
         
-        dispatch_sync(eng_queue, initCBLBlock);
+        NSBlockOperation * blockOp = [NSBlockOperation blockOperationWithBlock:initCBLBlock];
+        [m_engQueue addOperation:blockOp];
+        [m_engQueue waitUntilAllOperationsAreFinished];
         
         if (! success ) {
             return nil;

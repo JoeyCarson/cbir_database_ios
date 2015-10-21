@@ -91,14 +91,18 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Allocate the block to hold 4 bytes per pixel.
     unsigned char * buffer = (unsigned char *) malloc(BLOCK_SIZE * BLOCK_SIZE * 4);
     
+    
+    
     // For each given face image, we need to build a list of 8x8 histograms of the
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         
+        // Identifier of this particular face.
         NSString * faceUUID = [self generateFaceKey];
         
         // Render the face LBP and get a pointer to the underlying data buffer.
         FaceLBP * face = faces[i];
         
+        // Dimensions of the face in pixels.
         CGFloat width  = face.lbpImage.extent.size.width;
         CGFloat height = face.lbpImage.extent.size.height;
         NSData * pixelData = [ImageUtil copyPixelData:face.lbpImage];
@@ -107,9 +111,16 @@ NSString * FACE_KEY_PREFIX = @"face_";
         UInt32 horizontalBlockCt = ceil(width / BLOCK_SIZE);
         UInt32 verticalBlockCt   = ceil(height / BLOCK_SIZE);
         
+        // List of the names of feature ID's.
+        NSMutableArray<NSString *> * featureIdentifiers = [[NSMutableArray alloc] init];
+        NSMutableDictionary * faceData = [[NSMutableDictionary alloc] init];
+        
         for ( UInt32 blockRow = 0; blockRow < verticalBlockCt; blockRow++ ) {
             
-            for ( UInt32 blockIndex = 0; blockIndex < horizontalBlockCt; blockIndex++ ) {
+            // blockIndex identfies the index of the block relative to the current row.
+            // featureIndex identifies the index of the feature in the overall face image.
+            
+            for ( UInt32 blockIndex = 0, featureIndex = 0; blockIndex < horizontalBlockCt; blockIndex++, featureIndex++ ) {
                 // Extract the rectangle. Make sure that the image and block sizes accounts for 4 bytes per pixel.
                 CGSize faceSize = CGSizeMake(4 * face.lbpImage.extent.size.width, face.lbpImage.extent.size.height);
                 CGRect rect = CGRectMake(blockIndex, blockRow, 4 * BLOCK_SIZE, BLOCK_SIZE);
@@ -131,8 +142,12 @@ NSString * FACE_KEY_PREFIX = @"face_";
                 
                 // Write the data and total to the CBLDocument.  Might be able to use no-copy, assuming that
                 // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
+                NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
                 NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
-                [CBLUtil saveAttachmentToDocument:doc name:@"" mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
+                [CBLUtil saveAttachmentToDocument:doc name:featureID mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
+                
+                // Store the feature ID in the list.
+                [featureIdentifiers addObject:featureID];
                 
                 //NSLog(@"pixels");
                 //std::cout << channels[0];
@@ -141,6 +156,9 @@ NSString * FACE_KEY_PREFIX = @"face_";
                 //std::cout << lbpHistogram;
             }
         }
+        
+        faceData[@"id"] = faceUUID;
+        faceData[@"features"] = featureIdentifiers;
     }
     
     free(buffer);
@@ -148,7 +166,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 - (NSString *) generateFaceKey
 {
-    return [NSString stringWithFormat:@"%@%@", FACE_KEY_PREFIX, [NSUUID UUID]];
+    return [NSString stringWithFormat:@"%@%@", FACE_KEY_PREFIX, [NSUUID UUID].UUIDString];
 }
 
 //char * bytes = (char *)malloc(8);
