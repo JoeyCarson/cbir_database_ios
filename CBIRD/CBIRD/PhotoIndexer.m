@@ -67,26 +67,18 @@
                     // Extract the local asset ID to name the document with.
                     NSString * localID = asset.localIdentifier;
                     
-                    /*
-                    PHAssetResponseHandler indexBlock = ^void(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-                        CGImageRef imageCopy = result.CGImage;
-                        CBIRDocument * doc = [[CBIRDocument alloc] initWithCGImage:imageCopy persistentID:localID type:PH_ASSET];
-                        indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
-                    };
-                    
-                    // TODO: Investigate invocation nature.
-                    [[PHImageManager defaultManager] requestImageForAsset:asset
-                                                               targetSize:size
-                                                              contentMode:PHImageContentModeDefault
-                                                                  options:options
-                                                            resultHandler:indexBlock];
-                    */
-                    
                     PHAssetContentEditingResponseHandler indexBlock = ^void(PHContentEditingInput * contentEditingInput, NSDictionary * info) {
-                        CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
-                        //NSLog(@"metadata: %@", image.properties.description);
-                        CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:image persistentID:localID type:PH_ASSET];
-                        indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
+                        
+                        if ( contentEditingInput.fullSizeImageURL ) {
+                            // Create the image object.
+                            CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
+                            
+                            // Add it to a new document object.
+                            CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:image persistentID:localID type:PH_ASSET];
+                            
+                            // Index it.
+                            indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
+                        }
                     };
                     
                     PHContentEditingInputRequestOptions *opts = [[PHContentEditingInputRequestOptions alloc] init];
@@ -95,7 +87,7 @@
                 }
                 
                 // Uncomment the sleep when you want to display images.
-                [NSThread sleepForTimeInterval:1.0];
+                [NSThread sleepForTimeInterval:0.25];
             }
             
             // We should also pass an update state to the communicate

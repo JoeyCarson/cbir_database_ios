@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		112DA0FD1BD5CA9200138127 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 112DA0FC1BD5CA9200138127 /* opencv2.framework */; settings = {ASSET_TAGS = (); }; };
+		112DA1011BD5CB6300138127 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 112DA1001BD5CB6300138127 /* AssetsLibrary.framework */; };
 		114DB5261BCDD7DF00172550 /* ImageUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 114DB5241BCDD7DF00172550 /* ImageUtil.h */; settings = {ASSET_TAGS = (); }; };
-		114DB5271BCDD7DF00172550 /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 114DB5251BCDD7DF00172550 /* ImageUtil.m */; settings = {ASSET_TAGS = (); }; };
-		114DB5281BCDD7DF00172550 /* ImageUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 114DB5251BCDD7DF00172550 /* ImageUtil.m */; settings = {ASSET_TAGS = (); }; };
+		114DB5271BCDD7DF00172550 /* ImageUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 114DB5251BCDD7DF00172550 /* ImageUtil.mm */; settings = {ASSET_TAGS = (); }; };
+		114DB5281BCDD7DF00172550 /* ImageUtil.mm in Sources */ = {isa = PBXBuildFile; fileRef = 114DB5251BCDD7DF00172550 /* ImageUtil.mm */; settings = {ASSET_TAGS = (); }; };
 		114DB52B1BCF5E5D00172550 /* FaceIndexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 114DB5291BCF5E5D00172550 /* FaceIndexer.h */; settings = {ASSET_TAGS = (); }; };
-		114DB52C1BCF5E5D00172550 /* FaceIndexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 114DB52A1BCF5E5D00172550 /* FaceIndexer.m */; settings = {ASSET_TAGS = (); }; };
-		114DB52D1BCF5E5D00172550 /* FaceIndexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 114DB52A1BCF5E5D00172550 /* FaceIndexer.m */; settings = {ASSET_TAGS = (); }; };
+		114DB52C1BCF5E5D00172550 /* FaceIndexer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */; settings = {ASSET_TAGS = (); }; };
+		114DB52D1BCF5E5D00172550 /* FaceIndexer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */; settings = {ASSET_TAGS = (); }; };
 		11B798581BBB73690040F3A7 /* CBIRDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 11B798571BBB73690040F3A7 /* CBIRDatabase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		11B7985F1BBB73690040F3A7 /* CBIRDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798541BBB73690040F3A7 /* CBIRDatabase.framework */; settings = {ASSET_TAGS = (); }; };
 		11B798641BBB73690040F3A7 /* CBIRDatabaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798631BBB73690040F3A7 /* CBIRDatabaseTests.m */; };
@@ -34,6 +36,8 @@
 		11B798E61BC2277C0040F3A7 /* CBIRDocument.h in Headers */ = {isa = PBXBuildFile; fileRef = 11B798E41BC2277C0040F3A7 /* CBIRDocument.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		11B798E71BC2277C0040F3A7 /* CBIRDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798E51BC2277C0040F3A7 /* CBIRDocument.m */; settings = {ASSET_TAGS = (); }; };
 		11B798E81BC2277C0040F3A7 /* CBIRDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798E51BC2277C0040F3A7 /* CBIRDocument.m */; settings = {ASSET_TAGS = (); }; };
+		11DB57A11BD742210032E206 /* CBLUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 11DB579F1BD742210032E206 /* CBLUtil.h */; settings = {ASSET_TAGS = (); }; };
+		11DB57A21BD742210032E206 /* CBLUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 11DB57A01BD742210032E206 /* CBLUtil.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,10 +51,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		112DA0FC1BD5CA9200138127 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		112DA0FE1BD5CAC500138127 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		112DA1001BD5CB6300138127 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		114DB5241BCDD7DF00172550 /* ImageUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageUtil.h; sourceTree = "<group>"; };
-		114DB5251BCDD7DF00172550 /* ImageUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageUtil.m; sourceTree = "<group>"; };
+		114DB5251BCDD7DF00172550 /* ImageUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageUtil.mm; sourceTree = "<group>"; };
 		114DB5291BCF5E5D00172550 /* FaceIndexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceIndexer.h; sourceTree = "<group>"; };
-		114DB52A1BCF5E5D00172550 /* FaceIndexer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceIndexer.m; sourceTree = "<group>"; };
+		114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceIndexer.mm; sourceTree = "<group>"; };
 		11B798541BBB73690040F3A7 /* CBIRDatabase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CBIRDatabase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		11B798571BBB73690040F3A7 /* CBIRDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBIRDatabase.h; sourceTree = "<group>"; };
 		11B798591BBB73690040F3A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -70,6 +77,8 @@
 		11B798E01BC1994D0040F3A7 /* LBPFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LBPFilter.m; sourceTree = "<group>"; };
 		11B798E41BC2277C0040F3A7 /* CBIRDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBIRDocument.h; sourceTree = "<group>"; };
 		11B798E51BC2277C0040F3A7 /* CBIRDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CBIRDocument.m; sourceTree = "<group>"; };
+		11DB579F1BD742210032E206 /* CBLUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBLUtil.h; sourceTree = "<group>"; };
+		11DB57A01BD742210032E206 /* CBLUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CBLUtil.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +86,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				112DA1011BD5CB6300138127 /* AssetsLibrary.framework in Frameworks */,
+				112DA0FD1BD5CA9200138127 /* opencv2.framework in Frameworks */,
 				11B798D31BC187DB0040F3A7 /* libsqlite3.tbd in Frameworks */,
 				11B798D51BC18EC30040F3A7 /* GPUImage.framework in Frameworks */,
 				11B798D11BC1879B0040F3A7 /* SystemConfiguration.framework in Frameworks */,
@@ -101,7 +112,9 @@
 			isa = PBXGroup;
 			children = (
 				114DB5241BCDD7DF00172550 /* ImageUtil.h */,
-				114DB5251BCDD7DF00172550 /* ImageUtil.m */,
+				114DB5251BCDD7DF00172550 /* ImageUtil.mm */,
+				11DB579F1BD742210032E206 /* CBLUtil.h */,
+				11DB57A01BD742210032E206 /* CBLUtil.m */,
 			);
 			name = util;
 			sourceTree = "<group>";
@@ -109,6 +122,9 @@
 		11B7984A1BBB73680040F3A7 = {
 			isa = PBXGroup;
 			children = (
+				112DA1001BD5CB6300138127 /* AssetsLibrary.framework */,
+				112DA0FE1BD5CAC500138127 /* OpenAL.framework */,
+				112DA0FC1BD5CA9200138127 /* opencv2.framework */,
 				11B798D41BC18EC30040F3A7 /* GPUImage.framework */,
 				11B798D21BC187DB0040F3A7 /* libsqlite3.tbd */,
 				11B798D01BC1879B0040F3A7 /* SystemConfiguration.framework */,
@@ -168,7 +184,7 @@
 			isa = PBXGroup;
 			children = (
 				114DB5291BCF5E5D00172550 /* FaceIndexer.h */,
-				114DB52A1BCF5E5D00172550 /* FaceIndexer.m */,
+				114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */,
 			);
 			name = indexers;
 			sourceTree = "<group>";
@@ -195,6 +211,7 @@
 				11B798E61BC2277C0040F3A7 /* CBIRDocument.h in Headers */,
 				11B7987F1BBB74C30040F3A7 /* CBIRDatabaseEngine.h in Headers */,
 				11B798861BBB86480040F3A7 /* CBIRIndexer.h in Headers */,
+				11DB57A11BD742210032E206 /* CBLUtil.h in Headers */,
 				11B798E11BC1994D0040F3A7 /* LBPFilter.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,10 +313,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				11B798801BBB74C30040F3A7 /* CBIRDatabaseEngine.m in Sources */,
-				114DB5271BCDD7DF00172550 /* ImageUtil.m in Sources */,
+				114DB5271BCDD7DF00172550 /* ImageUtil.mm in Sources */,
 				11B798871BBB86480040F3A7 /* CBIRIndexer.m in Sources */,
-				114DB52C1BCF5E5D00172550 /* FaceIndexer.m in Sources */,
+				114DB52C1BCF5E5D00172550 /* FaceIndexer.mm in Sources */,
 				11B798E21BC1994D0040F3A7 /* LBPFilter.m in Sources */,
+				11DB57A21BD742210032E206 /* CBLUtil.m in Sources */,
 				11B798E71BC2277C0040F3A7 /* CBIRDocument.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,9 +329,9 @@
 				11B798811BBB74C30040F3A7 /* CBIRDatabaseEngine.m in Sources */,
 				11B798E81BC2277C0040F3A7 /* CBIRDocument.m in Sources */,
 				11B798881BBB86480040F3A7 /* CBIRIndexer.m in Sources */,
-				114DB5281BCDD7DF00172550 /* ImageUtil.m in Sources */,
+				114DB5281BCDD7DF00172550 /* ImageUtil.mm in Sources */,
 				11B798641BBB73690040F3A7 /* CBIRDatabaseTests.m in Sources */,
-				114DB52D1BCF5E5D00172550 /* FaceIndexer.m in Sources */,
+				114DB52D1BCF5E5D00172550 /* FaceIndexer.mm in Sources */,
 				11B798E31BC1994D0040F3A7 /* LBPFilter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

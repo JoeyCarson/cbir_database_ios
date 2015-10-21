@@ -8,10 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-
-
-@class CBIRDocument;
-@class UIImage;
+@class CBLDocument, CBIRDocument, UIImage;
 
 
 @interface CBIRIndexResult : NSObject
@@ -28,6 +25,6 @@
 
 @interface CBIRIndexer : NSObject
 
--(CBIRIndexResult *)indexImage:(CBIRDocument *)document;
+-(CBIRIndexResult *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc;
 
 @end

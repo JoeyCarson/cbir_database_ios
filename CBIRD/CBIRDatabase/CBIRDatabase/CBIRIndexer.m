@@ -7,7 +7,6 @@
 //
 #import "CBIRIndexer.h"
 
-
 @implementation CBIRIndexResult
 
 @synthesize indexResult = _indexResult;
@@ -29,7 +28,7 @@
 
 @implementation CBIRIndexer
 
--(CBIRIndexResult *)indexImage:(CBIRDocument *)document
+-(CBIRIndexResult *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc
 {
     [self doesNotRecognizeSelector:_cmd];
     return nil;

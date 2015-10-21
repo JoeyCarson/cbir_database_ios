@@ -145,12 +145,19 @@ CBIRDatabaseEngine * _singletonEngine;
         NSEnumerator * e = [m_indexers keyEnumerator];
         NSString * indexerName = nil;
         
+        CBLDocument * cblDoc = [[self databaseForName:CBIR_IMAGE_DB_NAME] documentWithID:doc.persistentID];
+        
         // For each registered CBIRIndexer object, generate a descriptor object
         // for the given image.  Store the descriptor object in a database document.
         while ( (indexerName = [e nextObject]) != nil ) {
             //NSLog(@"running indexer. name: %@", indexerName);
             const CBIRIndexer * indexerObj = [self getIndexer:indexerName];
-            result = [indexerObj indexImage:doc];
+            
+            // CBIRIndexer objects must write the index data into the document.
+            // TODO:  It might be smart to wrap the CBLDocument in an object that
+            //        guarantees name uniqueness, so that indexers aren't stepping
+            //        on one another's data.
+            result = [indexerObj indexImage:doc cblDocument:cblDoc];
         }
         
     };
