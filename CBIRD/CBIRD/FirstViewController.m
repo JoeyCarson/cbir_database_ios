@@ -12,6 +12,7 @@
 @interface FirstViewController ()
 {
     NSTimer * timer;
+    PhotoIndexer * m_indexer;
 }
 
 @property (weak, nonatomic) IBOutlet UIProgressView *indexerProgressView;
@@ -35,26 +36,35 @@
     self.indexerProgressView.progress = 0;
 }
 
+-(void)viewDidDisappear:(BOOL)animated
+{
+    if ( m_indexer ) {
+        [m_indexer pause];
+    }
+}
+
 -(void)startIndexing
 {
-    self.indexerProgressView.progress = 0;
-    [PhotoIndexer fetchAndIndexAssetsWithOptions:nil delegate:self];
+    if ( !m_indexer ) {
+        m_indexer = [[PhotoIndexer alloc] init];
+        self.indexerProgressView.progress = 0;
+        [m_indexer fetchAndIndexAssetsWithOptions:nil delegate:self];
+    } else {
+        [m_indexer resume];
+    }
 }
 
 -(void)progressUpdated:(CGFloat)progress filteredImage:(UIImage *)filteredImage
 {
-    __block CGFloat blockProgress = progress;
-    dispatch_async(dispatch_get_main_queue(), ^void() {
+    dispatch_async(dispatch_get_main_queue(), ^{
         
-        
-        
-        NSLog(@"FirstViewController: progressUpdated to %f retain count: %ld", blockProgress, filteredImage.CGImage ? CFGetRetainCount(filteredImage.CGImage) : 0);
+        NSLog(@"FirstViewController: progressUpdated to %f retain count: %ld", progress, filteredImage.CGImage ? CFGetRetainCount(filteredImage.CGImage) : 0);
         
         if ( filteredImage ) {
             self.previewImage.image = filteredImage;
         }
         
-        self.indexerProgressView.progress = blockProgress;
+        self.indexerProgressView.progress = progress;
         //self.progressLabel.text = [NSString stringWithFormat:@"%f %%", progress * 100];
     });
 }

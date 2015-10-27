@@ -29,7 +29,7 @@
 
 + (NSArray *) detectFaces:(CIImage *)img
 {
-    CIContext * ctx = [CIContext contextWithOptions:nil];
+    static CIContext * ctx = [CIContext contextWithOptions:nil];
     NSDictionary<NSString *, id> * options = @{CIDetectorAccuracy: CIDetectorAccuracyHigh};
     
     CIDetector * detector = [CIDetector detectorOfType:CIDetectorTypeFace context:ctx options:options];
@@ -39,7 +39,16 @@
         options = @{CIDetectorImageOrientation : orientation};
     }
     
-    return [detector featuresInImage:img options:options];
+    NSLog(@"before detection.");
+    NSArray * faces = nil;
+    
+    //@autoreleasepool {
+        NSArray * tempf = [detector featuresInImage:img options:options];
+        faces = tempf;
+    //}
+
+    NSLog(@"after detection.  %@", faces);
+    return faces;
 }
 
 + (NSData *) copyPixelData:(CIImage *)image

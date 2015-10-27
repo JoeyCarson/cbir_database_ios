@@ -30,13 +30,56 @@ CBIRDatabaseEngine * _singletonEngine;
 {
     // All registered indexers.
     NSMutableDictionary * m_indexers;
-
-    // One serial dispatch queue for all transactions.
-    NSOperationQueue * m_engQueue;
     
     // Manager for CBL.  Don't use sharedInstance as
     // it's only recommended to be used on the main thread.
     CBLManager * m_cblManager;
+    
+    // Thread for database transactions.
+    NSThread * m_dbThread;
+}
+
+- (BOOL)isRunning
+{
+    return m_dbThread.executing;
+}
+
+- (BOOL)isTerminated
+{
+    return m_dbThread.cancelled;
+}
+
++(instancetype) sharedEngine
+{
+    static dispatch_once_t once;
+    dispatch_once(&once, ^{
+        _singletonEngine = [[CBIRDatabaseEngine alloc] initPrivate];
+    });
+    
+    return _singletonEngine;
+}
+
++(BOOL) shutdown
+{
+    __block BOOL shutdownSuccess = NO;
+    if ( _singletonEngine ) {
+        static dispatch_once_t shutdownOnce;
+        dispatch_once(&shutdownOnce, ^{
+            // terminate the main thread when it's checked.
+            [_singletonEngine terminate];
+            
+            // Now forget the singleton instance.
+            // The dealloc call will also set the
+            _singletonEngine = nil;
+            shutdownSuccess = YES;
+            
+            NSLog(@"CBIRDatabaseEngine shutdown complete.");
+        });
+    } else {
+        NSLog(@"CBIRDatabaseEngine shutdown called, but singleton doesn't exist.");
+    }
+    
+    return shutdownSuccess;
 }
 
 /**
@@ -51,54 +94,57 @@ CBIRDatabaseEngine * _singletonEngine;
 -(instancetype)initPrivate
 {
     self = [super init];
-
-    if ( self ) {
-        NSLog(@"initPrivate!!");
-        // Create the serial dispatch queue.  It seems plausible that the underlying queue is released during dealloc.
-        dispatch_queue_t eng_queue = dispatch_queue_create(CBIRD_ENGINE_QUEUE_NAME, DISPATCH_QUEUE_SERIAL);
-        m_engQueue = [[NSOperationQueue alloc] init];
-        m_engQueue.underlyingQueue = eng_queue;
-        
-        // Initialize indexer list.
-        __block BOOL success = NO;
-
-        // Create the CBLManager on the engine queue.
-        void (^initCBLBlock)(void) = ^void(void) {
-            NSError * error = nil;
-            m_cblManager = [[CBLManager alloc] initWithDirectory:CBLManager.defaultDirectory options:nil error:&error];
-            
-            if ( error ) {
-                NSLog(@"CBIRDatabaseEngine: CBLManager instantiation failure: %@", error);
-            } else {
-                // Add all built in supported indexers.
-                [self initBuiltinIndexers];
-                
-                // Trash the database to help with debugging in early stages of development.
-                [self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
-                success = YES;
-            }
-        };
-        
-        NSBlockOperation * blockOp = [NSBlockOperation blockOperationWithBlock:initCBLBlock];
-        [m_engQueue addOperation:blockOp];
-        [m_engQueue waitUntilAllOperationsAreFinished];
-        
-        if (! success ) {
-            return nil;
-        }
-        
-    }
     
+    if ( self ) {
+        
+        NSLog(@"initPrivate!!");
+        m_dbThread = [[NSThread alloc] initWithTarget:self selector:@selector(dBThread) object:nil];
+        [m_dbThread start];
+    }
     return self;
 }
 
-+(instancetype) sharedEngine
+- (void)dealloc
 {
-    if ( !_singletonEngine ) {
-        _singletonEngine = [[CBIRDatabaseEngine alloc] initPrivate];
+    NSLog(@"CBIRDatabaseEngine dealloc: terminating engine thread.");
+    [self performSelector:@selector(terminate) onThread:m_dbThread withObject:nil waitUntilDone:YES];
+}
+
+- (void) terminate
+{
+    NSLog(@"CBIRDatabaseEngine thread terminated set.");
+    [m_dbThread cancel];
+    
+    // Spin until complete.
+    while ( _singletonEngine.isRunning ) { /* spin until done.*/ }
+    NSLog(@"CBIRDatabaseEngine thread termination complete.");
+}
+
+- (void)dBThread
+{
+    // Set up couchbase lite manager.
+    NSError * error = nil;
+    m_cblManager = [[CBLManager alloc] initWithDirectory:CBLManager.defaultDirectory options:nil error:&error];
+    
+    if ( error ) {
+        NSLog(@"CBIRDatabaseEngine: CBLManager instantiation failure: %@", error);
+        [self terminate];
+    } else {
+        // Add all built in supported indexers.
+        [self initBuiltinIndexers];
+        
+        // Trash the database to help with debugging in early stages of development.
+        //[self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
     }
     
-    return _singletonEngine;
+    while ( !self.isTerminated ) {
+        @autoreleasepool {
+            NSDate * until = [NSDate dateWithTimeInterval:.10 sinceDate:[NSDate date]];
+            [[NSRunLoop currentRunLoop] runUntilDate:until];
+        }
+    }
+    
+    NSLog(@"CBIRDatabaseEngine thread done.");
 }
 
 -(void)initBuiltinIndexers
@@ -113,6 +159,11 @@ CBIRDatabaseEngine * _singletonEngine;
 }
 
 -(void)registerIndexer:(CBIRIndexer *)indexer
+{
+    [self performSelector:@selector(registerIndexerInternal:) onThread:m_dbThread withObject:indexer waitUntilDone:YES];
+}
+
+-(void)registerIndexerInternal:(CBIRIndexer *)indexer
 {
     if ( indexer ) {
         NSString * className = NSStringFromClass([indexer class]);
@@ -135,43 +186,31 @@ CBIRDatabaseEngine * _singletonEngine;
 
 -(CBIRIndexResult *)indexImage:(CBIRDocument *)imgDoc
 {
-    __block CBIRDocument * doc = imgDoc;
-    __block CBIRIndexResult * result = nil;
+    [self performSelector:@selector(indexImageInternal:) onThread:m_dbThread withObject:imgDoc waitUntilDone:YES];
+    return nil;
+}
+
+- (void)indexImageInternal:(CBIRDocument *)imgDoc
+{
+    NSLog(@"running index worker");
     
-    // Create an NSBlockOperation to perform indexing and ensure
-    // that we wait until all operations are complete.
-    void (^indexBlock)(void) = ^void(void) {
-        
-        NSLog(@"running index block");
-        
-        NSEnumerator * e = [m_indexers keyEnumerator];
-        NSString * indexerName = nil;
-        
-        CBLDocument * cblDoc = [[self databaseForName:CBIR_IMAGE_DB_NAME] documentWithID:doc.persistentID];
-        
-        // For each registered CBIRIndexer object, generate a descriptor object
-        // for the given image.  Store the descriptor object in a database document.
-        while ( (indexerName = [e nextObject]) != nil ) {
-            //NSLog(@"running indexer. name: %@", indexerName);
-            const CBIRIndexer * indexerObj = [self getIndexer:indexerName];
-            
-            // CBIRIndexer objects must write the index data into the document.
-            // TODO:  It might be smart to wrap the CBLDocument in an object that
-            //        guarantees name uniqueness, so that indexers aren't stepping
-            //        on one another's data.
-            result = [indexerObj indexImage:doc cblDocument:cblDoc];
-        }
-        
-    };
+    NSEnumerator * e = [m_indexers keyEnumerator];
+    NSString * indexerName = nil;
     
-    NSBlockOperation * blockOp = [NSBlockOperation blockOperationWithBlock:indexBlock];
-    [m_engQueue addOperation:blockOp];
+    CBLDocument * cblDoc = [[self databaseForName:CBIR_IMAGE_DB_NAME] documentWithID:imgDoc.persistentID];
     
-    // TODO: Consider not waiting until all operations are done.
-    [m_engQueue waitUntilAllOperationsAreFinished];
-    NSLog(@"CBIRDatabaseEngine.  Done indexing.");
-    
-    return result;
+    // For each registered CBIRIndexer object, generate a descriptor object
+    // for the given image.  Store the descriptor object in a database document.
+    while ( (indexerName = [e nextObject]) != nil ) {
+        //NSLog(@"running indexer. name: %@", indexerName);
+        const CBIRIndexer * indexerObj = [self getIndexer:indexerName];
+        
+        // CBIRIndexer objects must write the index data into the document.
+        // TODO:  It might be smart to wrap the CBLDocument in an object that
+        //        guarantees name uniqueness, so that indexers aren't stepping
+        //        on one another's data.
+        [indexerObj indexImage:imgDoc cblDocument:cblDoc];
+    }
 }
 
 -(CBLDatabase *)databaseForName:(NSString *)name

@@ -87,11 +87,11 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 - (void) extractFeatures:(NSArray<FaceLBP *> *)faces andPersistTo:(CBLDocument *)doc
 {
-    #define BLOCK_SIZE 8
+    #define BLOCK_SIZE 64
     // Allocate the block to hold 4 bytes per pixel.
     unsigned char * buffer = (unsigned char *) malloc(BLOCK_SIZE * BLOCK_SIZE * 4);
     
-    
+    @autoreleasepool {
     
     // For each given face image, we need to build a list of 8x8 histograms of the
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
@@ -114,13 +114,14 @@ NSString * FACE_KEY_PREFIX = @"face_";
         // List of the names of feature ID's.
         NSMutableArray<NSString *> * featureIdentifiers = [[NSMutableArray alloc] init];
         NSMutableDictionary * faceData = [[NSMutableDictionary alloc] init];
+        NSUInteger featureIndex = 0;
         
         for ( UInt32 blockRow = 0; blockRow < verticalBlockCt; blockRow++ ) {
             
             // blockIndex identfies the index of the block relative to the current row.
             // featureIndex identifies the index of the feature in the overall face image.
             
-            for ( UInt32 blockIndex = 0, featureIndex = 0; blockIndex < horizontalBlockCt; blockIndex++, featureIndex++ ) {
+            for ( UInt32 blockIndex = 0; blockIndex < horizontalBlockCt; blockIndex++, featureIndex++ ) {
                 // Extract the rectangle. Make sure that the image and block sizes accounts for 4 bytes per pixel.
                 CGSize faceSize = CGSizeMake(4 * face.lbpImage.extent.size.width, face.lbpImage.extent.size.height);
                 CGRect rect = CGRectMake(blockIndex, blockRow, 4 * BLOCK_SIZE, BLOCK_SIZE);
@@ -144,7 +145,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                 // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
                 NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
                 NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
-                [CBLUtil saveAttachmentToDocument:doc name:featureID mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
+                //[CBLUtil saveAttachmentToDocument:doc name:featureID mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
                 
                 // Store the feature ID in the list.
                 [featureIdentifiers addObject:featureID];
@@ -160,7 +161,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
         faceData[@"id"] = faceUUID;
         faceData[@"features"] = featureIdentifiers;
     }
-    
+    }
     free(buffer);
 }
 

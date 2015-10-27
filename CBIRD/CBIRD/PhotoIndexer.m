@@ -10,33 +10,65 @@
 
 #import "PhotoIndexer.h"
 
-@implementation PhotoIndexer
+#define ASSET_INDEXER_QUEUE_NAME "cbird_asset_indexer_queue"
+#define ASSET_INDEX_WORKER_QUEUE_NAME "cbird_asset_index_worker_queue"
 
-// TODO:  Define a PhotoIndexerDelegate protcol to provide UI feedback during indexing.
-+(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate
+@implementation PhotoIndexer
+{
+    NSOperationQueue * m_indexOpQueue;
+    NSOperationQueue * m_indexOutputQueue;
+}
+
+- (instancetype) init
+{
+    self = [super init];
+    if ( self ) {
+        dispatch_queue_t index_queue = dispatch_queue_create(ASSET_INDEXER_QUEUE_NAME, DISPATCH_QUEUE_SERIAL);
+        m_indexOpQueue = [[NSOperationQueue alloc] init];
+        m_indexOpQueue.underlyingQueue = index_queue;
+        
+        dispatch_queue_t index_out_queue = dispatch_queue_create(ASSET_INDEXER_QUEUE_NAME, DISPATCH_QUEUE_SERIAL);
+        m_indexOutputQueue = [[NSOperationQueue alloc] init];
+        m_indexOutputQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+        m_indexOutputQueue.underlyingQueue = index_out_queue;
+        
+    }
+    return self;
+}
+
+-(void)pause
+{
+    m_indexOpQueue.suspended = YES;
+}
+
+-(void)resume
+{
+    m_indexOpQueue.suspended = NO;
+}
+
+-(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate
 {
     
     __block id<PhotoIndexerDelegate> blockDelegate = delegate;
     
-    // Perform the indexing procedure asynchronously on GCD queue.
-    dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0), ^{
 
-        // Fetch all assets.
-        PHFetchResult<PHAsset *> * result = [PHAsset fetchAssetsWithOptions:options];
-        
-        // Start the progress at 10% just to get started.
-        CGFloat progress = 0.10;
-        [blockDelegate progressUpdated:progress filteredImage:nil];
-        
-        // Determine how much is left to get to 100% and the percentage of
-        // completion for each document (progressStep).
-        NSUInteger total = result.count;
-        CGFloat progressLeft = 1.0 - progress;
-        CGFloat progressStep = progressLeft / total;
-        
-        // Run all indexers on each asset.  Prep and store the results.
-        for ( NSUInteger i = 0; i < total; i++ ) {
+    // Fetch all assets.
+    PHFetchResult<PHAsset *> * result = [PHAsset fetchAssetsWithOptions:options];
+    
+    // Start the progress at 10% just to get started.
+    __block CGFloat progress = 0.10;
+    [blockDelegate progressUpdated:progress filteredImage:nil];
+    
+    // Determine how much is left to get to 100% and the percentage of
+    // completion for each document (progressStep).
+    NSUInteger total = result.count;
+    CGFloat progressLeft = 1.0 - progress;
+    CGFloat progressStep = progressLeft / total;
+    
+    for ( NSUInteger i = 0; i < total; i++ ) {
 
+        
+        void (^indexBlock)(void) = ^void() {
             // TODO: Change logic to check if this object is indexed.
             BOOL exists = NO;
             
@@ -60,44 +92,94 @@
                     size.width = asset.pixelWidth;
                     size.height = asset.pixelHeight;
                     
-                    
-                    PHImageRequestOptions * options = [[PHImageRequestOptions alloc] init];
-                    options.synchronous = YES;
-                    
                     // Extract the local asset ID to name the document with.
                     NSString * localID = asset.localIdentifier;
                     
-                    PHAssetContentEditingResponseHandler indexBlock = ^void(PHContentEditingInput * contentEditingInput, NSDictionary * info) {
+                    // F you very much Apple...  This callback will always go to the main thread regardless of what thread requested the
+                    // image data.  This is the only API that can directly be reliably used to pick up a CIImage with metadata properties
+                    // populated (necessary for face detection and other image processing operations).  But with it always dispatching to the
+                    // main thread, it's of no use since it will block UI interaction.
+                    PHAssetContentEditingResponseHandler requestBlock = ^void(PHContentEditingInput * contentEditingInput, NSDictionary * info) {
+                        
+                        NSError * error = info[PHContentEditingInputErrorKey];
+                        
+                        if ( error ) {
+                            NSLog(@"returning early error found. %@", error.description);
+                            return;
+                        }
                         
                         if ( contentEditingInput.fullSizeImageURL ) {
-                            // Create the image object.
-                            CIImage *image = [CIImage imageWithContentsOfURL:contentEditingInput.fullSizeImageURL];
                             
-                            // Add it to a new document object.
-                            CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:image persistentID:localID type:PH_ASSET];
+                            NSLog(@"ready for processing.");
+                            NSURL * url = [contentEditingInput.fullSizeImageURL copy];
                             
-                            // Index it.
-                            indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
+                            __block CIImage * img = [self cloneImageToTmp:url];
+                            
+                            if ( img ) {
+                                NSLog(@"valid URL.  queue indexer.");
+                                void (^indexBlock)() = ^void() {
+                                
+                                    // Add it to a new document object.
+                                    CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:img persistentID:localID type:PH_ASSET];
+                                    
+                                    // Index it.
+                                    NSDate * before = [NSDate date];
+                                    indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
+                                    
+                                    // We should also pass an update state to the communicate
+                                    // failure or completion of the indexer process.
+                                    NSDate * after = [NSDate date];
+                                    NSLog(@"indexing time: %f s", after.timeIntervalSince1970 - before.timeIntervalSince1970);
+                                    
+                                    // remove the temporary file that we wrote.
+                                    [[NSFileManager defaultManager] removeItemAtURL:img.url error:nil];
+                                    
+                                    [delegate progressUpdated:(progress += progressStep) filteredImage:indexResult.filteredImage];
+                                    NSLog(@"processing complete.");
+                                };
+                                
+                                [m_indexOutputQueue addOperationWithBlock: indexBlock];
+                            }
                         }
+                        
                     };
                     
                     PHContentEditingInputRequestOptions *opts = [[PHContentEditingInputRequestOptions alloc] init];
                     opts.networkAccessAllowed = NO;
-                    [asset requestContentEditingInputWithOptions:opts completionHandler:indexBlock];
+                    
+                    NSLog(@"adding request.");
+                    [asset requestContentEditingInputWithOptions:opts completionHandler:requestBlock];
+                    
                 }
                 
-                // Uncomment the sleep when you want to display images.
-                [NSThread sleepForTimeInterval:0.25];
             }
-            
-            // We should also pass an update state to the communicate
-            // failure or completion of the indexer process.
-            [delegate progressUpdated:(progress += progressStep) filteredImage:indexResult.filteredImage];
-            
-        }
+        };
         
-        NSLog(@"PhotoIndexer done.");
-    });
+        [m_indexOpQueue addOperationWithBlock:indexBlock];
+        
+    }
+    
+}
+
+// Copy the image from the private storage into temporary storage.
+-(CIImage *)cloneImageToTmp:(NSURL *)fromImageURL
+{
+    CIImage * img = nil;
+    static NSUInteger c = 0;
+    NSString * urlStr = [NSString stringWithFormat:@"file://%@_%lu", NSTemporaryDirectory(), (unsigned long)c++];
+    NSURL * url = [NSURL URLWithString:urlStr];
+    
+    NSError * error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
+    BOOL success = [[NSFileManager defaultManager] copyItemAtURL:fromImageURL toURL:url error:&error];
+    
+    if ( !success || error ) {
+        NSLog(@"clone image to temp failed. %@", error);
+    } else {
+        img = [CIImage imageWithContentsOfURL:url];
+    }
+    
+    return img;
 }
 
 

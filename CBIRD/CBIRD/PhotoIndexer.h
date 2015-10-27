@@ -15,6 +15,8 @@ typedef void (^PHAssetResponseHandler)(UIImage * _Nullable result, NSDictionary 
 
 typedef void (^PHAssetContentEditingResponseHandler)(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nullable info);
 
+typedef void (^PHImageManagerDataResponseHandler)(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info);
+
 @class PHFetchOptions;
 
 
@@ -29,11 +31,17 @@ typedef void (^PHAssetContentEditingResponseHandler)(PHContentEditingInput * _Nu
  */
 @interface PhotoIndexer : NSObject
 
+// pauses the indexing operations.
+-(void)pause;
+
+// resumes the indexing operations.
+-(void)resume;
+
 // Wrapper method for fetchAssetsWithOptions that indexes all returned assets.
 // This method will provide feedback regarding the status of the database indexing procedure.
 // The calling module mustn't attempt a query while the indexing procedure is running, lest
 // the results may not included indexed properties.  This could probably be improved, but it's
 // fine for now.
-+(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate;
+-(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate;
 
 @end

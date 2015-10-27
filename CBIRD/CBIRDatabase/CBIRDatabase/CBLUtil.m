@@ -23,7 +23,7 @@
     if ( error ) {
         NSLog(@"Failed to save revision.  %@", error);
     } else {
-        NSLog(@"doc %@ updated: %@", doc.documentID, savedRevision.properties);
+        //NSLog(@"doc %@ updated: %@", doc.documentID, savedRevision.properties);
     }
     
     return error;
