@@ -134,7 +134,7 @@ CBIRDatabaseEngine * _singletonEngine;
         [self initBuiltinIndexers];
         
         // Trash the database to help with debugging in early stages of development.
-        //[self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
+        [self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
     }
     
     while ( !self.isTerminated ) {

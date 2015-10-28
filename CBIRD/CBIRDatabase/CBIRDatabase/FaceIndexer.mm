@@ -91,9 +91,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Allocate the block to hold 4 bytes per pixel.
     unsigned char * buffer = (unsigned char *) malloc(BLOCK_SIZE * BLOCK_SIZE * 4);
     
-    @autoreleasepool {
-    
-    // For each given face image, we need to build a list of 8x8 histograms of the
+        // For each given face image, we need to build a list of 8x8 histograms of the
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         
         // Identifier of this particular face.
@@ -122,45 +120,48 @@ NSString * FACE_KEY_PREFIX = @"face_";
             // featureIndex identifies the index of the feature in the overall face image.
             
             for ( UInt32 blockIndex = 0; blockIndex < horizontalBlockCt; blockIndex++, featureIndex++ ) {
-                // Extract the rectangle. Make sure that the image and block sizes accounts for 4 bytes per pixel.
-                CGSize faceSize = CGSizeMake(4 * face.lbpImage.extent.size.width, face.lbpImage.extent.size.height);
-                CGRect rect = CGRectMake(blockIndex, blockRow, 4 * BLOCK_SIZE, BLOCK_SIZE);
-                [ImageUtil extractRect:rect fromData:pixelData ofSize:faceSize intoBuffer:buffer];
                 
-                // Load the rectangle into a cv matrix and split it up into channels.
-                // We only need the first one.  Ideally need to figure out how to output single byte pixels.
-                cv::Mat blockPixels(BLOCK_SIZE, BLOCK_SIZE, CV_8UC4, buffer, sizeof(*buffer));
-                std::vector<cv::Mat> channels;
-                cv::split(blockPixels, channels);
+                @autoreleasepool {
                 
-                // Calculate the histogram.
-                cv::Mat lbpHistogram;
-                int histSize = 256;
-                float range[] = { 0, 256 } ;
-                const float* histRange = { range };
-                cv::calcHist( &channels[0], 1, 0, cv::Mat(), lbpHistogram, 1, &histSize, &histRange, true, false );
-                
-                
-                // Write the data and total to the CBLDocument.  Might be able to use no-copy, assuming that
-                // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
-                NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
-                NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
-                //[CBLUtil saveAttachmentToDocument:doc name:featureID mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
-                
-                // Store the feature ID in the list.
-                [featureIdentifiers addObject:featureID];
-                
-                //NSLog(@"pixels");
-                //std::cout << channels[0];
-                
-                //NSLog(@"histogram");
-                //std::cout << lbpHistogram;
+                    // Extract the rectangle. Make sure that the image and block sizes accounts for 4 bytes per pixel.
+                    CGSize faceSize = CGSizeMake(4 * face.lbpImage.extent.size.width, face.lbpImage.extent.size.height);
+                    CGRect rect = CGRectMake(blockIndex, blockRow, 4 * BLOCK_SIZE, BLOCK_SIZE);
+                    [ImageUtil extractRect:rect fromData:pixelData ofSize:faceSize intoBuffer:buffer];
+                    
+                    // Load the rectangle into a cv matrix and split it up into channels.
+                    // We only need the first one.  Ideally need to figure out how to output single byte pixels.
+                    cv::Mat blockPixels(BLOCK_SIZE, BLOCK_SIZE, CV_8UC4, buffer, sizeof(*buffer));
+                    std::vector<cv::Mat> channels;
+                    cv::split(blockPixels, channels);
+                    
+                    // Calculate the histogram.
+                    cv::Mat lbpHistogram;
+                    int histSize = 256;
+                    float range[] = { 0, 256 } ;
+                    const float* histRange = { range };
+                    cv::calcHist( &channels[0], 1, 0, cv::Mat(), lbpHistogram, 1, &histSize, &histRange, true, false );
+                    
+                    
+                    // Write the data and total to the CBLDocument.  Might be able to use no-copy, assuming that
+                    // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
+                    NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
+                    NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
+                    [CBLUtil saveAttachmentToDocument:doc name:featureID mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
+                    
+                    // Store the feature ID in the list.
+                    [featureIdentifiers addObject:featureID];
+                    
+                    //NSLog(@"pixels");
+                    //std::cout << channels[0];
+                    
+                    //NSLog(@"histogram");
+                    //std::cout << lbpHistogram;
+                }
             }
         }
         
         faceData[@"id"] = faceUUID;
         faceData[@"features"] = featureIdentifiers;
-    }
     }
     free(buffer);
 }

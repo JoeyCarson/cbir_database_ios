@@ -46,7 +46,7 @@
 -(void)startIndexing
 {
     if ( !m_indexer ) {
-        m_indexer = [[PhotoIndexer alloc] init];
+        m_indexer = [[PhotoIndexer alloc] initWithDelegate:self];
         self.indexerProgressView.progress = 0;
         [m_indexer fetchAndIndexAssetsWithOptions:nil delegate:self];
     } else {

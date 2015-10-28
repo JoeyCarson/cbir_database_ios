@@ -31,6 +31,10 @@ typedef void (^PHImageManagerDataResponseHandler)(NSData *imageData, NSString *d
  */
 @interface PhotoIndexer : NSObject
 
+@property (nonatomic, weak) id<PhotoIndexerDelegate> delegate;
+
+-(instancetype)initWithDelegate:(id<PhotoIndexerDelegate>)delegate;
+
 // pauses the indexing operations.
 -(void)pause;
 

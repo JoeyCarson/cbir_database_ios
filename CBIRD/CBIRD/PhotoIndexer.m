@@ -19,10 +19,14 @@
     NSOperationQueue * m_indexOutputQueue;
 }
 
-- (instancetype) init
+@synthesize delegate = _delegate;
+
+- (instancetype) initWithDelegate:(id<PhotoIndexerDelegate>)delegate
 {
     self = [super init];
     if ( self ) {
+        self.delegate = delegate;
+        
         dispatch_queue_t index_queue = dispatch_queue_create(ASSET_INDEXER_QUEUE_NAME, DISPATCH_QUEUE_SERIAL);
         m_indexOpQueue = [[NSOperationQueue alloc] init];
         m_indexOpQueue.underlyingQueue = index_queue;
@@ -46,6 +50,12 @@
     m_indexOpQueue.suspended = NO;
 }
 
+-(void) dealloc
+{
+    [m_indexOutputQueue setSuspended:YES];
+    [m_indexOpQueue setSuspended:YES];
+}
+
 -(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate
 {
     
@@ -67,7 +77,6 @@
     
     for ( NSUInteger i = 0; i < total; i++ ) {
 
-        
         void (^indexBlock)(void) = ^void() {
             // TODO: Change logic to check if this object is indexed.
             BOOL exists = NO;
@@ -95,61 +104,54 @@
                     // Extract the local asset ID to name the document with.
                     NSString * localID = asset.localIdentifier;
                     
-                    // F you very much Apple...  This callback will always go to the main thread regardless of what thread requested the
-                    // image data.  This is the only API that can directly be reliably used to pick up a CIImage with metadata properties
-                    // populated (necessary for face detection and other image processing operations).  But with it always dispatching to the
-                    // main thread, it's of no use since it will block UI interaction.
-                    PHAssetContentEditingResponseHandler requestBlock = ^void(PHContentEditingInput * contentEditingInput, NSDictionary * info) {
+                    PHImageManagerDataResponseHandler imageDataCallback = ^void(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info)
+                    {
                         
-                        NSError * error = info[PHContentEditingInputErrorKey];
+                        NSError * error = info[PHImageErrorKey];
                         
                         if ( error ) {
-                            NSLog(@"returning early error found. %@", error.description);
+                            NSLog(@"imageData callback.  error: %@", error);
                             return;
                         }
                         
-                        if ( contentEditingInput.fullSizeImageURL ) {
+                        if ( imageData ) {
                             
-                            NSLog(@"ready for processing.");
-                            NSURL * url = [contentEditingInput.fullSizeImageURL copy];
-                            
-                            __block CIImage * img = [self cloneImageToTmp:url];
+                            CIImage * img = [self writeAssetToTmp:asset date:imageData];
                             
                             if ( img ) {
-                                NSLog(@"valid URL.  queue indexer.");
-                                void (^indexBlock)() = ^void() {
+                            
+                                // Add it to a new document object.
+                                CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:img persistentID:localID type:PH_ASSET];
                                 
-                                    // Add it to a new document object.
-                                    CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:img persistentID:localID type:PH_ASSET];
-                                    
-                                    // Index it.
-                                    NSDate * before = [NSDate date];
-                                    indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
-                                    
-                                    // We should also pass an update state to the communicate
-                                    // failure or completion of the indexer process.
-                                    NSDate * after = [NSDate date];
-                                    NSLog(@"indexing time: %f s", after.timeIntervalSince1970 - before.timeIntervalSince1970);
-                                    
-                                    // remove the temporary file that we wrote.
-                                    [[NSFileManager defaultManager] removeItemAtURL:img.url error:nil];
-                                    
-                                    [delegate progressUpdated:(progress += progressStep) filteredImage:indexResult.filteredImage];
-                                    NSLog(@"processing complete.");
-                                };
+                                // Index it.
+                                NSDate * before = [NSDate date];
+                                CBIRIndexResult * indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
                                 
-                                [m_indexOutputQueue addOperationWithBlock: indexBlock];
+                                // We should also pass an update state to the communicate
+                                // failure or completion of the indexer process.
+                                NSDate * after = [NSDate date];
+                                NSLog(@"indexing time: %f s", after.timeIntervalSince1970 - before.timeIntervalSince1970);
+                                
+                                // remove the temporary file that we wrote.
+                                NSError * err = nil;
+                                BOOL removed = [[NSFileManager defaultManager] removeItemAtURL:img.url error:&err];
+                                if ( !removed ) {
+                                    NSLog(@"remove fails: %@", err);
+                                }
+                            
+                                [self.delegate progressUpdated:(progress += progressStep) filteredImage:indexResult.filteredImage];
+                                NSLog(@"processing complete.");
                             }
                         }
                         
                     };
                     
-                    PHContentEditingInputRequestOptions *opts = [[PHContentEditingInputRequestOptions alloc] init];
+                    // Retrieve the image data using a synchronous callback that won't hit the network.
+                    PHImageRequestOptions * opts = [[PHImageRequestOptions alloc] init];
+                    opts.synchronous = YES;
                     opts.networkAccessAllowed = NO;
                     
-                    NSLog(@"adding request.");
-                    [asset requestContentEditingInputWithOptions:opts completionHandler:requestBlock];
-                    
+                    [[PHImageManager defaultManager] requestImageDataForAsset:asset options:opts resultHandler:imageDataCallback];
                 }
                 
             }
@@ -162,25 +164,68 @@
 }
 
 // Copy the image from the private storage into temporary storage.
--(CIImage *)cloneImageToTmp:(NSURL *)fromImageURL
+-(CIImage *)writeAssetToTmp:(PHAsset *)asset date:(NSData *)imageData
 {
-    CIImage * img = nil;
+    // Generate a unique url.
     static NSUInteger c = 0;
     NSString * urlStr = [NSString stringWithFormat:@"file://%@_%lu", NSTemporaryDirectory(), (unsigned long)c++];
     NSURL * url = [NSURL URLWithString:urlStr];
     
-    NSError * error = nil;
+    // Remove tmp file from previous runs.
     [[NSFileManager defaultManager] removeItemAtURL:url error:nil];
-    BOOL success = [[NSFileManager defaultManager] copyItemAtURL:fromImageURL toURL:url error:&error];
     
-    if ( !success || error ) {
-        NSLog(@"clone image to temp failed. %@", error);
-    } else {
-        img = [CIImage imageWithContentsOfURL:url];
+    // First check whether or not the image data will actually work.
+    // If the data is bad, the temp image will be nil.
+    CIImage * temp = [CIImage imageWithData:imageData];
+    CIImage * img = nil;
+    
+    if ( temp ) {
+        temp = nil;
+        BOOL success = [imageData writeToURL:url atomically:NO];
+        if ( success ) {
+            img = [CIImage imageWithContentsOfURL:url];
+            //NSLog(@"image: %@", image.description);
+        }
     }
     
     return img;
 }
+
+
+
+
+
+//                    // F you very much Apple...  This callback will always go to the main thread regardless of what thread requested the
+//                    // image data.  This is the only API that can directly be reliably used to pick up a CIImage with metadata properties
+//                    // populated (necessary for face detection and other image processing operations).  But with it always dispatching to the
+//                    // main thread, it's of no use since it will block UI interaction.
+//                    PHAssetContentEditingResponseHandler requestBlock = ^void(PHContentEditingInput * contentEditingInput, NSDictionary * info) {
+//
+//                        NSError * error = info[PHContentEditingInputErrorKey];
+//
+//                        if ( error ) {
+//                            NSLog(@"returning early error found. %@", error.description);
+//                            return;
+//                        }
+//
+//                        if ( contentEditingInput.fullSizeImageURL ) {
+//
+//                            NSLog(@"ready for processing.");
+//                            NSURL * url = [contentEditingInput.fullSizeImageURL copy];
+//
+//                            __block CIImage * img = [self cloneImageToTmp:url];
+//
+//
+//                        }
+//
+//                    };
+//
+//                    PHContentEditingInputRequestOptions *opts = [[PHContentEditingInputRequestOptions alloc] init];
+//                    opts.networkAccessAllowed = NO;
+//
+//                    NSLog(@"adding request.");
+//                    //[asset requestContentEditingInputWithOptions:opts completionHandler:requestBlock];
+
 
 
 @end
