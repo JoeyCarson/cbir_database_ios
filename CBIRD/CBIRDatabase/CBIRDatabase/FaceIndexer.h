@@ -8,6 +8,8 @@
 
 #import <CBIRDatabase/CBIRDatabase.h>
 
+static NSString * const FACE_DATA_LIST_DBKEY = @"face_data_list";
+
 @interface FaceIndexer : CBIRIndexer
 
 @end

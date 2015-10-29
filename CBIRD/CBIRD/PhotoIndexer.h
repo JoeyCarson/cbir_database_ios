@@ -15,7 +15,7 @@ typedef void (^PHAssetResponseHandler)(UIImage * _Nullable result, NSDictionary 
 
 typedef void (^PHAssetContentEditingResponseHandler)(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nullable info);
 
-typedef void (^PHImageManagerDataResponseHandler)(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info);
+typedef void (^PHImageManagerDataResponseHandler)(NSData * _Nullable imageData, NSString  * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info);
 
 @class PHFetchOptions;
 
@@ -32,6 +32,7 @@ typedef void (^PHImageManagerDataResponseHandler)(NSData *imageData, NSString *d
 @interface PhotoIndexer : NSObject
 
 @property (nonatomic, weak) id<PhotoIndexerDelegate> delegate;
+@property (nonatomic, readonly, getter=isRunning) BOOL running;
 
 -(instancetype)initWithDelegate:(id<PhotoIndexerDelegate>)delegate;
 

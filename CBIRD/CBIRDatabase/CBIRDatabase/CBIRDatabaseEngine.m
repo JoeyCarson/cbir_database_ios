@@ -68,6 +68,10 @@ CBIRDatabaseEngine * _singletonEngine;
             // terminate the main thread when it's checked.
             [_singletonEngine terminate];
             
+            // Spin until complete.
+            while ( _singletonEngine.isRunning ) { /* spin until done.*/ }
+            NSLog(@"CBIRDatabaseEngine thread termination complete.");
+            
             // Now forget the singleton instance.
             // The dealloc call will also set the
             _singletonEngine = nil;
@@ -114,10 +118,6 @@ CBIRDatabaseEngine * _singletonEngine;
 {
     NSLog(@"CBIRDatabaseEngine thread terminated set.");
     [m_dbThread cancel];
-    
-    // Spin until complete.
-    while ( _singletonEngine.isRunning ) { /* spin until done.*/ }
-    NSLog(@"CBIRDatabaseEngine thread termination complete.");
 }
 
 - (void)dBThread

@@ -17,6 +17,7 @@
 
 @property (weak, nonatomic) IBOutlet UIProgressView *indexerProgressView;
 @property (weak, nonatomic) IBOutlet UIImageView *previewImage;
+@property (weak, nonatomic) IBOutlet UIButton *toggle;
 
 
 @end
@@ -28,29 +29,32 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    self.indexerProgressView.progress = 0;
+    timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(toggleIndexing) userInfo:nil repeats:NO];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(startIndexing) userInfo:nil repeats:NO];
-    self.indexerProgressView.progress = 0;
+    
 }
 
 -(void)viewDidDisappear:(BOOL)animated
 {
-    if ( m_indexer ) {
-        [m_indexer pause];
-    }
+    
 }
 
--(void)startIndexing
+-(void)toggleIndexing
 {
     if ( !m_indexer ) {
         m_indexer = [[PhotoIndexer alloc] initWithDelegate:self];
-        self.indexerProgressView.progress = 0;
         [m_indexer fetchAndIndexAssetsWithOptions:nil delegate:self];
-    } else {
+    }
+    
+    
+    if ( !m_indexer.isRunning ) {
         [m_indexer resume];
+    } else {
+        [m_indexer pause];
     }
 }
 

@@ -8,6 +8,7 @@
 
 #import <CoreImage/CoreImage.h>
 #import <opencv2/opencv.hpp>
+#import <CouchbaseLite/CouchbaseLite.h>
 
 #import "CBIRDocument.h"
 #import "LBPFilter.h"
@@ -91,6 +92,9 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Allocate the block to hold 4 bytes per pixel.
     unsigned char * buffer = (unsigned char *) malloc(BLOCK_SIZE * BLOCK_SIZE * 4);
     
+    // Array of face data dictionaries.
+    NSMutableArray * faceDataList = [[NSMutableArray alloc] init];
+    
         // For each given face image, we need to build a list of 8x8 histograms of the
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         
@@ -112,6 +116,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
         // List of the names of feature ID's.
         NSMutableArray<NSString *> * featureIdentifiers = [[NSMutableArray alloc] init];
         NSMutableDictionary * faceData = [[NSMutableDictionary alloc] init];
+        
         NSUInteger featureIndex = 0;
         
         for ( UInt32 blockRow = 0; blockRow < verticalBlockCt; blockRow++ ) {
@@ -162,7 +167,23 @@ NSString * FACE_KEY_PREFIX = @"face_";
         
         faceData[@"id"] = faceUUID;
         faceData[@"features"] = featureIdentifiers;
+        [faceDataList addObject:faceData];
     }
+    
+    if ( faceDataList.count > 0 ) {
+        NSError * error = nil;
+        
+        CBLUnsavedRevision * newRevision = doc.newRevision;
+        NSMutableDictionary * newProperties = newRevision.properties;
+        
+        newProperties[FACE_DATA_LIST_DBKEY] = faceDataList;
+        [newRevision save:&error];
+        
+        if ( error ) {
+            NSLog(@"%s error saving face data list: %@", __FUNCTION__, error);
+        }
+    }
+    
     free(buffer);
 }
 
@@ -170,20 +191,6 @@ NSString * FACE_KEY_PREFIX = @"face_";
 {
     return [NSString stringWithFormat:@"%@%@", FACE_KEY_PREFIX, [NSUUID UUID].UUIDString];
 }
-
-//char * bytes = (char *)malloc(8);
-//memcpy(bytes, pixelData.bytes, 8);
-//
-//cv::Mat m(1, 2, CV_8UC4, bytes, 8);
-//
-//
-//std::vector<cv::Mat> channels;
-//cv::split(m, channels);
-//
-//cv::Mat r = channels[0];
-//uint8_t zz = r.at<uint8_t>(0, 0);
-//uint8_t zo = r.at<uint8_t>(0, 1);
-//zz = r.at<uint8_t>(0, 1);
 
 
 @end
