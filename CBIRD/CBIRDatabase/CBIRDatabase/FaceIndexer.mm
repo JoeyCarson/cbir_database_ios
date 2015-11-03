@@ -86,14 +86,17 @@ NSString * FACE_KEY_PREFIX = @"face_";
     return lbpFaceImages;
 }
 
+// Extracts features from each face in the list and save them to the document.
 - (void) extractFeatures:(NSArray<FaceLBP *> *)faces andPersistTo:(CBLDocument *)doc
 {
-    #define BLOCK_SIZE 64
+    #define BLOCK_SIZE 16
     // Allocate the block to hold 4 bytes per pixel.
     unsigned char * buffer = (unsigned char *) malloc(BLOCK_SIZE * BLOCK_SIZE * 4);
     
     // Array of face data dictionaries.
     NSMutableArray * faceDataList = [[NSMutableArray alloc] init];
+    
+    CBLUnsavedRevision * revision = [doc newRevision];
     
         // For each given face image, we need to build a list of 8x8 histograms of the
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
@@ -151,7 +154,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                     // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
                     NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
                     NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
-                    [CBLUtil saveAttachmentToDocument:doc name:featureID mimeType:MIME_TYPE_OCTET_STREAM data:histogramData];
+                    [revision setAttachmentNamed:featureID withContentType:MIME_TYPE_OCTET_STREAM content:histogramData];
                     
                     // Store the feature ID in the list.
                     [featureIdentifiers addObject:featureID];
@@ -173,11 +176,10 @@ NSString * FACE_KEY_PREFIX = @"face_";
     if ( faceDataList.count > 0 ) {
         NSError * error = nil;
         
-        CBLUnsavedRevision * newRevision = doc.newRevision;
-        NSMutableDictionary * newProperties = newRevision.properties;
+        NSMutableDictionary * newProperties = revision.properties;
         
         newProperties[FACE_DATA_LIST_DBKEY] = faceDataList;
-        [newRevision save:&error];
+        [revision save:&error];
         
         if ( error ) {
             NSLog(@"%s error saving face data list: %@", __FUNCTION__, error);

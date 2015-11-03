@@ -22,8 +22,7 @@
     CIContext * ctx = [CIContext contextWithOptions:options];
     
     CGImageRef cgImage = [ctx createCGImage:img fromRect:img.extent ]; // format:kCIFormatRG8 colorSpace:cs
-    
-    //NSLog(@"ImageUtil CGImage retain count: %ld", CFGetRetainCount(cgImage));
+
     return cgImage;
 }
 

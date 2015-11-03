@@ -111,7 +111,7 @@ CBIRDatabaseEngine * _singletonEngine;
 - (void)dealloc
 {
     NSLog(@"CBIRDatabaseEngine dealloc: terminating engine thread.");
-    [self performSelector:@selector(terminate) onThread:m_dbThread withObject:nil waitUntilDone:YES];
+    [CBIRDatabaseEngine shutdown];
 }
 
 - (void) terminate
