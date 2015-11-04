@@ -14,6 +14,8 @@
 @class CBIRDocument;
 @class CBIRIndexResult;
 
+@class CBLDocument;
+
 @interface CBIRDatabaseEngine : NSObject
 
 // Whether or not the database engine thread is running.
@@ -37,5 +39,7 @@
 
 // Register the indexer object according to its name.
 -(void)registerIndexer:(CBIRIndexer *)indexer;
+
+-(CBLDocument *)getDocument:(NSString *)persistentID;
 
 @end

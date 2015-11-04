@@ -76,14 +76,13 @@
     for ( NSUInteger i = 0; i < total; i++ ) {
 
         void (^indexBlock)(void) = ^void() {
+            
+            PHAsset * asset = [result objectAtIndex:i];
+            
             // TODO: Change logic to check if this object is indexed.
-            BOOL exists = NO;
+            BOOL exists = ([[CBIRDatabaseEngine sharedEngine] getDocument:asset.localIdentifier] != nil);
             
             __block CBIRIndexResult * indexResult = nil;
-            
-            // We should also pass an update state to the communicate
-            // failure or completion of the indexer process.
-            [self.delegate progressUpdated:(progress += progressStep) filteredImage:indexResult.filteredImage];
             
             if ( !exists )
             {
@@ -96,7 +95,6 @@
                 // https://developer.apple.com/library/ios/documentation/General/Conceptual/ConcurrencyProgrammingGuide/OperationQueues/OperationQueues.html
                 @autoreleasepool
                 {
-                    PHAsset * asset = [result objectAtIndex:i];
                     
                     CGSize size;
                     size.width = asset.pixelWidth;
@@ -122,6 +120,10 @@
                             if ( img ) {
                             
                                 // Add it to a new document object.
+                                // TODO: Change this CBIRDocument class to something that makes more sense.
+                                // For instance, something that can be used for output as well as input.
+                                // Consider it CBIRDatabaseTransaction <- IndexImageTransaction.
+                                // The goal is to have a common method to represent persistent ID's.
                                 CBIRDocument * doc = [[CBIRDocument alloc] initWithCIImage:img persistentID:localID type:PH_ASSET];
                                 
                                 // Index it.
@@ -152,6 +154,9 @@
                 
             }
             
+            // We should also pass an update state to the communicate
+            // failure or completion of the indexer process.
+            [self.delegate progressUpdated:(progress += progressStep) filteredImage:indexResult.filteredImage];
             NSLog(@"processing complete.");
         };
         

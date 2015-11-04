@@ -16,6 +16,10 @@
 #define CBIRD_ENGINE_QUEUE_NAME "cbird_db_engine_queue"
 #define CBIR_IMAGE_DB_NAME @"cbird_image_db"
 
+
+static NSString * const kCBIROutputDocument = @"outputDocument";
+static NSString * const kCBIRPersistentID = @"persistentID";
+
 @interface CBIRDatabaseEngine(Private)
 
 -(instancetype)initPrivate;
@@ -134,7 +138,7 @@ CBIRDatabaseEngine * _singletonEngine;
         [self initBuiltinIndexers];
         
         // Trash the database to help with debugging in early stages of development.
-        [self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
+        //[self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
     }
     
     while ( !self.isTerminated ) {
@@ -199,9 +203,9 @@ CBIRDatabaseEngine * _singletonEngine;
     
     CBLDocument * cblDoc = [[self databaseForName:CBIR_IMAGE_DB_NAME] documentWithID:imgDoc.persistentID];
     
-    // For each registered CBIRIndexer object, generate a descriptor object
-    // for the given image.  Store the descriptor object in a database document.
+    // Use each indexer to extract features and write them into the CBLDocument.
     while ( (indexerName = [e nextObject]) != nil ) {
+
         //NSLog(@"running indexer. name: %@", indexerName);
         const CBIRIndexer * indexerObj = [self getIndexer:indexerName];
         
@@ -212,6 +216,25 @@ CBIRDatabaseEngine * _singletonEngine;
         [indexerObj indexImage:imgDoc cblDocument:cblDoc];
     }
 }
+
+-(CBLDocument *)getDocument:(NSString *)persistentID
+{
+    NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
+    params[kCBIRPersistentID] = persistentID;
+    
+    [self performSelector:@selector(getDocumentInternal:) onThread:m_dbThread withObject:params waitUntilDone:YES];
+    
+    CBLDocument * outputDocument = params[kCBIROutputDocument];
+    return outputDocument;
+}
+
+-(void)getDocumentInternal:(NSMutableDictionary *)params
+{
+    NSString * persistentID = params[kCBIRPersistentID];
+    CBLDocument * doc = [[self databaseForName:CBIR_IMAGE_DB_NAME] existingDocumentWithID:persistentID];
+    params[kCBIROutputDocument] = doc;
+}
+
 
 -(CBLDatabase *)databaseForName:(NSString *)name
 {

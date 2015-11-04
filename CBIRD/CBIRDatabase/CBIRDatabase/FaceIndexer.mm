@@ -137,7 +137,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
         
         // Extract features blocks from each row as such.
         // [0 ][1 ][2 ][3 ] 0
-        // [4 ][5 ][6 ][7 ] 1             example: a 3x3 grid.
+        // [4 ][5 ][6 ][7 ] 1             example: a 4x4 grid.
         // [8 ][9 ][10][11] 2             See GRID_WIDTH_IN_BLOCKS
         // [12][13][14][15] 3             and GRID_HEIGHT_IN_BLOCKS.
         //  0   1   2   3
