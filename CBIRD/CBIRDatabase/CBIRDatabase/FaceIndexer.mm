@@ -89,16 +89,17 @@ NSString * FACE_KEY_PREFIX = @"face_";
 // Extracts features from each face in the list and save them to the document.
 - (void) extractFeatures:(NSArray<FaceLBP *> *)faces andPersistTo:(CBLDocument *)doc
 {
-    #define BLOCK_SIZE 16
-    // Allocate the block to hold 4 bytes per pixel.
-    unsigned char * buffer = (unsigned char *) malloc(BLOCK_SIZE * BLOCK_SIZE * 4);
+    // The grid size to partition each face into.
+    #define GRID_WIDTH_IN_BLOCKS 16
+    #define GRID_HEIGHT_IN_BLOCKS 16
     
     // Array of face data dictionaries.
     NSMutableArray * faceDataList = [[NSMutableArray alloc] init];
     
+    // New revision to save face data.
     CBLUnsavedRevision * revision = [doc newRevision];
     
-        // For each given face image, we need to build a list of 8x8 histograms of the
+    // For each given face image, we need to build a list of 8x8 histograms of the
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         
         // Identifier of this particular face.
@@ -112,14 +113,36 @@ NSString * FACE_KEY_PREFIX = @"face_";
         CGFloat height = face.lbpImage.extent.size.height;
         NSData * pixelData = [ImageUtil copyPixelData:face.lbpImage];
         
-        // Round up the number of blocks and rows to ensure that we consume the entire image.
-        UInt32 horizontalBlockCt = ceil(width / BLOCK_SIZE);
-        UInt32 verticalBlockCt   = ceil(height / BLOCK_SIZE);
+        // The number of blocks we're slicing the image into.
+        UInt32 horizontalBlockCt = GRID_WIDTH_IN_BLOCKS;
+        UInt32 verticalBlockCt   = GRID_HEIGHT_IN_BLOCKS;
+        
+        // TODO: Come up with a safe (e.g. not overstepping the array) way to partition
+        // the image such that we aren't losing precision in width per block.
+        // If we rounded up for the fraction of the pixel, it will make the block widths
+        // add up to greater than the actual width of the buffer.
+        // Interesting little problem.  But just keep it mildly imprecise and safe for now.
+        UInt32 block_width  = width / horizontalBlockCt;
+        UInt32 block_height = height / verticalBlockCt;
+        
+        // Allocate the block to hold 4 bytes per pixel.
+        unsigned char * buffer = (unsigned char *) malloc(block_width * block_height * 4);
         
         // List of the names of feature ID's.
         NSMutableArray<NSString *> * featureIdentifiers = [[NSMutableArray alloc] init];
         NSMutableDictionary * faceData = [[NSMutableDictionary alloc] init];
         
+        // The size of the face.
+        CGSize faceSize = CGSizeMake(4 * width, height);
+        
+        // Extract features blocks from each row as such.
+        // [0 ][1 ][2 ][3 ] 0
+        // [4 ][5 ][6 ][7 ] 1             example: a 3x3 grid.
+        // [8 ][9 ][10][11] 2             See GRID_WIDTH_IN_BLOCKS
+        // [12][13][14][15] 3             and GRID_HEIGHT_IN_BLOCKS.
+        //  0   1   2   3
+        
+        // The index of each block in the grid.
         NSUInteger featureIndex = 0;
         
         for ( UInt32 blockRow = 0; blockRow < verticalBlockCt; blockRow++ ) {
@@ -132,13 +155,12 @@ NSString * FACE_KEY_PREFIX = @"face_";
                 @autoreleasepool {
                 
                     // Extract the rectangle. Make sure that the image and block sizes accounts for 4 bytes per pixel.
-                    CGSize faceSize = CGSizeMake(4 * face.lbpImage.extent.size.width, face.lbpImage.extent.size.height);
-                    CGRect rect = CGRectMake(blockIndex, blockRow, 4 * BLOCK_SIZE, BLOCK_SIZE);
+                    CGRect rect = CGRectMake(blockIndex, blockRow, 4 * block_width, block_height);
                     [ImageUtil extractRect:rect fromData:pixelData ofSize:faceSize intoBuffer:buffer];
                     
                     // Load the rectangle into a cv matrix and split it up into channels.
                     // We only need the first one.  Ideally need to figure out how to output single byte pixels.
-                    cv::Mat blockPixels(BLOCK_SIZE, BLOCK_SIZE, CV_8UC4, buffer, sizeof(*buffer));
+                    cv::Mat blockPixels(block_width, block_height, CV_8UC4, buffer, sizeof(*buffer));
                     std::vector<cv::Mat> channels;
                     cv::split(blockPixels, channels);
                     
@@ -154,6 +176,8 @@ NSString * FACE_KEY_PREFIX = @"face_";
                     // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
                     NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
                     NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
+                    
+                    // It's a good idea to come up with a way to flush when the histograms become too many.
                     [revision setAttachmentNamed:featureID withContentType:MIME_TYPE_OCTET_STREAM content:histogramData];
                     
                     // Store the feature ID in the list.
@@ -171,6 +195,11 @@ NSString * FACE_KEY_PREFIX = @"face_";
         faceData[@"id"] = faceUUID;
         faceData[@"features"] = featureIdentifiers;
         [faceDataList addObject:faceData];
+        
+        if ( buffer ) {
+            // Why on Earth wouldn't there be a buffer?
+            free(buffer);
+        }
     }
     
     if ( faceDataList.count > 0 ) {
@@ -185,8 +214,6 @@ NSString * FACE_KEY_PREFIX = @"face_";
             NSLog(@"%s error saving face data list: %@", __FUNCTION__, error);
         }
     }
-    
-    free(buffer);
 }
 
 - (NSString *) generateFaceKey
