@@ -17,8 +17,8 @@
 #define CBIR_IMAGE_DB_NAME @"cbird_image_db"
 
 
-static NSString * const kCBIROutputDocument = @"outputDocument";
-static NSString * const kCBIRPersistentID = @"persistentID";
+static const NSString * const kCBIROutputDocument = @"outputDocument";
+static const NSString * const kCBIRPersistentID = @"persistentID";
 
 @interface CBIRDatabaseEngine(Private)
 

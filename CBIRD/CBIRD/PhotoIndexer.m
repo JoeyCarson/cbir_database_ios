@@ -81,7 +81,6 @@
             
             // TODO: Change logic to check if this object is indexed.
             BOOL exists = ([[CBIRDatabaseEngine sharedEngine] getDocument:asset.localIdentifier] != nil);
-            
             __block CBIRIndexResult * indexResult = nil;
             
             if ( !exists )
