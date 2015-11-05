@@ -47,6 +47,6 @@ typedef void (^PHImageManagerDataResponseHandler)(NSData * _Nullable imageData, 
 // The calling module mustn't attempt a query while the indexing procedure is running, lest
 // the results may not included indexed properties.  This could probably be improved, but it's
 // fine for now.
--(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate;
+-(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options;
 
 @end

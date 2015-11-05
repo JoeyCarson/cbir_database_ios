@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "QueryViewController.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, QueryViewDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 

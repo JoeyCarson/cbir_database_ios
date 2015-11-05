@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1107E8C51BEAF7FB00DAFDAD /* QueryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1107E8C41BEAF7FB00DAFDAD /* QueryViewController.xib */; };
 		11B7980A1BBB726E0040F3A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798091BBB726E0040F3A7 /* main.m */; };
 		11B7980D1BBB726E0040F3A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B7980C1BBB726E0040F3A7 /* AppDelegate.m */; };
-		11B798101BBB726E0040F3A7 /* FirstViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B7980F1BBB726E0040F3A7 /* FirstViewController.m */; };
+		11B798101BBB726E0040F3A7 /* QueryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B7980F1BBB726E0040F3A7 /* QueryViewController.m */; };
 		11B798131BBB726E0040F3A7 /* SecondViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798121BBB726E0040F3A7 /* SecondViewController.m */; };
 		11B798161BBB726E0040F3A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11B798141BBB726E0040F3A7 /* Main.storyboard */; };
 		11B798181BBB726E0040F3A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11B798171BBB726E0040F3A7 /* Assets.xcassets */; };
@@ -18,8 +19,8 @@
 		11B798311BBB726E0040F3A7 /* CBIRDUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798301BBB726E0040F3A7 /* CBIRDUITests.m */; };
 		11B798891BBB937F0040F3A7 /* CBIRDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798741BBB73690040F3A7 /* CBIRDatabase.framework */; };
 		11B7988E1BBB974A0040F3A7 /* CBIRDatabase.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 11B798741BBB73690040F3A7 /* CBIRDatabase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		11B798921BBC47A80040F3A7 /* PhotoIndexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798911BBC47A80040F3A7 /* PhotoIndexer.m */; settings = {ASSET_TAGS = (); }; };
-		11B798931BBC47A80040F3A7 /* PhotoIndexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798911BBC47A80040F3A7 /* PhotoIndexer.m */; settings = {ASSET_TAGS = (); }; };
+		11B798921BBC47A80040F3A7 /* PhotoIndexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798911BBC47A80040F3A7 /* PhotoIndexer.m */; };
+		11B798931BBC47A80040F3A7 /* PhotoIndexer.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798911BBC47A80040F3A7 /* PhotoIndexer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,12 +75,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1107E8C41BEAF7FB00DAFDAD /* QueryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QueryViewController.xib; sourceTree = "<group>"; };
 		11B798051BBB726E0040F3A7 /* CBIRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CBIRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11B798091BBB726E0040F3A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		11B7980B1BBB726E0040F3A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		11B7980C1BBB726E0040F3A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		11B7980E1BBB726E0040F3A7 /* FirstViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FirstViewController.h; sourceTree = "<group>"; };
-		11B7980F1BBB726E0040F3A7 /* FirstViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FirstViewController.m; sourceTree = "<group>"; };
+		11B7980E1BBB726E0040F3A7 /* QueryViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QueryViewController.h; sourceTree = "<group>"; };
+		11B7980F1BBB726E0040F3A7 /* QueryViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QueryViewController.m; sourceTree = "<group>"; };
 		11B798111BBB726E0040F3A7 /* SecondViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SecondViewController.h; sourceTree = "<group>"; };
 		11B798121BBB726E0040F3A7 /* SecondViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SecondViewController.m; sourceTree = "<group>"; };
 		11B798151BBB726E0040F3A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -150,8 +152,8 @@
 				11B7988F1BBC47600040F3A7 /* Util */,
 				11B7980B1BBB726E0040F3A7 /* AppDelegate.h */,
 				11B7980C1BBB726E0040F3A7 /* AppDelegate.m */,
-				11B7980E1BBB726E0040F3A7 /* FirstViewController.h */,
-				11B7980F1BBB726E0040F3A7 /* FirstViewController.m */,
+				11B7980E1BBB726E0040F3A7 /* QueryViewController.h */,
+				11B7980F1BBB726E0040F3A7 /* QueryViewController.m */,
 				11B798111BBB726E0040F3A7 /* SecondViewController.h */,
 				11B798121BBB726E0040F3A7 /* SecondViewController.m */,
 				11B798141BBB726E0040F3A7 /* Main.storyboard */,
@@ -159,6 +161,7 @@
 				11B798191BBB726E0040F3A7 /* LaunchScreen.storyboard */,
 				11B7981C1BBB726E0040F3A7 /* Info.plist */,
 				11B798081BBB726E0040F3A7 /* Supporting Files */,
+				1107E8C41BEAF7FB00DAFDAD /* QueryViewController.xib */,
 			);
 			path = CBIRD;
 			sourceTree = "<group>";
@@ -336,6 +339,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				11B7981B1BBB726E0040F3A7 /* LaunchScreen.storyboard in Resources */,
+				1107E8C51BEAF7FB00DAFDAD /* QueryViewController.xib in Resources */,
 				11B798181BBB726E0040F3A7 /* Assets.xcassets in Resources */,
 				11B798161BBB726E0040F3A7 /* Main.storyboard in Resources */,
 			);
@@ -365,7 +369,7 @@
 				11B798921BBC47A80040F3A7 /* PhotoIndexer.m in Sources */,
 				11B798131BBB726E0040F3A7 /* SecondViewController.m in Sources */,
 				11B7980D1BBB726E0040F3A7 /* AppDelegate.m in Sources */,
-				11B798101BBB726E0040F3A7 /* FirstViewController.m in Sources */,
+				11B798101BBB726E0040F3A7 /* QueryViewController.m in Sources */,
 				11B7980A1BBB726E0040F3A7 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -41,6 +41,7 @@
 -(void)pause
 {
     m_indexOpQueue.suspended = YES;
+    m_indexOpQueue.class
 }
 
 -(void)resume
@@ -54,10 +55,10 @@
     [m_indexOpQueue waitUntilAllOperationsAreFinished];
 }
 
--(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options delegate:(_Nullable id<PhotoIndexerDelegate>)delegate
+-(void)fetchAndIndexAssetsWithOptions:(nullable PHFetchOptions *)options
 {
     
-    __block id<PhotoIndexerDelegate> blockDelegate = delegate;
+    __block id<PhotoIndexerDelegate> blockDelegate = self.delegate;
     if ( !options ) {
         options = [PHFetchOptions new];
     }
