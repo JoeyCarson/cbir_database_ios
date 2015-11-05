@@ -28,6 +28,7 @@
         
         dispatch_queue_t index_queue = dispatch_queue_create(ASSET_INDEXER_QUEUE_NAME, DISPATCH_QUEUE_SERIAL);
         m_indexOpQueue = [[NSOperationQueue alloc] init];
+        m_indexOpQueue.maxConcurrentOperationCount = 1;
         m_indexOpQueue.underlyingQueue = index_queue;
     }
     return self;
@@ -40,8 +41,7 @@
 
 -(void)pause
 {
-    m_indexOpQueue.suspended = YES;
-    m_indexOpQueue.class
+    [m_indexOpQueue setSuspended:YES];
 }
 
 -(void)resume
@@ -170,7 +170,6 @@
         };
         
         [m_indexOpQueue addOperationWithBlock:indexBlock];
-        
     }
     
 }
@@ -192,7 +191,6 @@
     CIImage * img = nil;
     
     if ( temp ) {
-        temp = nil;
         BOOL success = [imageData writeToURL:url atomically:NO];
         if ( success ) {
             img = [CIImage imageWithContentsOfURL:url];
