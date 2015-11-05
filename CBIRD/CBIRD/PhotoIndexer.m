@@ -58,7 +58,11 @@
 {
     
     __block id<PhotoIndexerDelegate> blockDelegate = delegate;
+    if ( !options ) {
+        options = [PHFetchOptions new];
+    }
     
+    options.predicate = [NSPredicate predicateWithFormat:@"(mediaType == %d)", PHAssetMediaTypeImage];
 
     // Fetch all assets.
     PHFetchResult<PHAsset *> * result = [PHAsset fetchAssetsWithOptions:options];
@@ -104,13 +108,18 @@
                     
                     PHImageManagerDataResponseHandler imageDataCallback = ^void(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info)
                     {
-                        
+                        static UInt32 i = 0;
+                        NSLog(@"imageData callback. %u %@", ++i, info.description);
                         NSError * error = info[PHImageErrorKey];
                         
                         if ( error ) {
-                            NSLog(@"imageData callback.  error: %@", error);
+                            NSLog(@"imageData callback. error: %@", error);
                             return;
                         }
+                        
+                        NSURL * url = info[@"PHImageFileURLKey"];
+                        NSLog(@"imageData callback.  url: %@", url);
+                        
                         
                         if ( imageData ) {
                             
@@ -127,7 +136,7 @@
                                 
                                 // Index it.
                                 NSDate * before = [NSDate date];
-                                CBIRIndexResult * indexResult = [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
+                                [[CBIRDatabaseEngine sharedEngine] indexImage:doc];
 
                                 NSDate * after = [NSDate date];
                                 NSLog(@"indexing time: %f s", after.timeIntervalSince1970 - before.timeIntervalSince1970);

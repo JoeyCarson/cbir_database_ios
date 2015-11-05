@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class CBLDocument, CBIRDocument, UIImage;
+@class CBLDocument, CBLUnsavedRevision, CBIRDocument, UIImage;
 
 
 @interface CBIRIndexResult : NSObject
@@ -25,6 +25,6 @@
 
 @interface CBIRIndexer : NSObject
 
--(CBIRIndexResult *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc;
+-(CBLUnsavedRevision *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc;
 
 @end

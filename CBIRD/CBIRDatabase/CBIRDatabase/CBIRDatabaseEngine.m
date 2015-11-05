@@ -210,10 +210,14 @@ CBIRDatabaseEngine * _singletonEngine;
         const CBIRIndexer * indexerObj = [self getIndexer:indexerName];
         
         // CBIRIndexer objects must write the index data into the document.
-        // TODO:  It might be smart to wrap the CBLDocument in an object that
-        //        guarantees name uniqueness, so that indexers aren't stepping
-        //        on one another's data.
-        [indexerObj indexImage:imgDoc cblDocument:cblDoc];
+        CBLUnsavedRevision * unsavedRevision = [indexerObj indexImage:imgDoc cblDocument:cblDoc];
+        
+        NSError * error = nil;
+        [unsavedRevision save:&error];
+        if ( error ) {
+            NSLog(@"%s error saving face data list: %@", __FUNCTION__, error);
+        }
+        
     }
 }
 

@@ -28,7 +28,7 @@
 
 @implementation CBIRIndexer
 
--(CBIRIndexResult *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc
+-(CBLUnsavedRevision *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc
 {
     [self doesNotRecognizeSelector:_cmd];
     return nil;
