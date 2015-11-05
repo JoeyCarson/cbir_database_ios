@@ -53,6 +53,11 @@
     return YES;
 }
 
+- (BOOL)indexingEnabled
+{
+    return m_indexer.isRunning;
+}
+
 - (void)enableIndexing:(BOOL)enabled;
 {
     if ( enabled ) {

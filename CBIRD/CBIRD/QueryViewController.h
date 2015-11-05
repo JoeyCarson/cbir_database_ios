@@ -13,6 +13,7 @@
 @protocol QueryViewDelegate
 
 - (void)enableIndexing:(BOOL)enabled;
+- (BOOL)indexingEnabled;
 
 @end
 

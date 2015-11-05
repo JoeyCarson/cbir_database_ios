@@ -13,6 +13,7 @@
 {
     NSTimer * timer;
     PhotoIndexer * m_indexer;
+    UILabel * m_progressLabel;
 }
 
 @end
@@ -26,10 +27,12 @@
     self.indexerProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     self.indexerProgressView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    //UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+
+    m_progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 40, 20)];
+    UIBarButtonItem * progressLabelItem = [[UIBarButtonItem alloc] initWithCustomView:m_progressLabel];
     
     self.toggle = [[UISwitch alloc] init];
-    self.toggle.on = YES;
     [self.toggle addTarget:self action:@selector(toggleIndexing:) forControlEvents:UIControlEventValueChanged];
     
     UIBarButtonItem * progressItem = [[UIBarButtonItem alloc] initWithCustomView:self.indexerProgressView];
@@ -38,7 +41,7 @@
     CGFloat width = self.parentViewController.view.frame.size.width;
     UIToolbar * toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, width, 70)];
     //toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    toolbar.items = @[progressItem, spacer, toggleItem ];
+    toolbar.items = @[progressItem, progressLabelItem, toggleItem ];
 
     UIView * backgroundView = [[UIView alloc] init];
     backgroundView.backgroundColor = [UIColor blackColor];
@@ -52,12 +55,13 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.indexerProgressView.progress = 0;
+    m_progressLabel.text = @"0 %";
     //timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(toggleIndexing:) userInfo:nil repeats:NO];
 }
 
 -(void)viewDidAppear:(BOOL)animated
 {
-    
+    self.toggle.on = [self.delegate indexingEnabled];
 }
 
 -(void)viewDidDisappear:(BOOL)animated
@@ -81,7 +85,7 @@
         }
         
         self.indexerProgressView.progress = progress;
-        //self.progressLabel.text = [NSString stringWithFormat:@"%f %%", progress * 100];
+        m_progressLabel.text = [NSString stringWithFormat:@"%.0f %%", progress * 100];
     });
 }
 
