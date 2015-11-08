@@ -88,10 +88,6 @@ NSString * FACE_KEY_PREFIX = @"face_";
 // Extracts features from each face in the list and save them to the document.
 - (void) extractFeatures:(NSArray<FaceLBP *> *)faces andPersistTo:(CBLUnsavedRevision *)revision
 {
-    // The grid size to partition each face into.
-    #define GRID_WIDTH_IN_BLOCKS 16
-    #define GRID_HEIGHT_IN_BLOCKS 16
-    
     // Array of face data dictionaries.
     NSMutableArray * faceDataList = [[NSMutableArray alloc] init];
     
@@ -163,15 +159,23 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         // Calculate the histogram.
                         cv::Mat lbpHistogram;
                         int histSize = 256;
-                        float range[] = { 0, 256 } ;
+                        float range[] = { -0.1, 256 }; // [0, 255]
                         const float* histRange = { range };
                         cv::calcHist( &channels[0], 1, 0, cv::Mat(), lbpHistogram, 1, &histSize, &histRange, true, false );
                         
+                        // Normalize all gray levels to their overall percentage in the region.
+                        [self percentizeHistogram:&lbpHistogram blockArea:(block_height * block_width)];
+                        
+                        
+                        // We need to be cognizant of the type of underlying data that OpenCV is producing in the histogram.
+                        // We're only aware of 32bit floats.
+                        NSAssert(lbpHistogram.type() == CV_32F, @"LBP Histogram type is %d.  Only CV_32F is supported", lbpHistogram.type());
                         
                         // Write the data and total to the CBLDocument.  Might be able to use no-copy, assuming that
                         // CBL itself will eventually copy the data, no need for it twice.  Might be necessary for thread safety.
                         NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
-                        NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:lbpHistogram.total()];
+                        NSUInteger sizeOfHistogramData = lbpHistogram.total() * lbpHistogram.elemSize();
+                        NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:sizeOfHistogramData];
                         
                         // It's a good idea to come up with a way to flush when the histograms become too many.
                         [revision setAttachmentNamed:featureID withContentType:MIME_TYPE_OCTET_STREAM content:histogramData];
@@ -182,7 +186,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         //NSLog(@"pixels");
                         //std::cout << channels[0];
                         
-                        //NSLog(@"histogram");
+                        //NSLog(@"histogram type: %d elemSize: %zu", lbpHistogram.type(), lbpHistogram.elemSize());
                         //std::cout << lbpHistogram;
                     }
                 }
@@ -202,6 +206,22 @@ NSString * FACE_KEY_PREFIX = @"face_";
     if ( faceDataList.count > 0 ) {
         NSMutableDictionary * newProperties = revision.properties;
         newProperties[FACE_DATA_LIST_DBKEY] = faceDataList;
+    }
+}
+
+// Normalizes the values in the histogram such that each bin (lbp intensity) value is the percentage of the occurrence
+// occurence of the color that the bin represents.  This should correct for equal faces at different scales which cause
+// the values of each intensity to be scaled to more or less, despite the images being effectively equal.
+- (void) percentizeHistogram:(cv::Mat *)lbpHistogram blockArea:(size_t)area
+{
+    // Recall that cv::normalize(lbpHistogram, lbpHistogram, 0, block_width * block_height, cv::NORM_MINMAX, -1, cv::Mat() );
+    // doesn't do the trick.
+    
+    cv::Mat col = lbpHistogram->col(0);
+    for ( int i = 0; i < col.rows; i++ ) {
+        float & valRef = col.at<float>(i);
+        valRef /= area;
+        //NSLog(@"valRef is: %f", valRef);
     }
 }
 

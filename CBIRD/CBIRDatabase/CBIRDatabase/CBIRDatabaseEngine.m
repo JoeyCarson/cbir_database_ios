@@ -219,6 +219,66 @@ CBIRDatabaseEngine * _singletonEngine;
         }
         
     }
+    
+    [self testDifference:cblDoc];
+}
+
+-(void)testDifference:(CBLDocument *)doc
+{
+    if ( doc ) {
+        
+        NSDictionary * p = doc.properties;
+        NSArray * faceDataList = p[@"face_data_list"];
+        
+        if ( faceDataList ) {
+        
+            for ( NSUInteger i = 0; i < faceDataList.count; i++ ) {
+            
+                NSDictionary * faceDataMap = faceDataList[i];
+                NSArray * featureList = faceDataMap[@"features"];
+                
+                if ( featureList.count > 0 ) {
+                
+                    // Put all associated histogram buffers into a single image.
+                    size_t histoLengthInBytes = 256 * sizeof(float);
+                    NSUInteger histoImageSize = GRID_HEIGHT_IN_BLOCKS * GRID_WIDTH_IN_BLOCKS * histoLengthInBytes;
+                    unsigned char * trainingHistoImageBuffer = malloc(histoImageSize);
+                    void * outputHistoPointer = trainingHistoImageBuffer;
+                    
+                    // Now memcpy each histogram into the buffer.
+                    for ( NSUInteger featureIndex = 0; featureIndex < featureList.count; featureIndex++ ) {
+                        
+                        // Retrieve each attachment.
+                        NSString * featureAttachmentName = featureList[featureIndex];
+                        CBLAttachment * featureAttachment = [[doc currentRevision] attachmentNamed:featureAttachmentName];
+                        NSData * attachmentData = featureAttachment.content;
+                        
+                        
+                        memcpy(outputHistoPointer, attachmentData.bytes, histoLengthInBytes);
+                        outputHistoPointer += histoLengthInBytes;
+                    }
+                    
+                    // Wrap the buffer in an NSData.
+                    NSData * histoImageData = [NSData dataWithBytesNoCopy:trainingHistoImageBuffer length:histoImageSize];
+                    
+                    // The "image" is 256 * number of blocks wide (each of which is a float).
+                    CGSize histoImageDim = CGSizeMake(GRID_WIDTH_IN_BLOCKS * 256, GRID_HEIGHT_IN_BLOCKS);
+                    
+                    // The kCIFormatRf format equates to each "pixel" being a 32 bit float.  Each pixel should be a float
+                    // from the computation 
+                    CIImage * histoImage = [[CIImage alloc] initWithBitmapData:histoImageData
+                                                                   bytesPerRow:(GRID_WIDTH_IN_BLOCKS * histoLengthInBytes)
+                                                                          size:histoImageDim
+                                                                        format:kCIFormatRf
+                                                                    colorSpace:nil];
+                    
+                    
+                    NSAssert(histoImage != nil, @"failed generating histoImage");
+                    
+                }
+            }
+        }
+    }
 }
 
 -(CBLDocument *)getDocument:(NSString *)persistentID

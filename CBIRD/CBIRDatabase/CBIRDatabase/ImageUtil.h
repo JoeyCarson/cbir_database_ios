@@ -41,4 +41,7 @@
 // @param buffer    - The output buffer used to write into.
 + (void) extractRect:(CGRect)blockRect fromData:(NSData *)pixelData ofSize:(CGSize)size intoBuffer:(unsigned char *)buffer;
 
+
+
+
 @end
