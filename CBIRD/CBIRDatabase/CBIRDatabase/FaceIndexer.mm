@@ -91,7 +91,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Array of face data dictionaries.
     NSMutableArray * faceDataList = [[NSMutableArray alloc] init];
     
-    // For each given face image, we need to build a list of 8x8 histograms of the
+    // For each given face image, we need to build a list of histograms over 8x8 regions.
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         @autoreleasepool {
             // Identifier of this particular face.
@@ -134,14 +134,13 @@ NSString * FACE_KEY_PREFIX = @"face_";
             // [12][13][14][15] 3             and GRID_HEIGHT_IN_BLOCKS.
             //  0   1   2   3
             
-            // The index of each block in the grid.
+            // featureIndex identifies the index of the feature in the overall face image.
             NSUInteger featureIndex = 0;
             
             for ( UInt32 blockRow = 0; blockRow < verticalBlockCt; blockRow++ ) {
                 
                 // blockIndex identfies the index of the block relative to the current row.
-                // featureIndex identifies the index of the feature in the overall face image.
-                
+            
                 for ( UInt32 blockIndex = 0; blockIndex < horizontalBlockCt; blockIndex++, featureIndex++ ) {
                     
                     @autoreleasepool {
@@ -165,7 +164,6 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         
                         // Normalize all gray levels to their overall percentage in the region.
                         [self percentizeHistogram:&lbpHistogram blockArea:(block_height * block_width)];
-                        
                         
                         // We need to be cognizant of the type of underlying data that OpenCV is producing in the histogram.
                         // We're only aware of 32bit floats.

@@ -7,7 +7,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="QueryViewController">
             <connections>
                 <outlet property="indexerProgressView" destination="tiR-UG-4u9" id="SK9-UC-R1C"/>
-                <outlet property="view" destination="SyZ-KO-XAL" id="adK-5b-5ke"/>
+                <outlet property="view" destination="SyZ-KO-XAL" id="ShN-LF-hyk"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>

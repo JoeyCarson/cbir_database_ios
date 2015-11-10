@@ -6,6 +6,7 @@
 //  Copyright © 2015 Joseph Carson. All rights reserved.
 //
 
+#import "CaptureFaceViewController.h"
 #import "QueryViewController.h"
 #import "PhotoIndexer.h"
 
@@ -16,22 +17,92 @@
     UILabel * m_progressLabel;
 }
 
+@property (nonatomic) CaptureFaceViewController * faceCaptureController;
+
 @end
 
 
 
 @implementation QueryViewController
 
+@synthesize faceCaptureController = _faceCaptureController;
+
+-(CaptureFaceViewController *)faceCaptureController
+{
+    if ( !_faceCaptureController ) {
+        _faceCaptureController = [[CaptureFaceViewController alloc] init];
+        _faceCaptureController.view.frame = CGRectMake(0, 0, 375, 667);
+    }
+    
+    return _faceCaptureController;
+}
+
 -(void)loadView
 {
+
+    UIToolbar * toolbar = [self buildToolbar];
+    
+    UIView * backgroundView = [[UIView alloc] init];
+    backgroundView.backgroundColor = [UIColor blackColor];
+    [backgroundView addSubview:toolbar];
+    
+    
+    UIButton * selectImageButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    selectImageButton.frame = CGRectMake(0, 0, 0, 0);
+    [selectImageButton setTitle:@"Select Image" forState:UIControlStateNormal];
+    [selectImageButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    selectImageButton.backgroundColor = [UIColor blackColor];
+    [selectImageButton addTarget:self action:@selector(onSelectImage:) forControlEvents:UIControlEventTouchUpInside];
+    selectImageButton.translatesAutoresizingMaskIntoConstraints = false;
+    
+    CGRect screenBounds = [[UIScreen mainScreen] bounds];
+    UIScrollView * scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, toolbar.frame.size.height, toolbar.frame.size.width, screenBounds.size.height - toolbar.bounds.size.height)];
+    scrollView.backgroundColor = [UIColor grayColor];
+    
+    UIImageView * faceImageView = [[UIImageView alloc] init];
+    faceImageView.image = [UIImage imageNamed:@"ios_icon.png"];
+    faceImageView.backgroundColor = [UIColor greenColor];
+    faceImageView.translatesAutoresizingMaskIntoConstraints = false;
+    
+    // TODO: Create a container view to better position elements.
+    [scrollView addSubview:selectImageButton];
+    [scrollView addSubview:faceImageView];
+    
+    NSDictionary * viewsDict = NSDictionaryOfVariableBindings(selectImageButton, faceImageView);
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[selectImageButton(<=40)]-10-[faceImageView(==200)]-|"
+                                                                      options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                      metrics:nil
+                                                                        views:viewsDict]];
+    
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[selectImageButton(==200)]"
+                                                                      options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                      metrics:nil
+                                                                        views:viewsDict]];
+
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[faceImageView(==200)]"
+                                                                      options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                      metrics:nil
+                                                                        views:viewsDict]];
+
+    
+    
+    [backgroundView addSubview:scrollView];
+    
+    
+    self.view = backgroundView;
+}
+
+-(UIToolbar *) buildToolbar
+{
+    // Progress view.
     self.indexerProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleBar];
     self.indexerProgressView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-
-    //UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-
+    
+    // Progress Label (percentage complete).
     m_progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 40, 20)];
     UIBarButtonItem * progressLabelItem = [[UIBarButtonItem alloc] initWithCustomView:m_progressLabel];
     
+    // Disable or enable indexing.
     self.toggle = [[UISwitch alloc] init];
     [self.toggle addTarget:self action:@selector(toggleIndexing:) forControlEvents:UIControlEventValueChanged];
     
@@ -42,13 +113,8 @@
     UIToolbar * toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, width, 70)];
     //toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     toolbar.items = @[progressItem, progressLabelItem, toggleItem ];
-
-    UIView * backgroundView = [[UIView alloc] init];
-    backgroundView.backgroundColor = [UIColor blackColor];
-    [backgroundView addSubview:toolbar];
     
-    
-    self.view = backgroundView;
+    return toolbar;
 }
 
 - (void)viewDidLoad {
@@ -56,7 +122,6 @@
     // Do any additional setup after loading the view, typically from a nib.
     self.indexerProgressView.progress = 0;
     m_progressLabel.text = @"0 %";
-    //timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(toggleIndexing:) userInfo:nil repeats:NO];
 }
 
 -(void)viewDidAppear:(BOOL)animated
@@ -67,6 +132,12 @@
 -(void)viewDidDisappear:(BOOL)animated
 {
     
+}
+
+-(void)onSelectImage:(UIEvent *)buttonEvent
+{
+    NSLog(@"onSelectImage! %@", buttonEvent);
+    [self presentViewController:self.faceCaptureController animated:YES completion:nil];
 }
 
 -(void)toggleIndexing:(UIEvent *)obj

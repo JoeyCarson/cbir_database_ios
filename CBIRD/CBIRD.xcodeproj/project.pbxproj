@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		1107E8C51BEAF7FB00DAFDAD /* QueryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1107E8C41BEAF7FB00DAFDAD /* QueryViewController.xib */; };
+		1107E8CC1BF01B4700DAFDAD /* ios_icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1107E8CB1BF01B4700DAFDAD /* ios_icon.png */; };
+		1107E8D21BF117C500DAFDAD /* CaptureFaceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1107E8D11BF117C500DAFDAD /* CaptureFaceViewController.m */; };
+		1107E8D91BF11F2900DAFDAD /* CaptureFaceView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1107E8D81BF11F2900DAFDAD /* CaptureFaceView.xib */; };
+		1107E8DC1BF16EB900DAFDAD /* TargetRectangleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1107E8DB1BF16EB900DAFDAD /* TargetRectangleView.m */; };
 		11B7980A1BBB726E0040F3A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798091BBB726E0040F3A7 /* main.m */; };
 		11B7980D1BBB726E0040F3A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B7980C1BBB726E0040F3A7 /* AppDelegate.m */; };
 		11B798101BBB726E0040F3A7 /* QueryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B7980F1BBB726E0040F3A7 /* QueryViewController.m */; };
@@ -76,6 +80,12 @@
 
 /* Begin PBXFileReference section */
 		1107E8C41BEAF7FB00DAFDAD /* QueryViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = QueryViewController.xib; sourceTree = "<group>"; };
+		1107E8CB1BF01B4700DAFDAD /* ios_icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ios_icon.png; sourceTree = "<group>"; };
+		1107E8D01BF117C500DAFDAD /* CaptureFaceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureFaceViewController.h; sourceTree = "<group>"; };
+		1107E8D11BF117C500DAFDAD /* CaptureFaceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureFaceViewController.m; sourceTree = "<group>"; };
+		1107E8D81BF11F2900DAFDAD /* CaptureFaceView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CaptureFaceView.xib; sourceTree = "<group>"; };
+		1107E8DA1BF16EB900DAFDAD /* TargetRectangleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TargetRectangleView.h; sourceTree = "<group>"; };
+		1107E8DB1BF16EB900DAFDAD /* TargetRectangleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TargetRectangleView.m; sourceTree = "<group>"; };
 		11B798051BBB726E0040F3A7 /* CBIRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CBIRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		11B798091BBB726E0040F3A7 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		11B7980B1BBB726E0040F3A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -125,6 +135,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1107E8CD1BF1168B00DAFDAD /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				1107E8D01BF117C500DAFDAD /* CaptureFaceViewController.h */,
+				1107E8D11BF117C500DAFDAD /* CaptureFaceViewController.m */,
+				1107E8D81BF11F2900DAFDAD /* CaptureFaceView.xib */,
+				1107E8DA1BF16EB900DAFDAD /* TargetRectangleView.h */,
+				1107E8DB1BF16EB900DAFDAD /* TargetRectangleView.m */,
+			);
+			name = UI;
+			sourceTree = "<group>";
+		};
 		11B797FC1BBB726D0040F3A7 = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +171,7 @@
 		11B798071BBB726E0040F3A7 /* CBIRD */ = {
 			isa = PBXGroup;
 			children = (
+				1107E8CD1BF1168B00DAFDAD /* UI */,
 				11B7988F1BBC47600040F3A7 /* Util */,
 				11B7980B1BBB726E0040F3A7 /* AppDelegate.h */,
 				11B7980C1BBB726E0040F3A7 /* AppDelegate.m */,
@@ -158,6 +181,7 @@
 				11B798121BBB726E0040F3A7 /* SecondViewController.m */,
 				11B798141BBB726E0040F3A7 /* Main.storyboard */,
 				11B798171BBB726E0040F3A7 /* Assets.xcassets */,
+				1107E8CB1BF01B4700DAFDAD /* ios_icon.png */,
 				11B798191BBB726E0040F3A7 /* LaunchScreen.storyboard */,
 				11B7981C1BBB726E0040F3A7 /* Info.plist */,
 				11B798081BBB726E0040F3A7 /* Supporting Files */,
@@ -338,9 +362,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1107E8CC1BF01B4700DAFDAD /* ios_icon.png in Resources */,
 				11B7981B1BBB726E0040F3A7 /* LaunchScreen.storyboard in Resources */,
 				1107E8C51BEAF7FB00DAFDAD /* QueryViewController.xib in Resources */,
 				11B798181BBB726E0040F3A7 /* Assets.xcassets in Resources */,
+				1107E8D91BF11F2900DAFDAD /* CaptureFaceView.xib in Resources */,
 				11B798161BBB726E0040F3A7 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,8 +392,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1107E8D21BF117C500DAFDAD /* CaptureFaceViewController.m in Sources */,
 				11B798921BBC47A80040F3A7 /* PhotoIndexer.m in Sources */,
 				11B798131BBB726E0040F3A7 /* SecondViewController.m in Sources */,
+				1107E8DC1BF16EB900DAFDAD /* TargetRectangleView.m in Sources */,
 				11B7980D1BBB726E0040F3A7 /* AppDelegate.m in Sources */,
 				11B798101BBB726E0040F3A7 /* QueryViewController.m in Sources */,
 				11B7980A1BBB726E0040F3A7 /* main.m in Sources */,
