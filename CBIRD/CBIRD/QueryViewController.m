@@ -15,6 +15,7 @@
     NSTimer * timer;
     PhotoIndexer * m_indexer;
     UILabel * m_progressLabel;
+    UIImageView * faceImageView;
 }
 
 @property (nonatomic) CaptureFaceViewController * faceCaptureController;
@@ -59,8 +60,7 @@
     UIScrollView * scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, toolbar.frame.size.height, toolbar.frame.size.width, screenBounds.size.height - toolbar.bounds.size.height)];
     scrollView.backgroundColor = [UIColor grayColor];
     
-    UIImageView * faceImageView = [[UIImageView alloc] init];
-    faceImageView.image = [UIImage imageNamed:@"ios_icon.png"];
+    faceImageView = [[UIImageView alloc] init];
     faceImageView.backgroundColor = [UIColor greenColor];
     faceImageView.translatesAutoresizingMaskIntoConstraints = false;
     
@@ -122,6 +122,12 @@
     // Do any additional setup after loading the view, typically from a nib.
     self.indexerProgressView.progress = 0;
     m_progressLabel.text = @"0 %";
+}
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    //[UIImage imageNamed:@"ios_icon.png"];
+    faceImageView.image = [UIImage imageWithCIImage:self.faceCaptureController.selectedFaceImage];
 }
 
 -(void)viewDidAppear:(BOOL)animated

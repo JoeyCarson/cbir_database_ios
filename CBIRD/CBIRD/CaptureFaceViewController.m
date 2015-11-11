@@ -39,19 +39,33 @@
 -(void)loadView
 {
     self.view = [[UIView alloc] initWithFrame:self->viewFrame];
-    CGRect imageFrame = CGRectMake(viewFrame.origin.x + 20, viewFrame.origin.y + 20, viewFrame.size.width - 40, 400);
-    self.fullSizeImageView = [[UIImageView alloc] initWithFrame:imageFrame];
+    self.view.backgroundColor = [UIColor blackColor];
     
-    [self.view addSubview:self.fullSizeImageView];
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.fullSizeImageView.image = [UIImage imageNamed:@"rancid_show.jpg"];
+    CGRect imageFrame = CGRectMake(viewFrame.origin.x + 20, viewFrame.origin.y + 80, viewFrame.size.width - 40, 400);
+    self.fullSizeImageView = [[UIImageView alloc] initWithFrame:imageFrame];
     self.fullSizeImageView.contentMode = UIViewContentModeScaleAspectFit;
-    self.fullSizeImageView.backgroundColor = [UIColor greenColor];
     self.fullSizeImageView.translatesAutoresizingMaskIntoConstraints = NO;
     self.fullSizeImageView.userInteractionEnabled = YES;
+    [self updateMainImage:[UIImage imageNamed:@"rancid_show.jpg"]];
+    
+    UIButton * doneButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    doneButton.opaque = NO;
+    doneButton.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.4];
+    doneButton.frame = CGRectMake(20, 20, 60, 30);
+    [doneButton setTitle:@"Done" forState:UIControlStateNormal];
+    [doneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    doneButton.backgroundColor = [UIColor whiteColor];
+    [doneButton addTarget:self action:@selector(onDone:) forControlEvents:UIControlEventTouchUpInside];
+    doneButton.translatesAutoresizingMaskIntoConstraints = false;
+    
+    [self.view addSubview:self.fullSizeImageView];
+    [self.view addSubview:doneButton];
+}
+
+-(void)updateMainImage:(UIImage *)image
+{
+    self.fullSizeImageView.image = image;
+    [self markFaceRectangles];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -62,6 +76,11 @@
 -(void)viewDidAppear:(BOOL)animated
 {
     
+}
+
+-(void)onDone:(UIEvent *)buttonEvent
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 -(void)markFaceRectangles
@@ -122,7 +141,9 @@
         tapRecognzier.numberOfTouchesRequired = 1;
         [rectView addGestureRecognizer:tapRecognzier];
         
-        
+        // TODO: This is bad.  Storing rectviews like this (unretained) causes a crash
+        // somewhere in the UI framework.  It seems like the view lets go of the object
+        // and since it's not retained in the NSDictionary/NSValue, it's released.
         NSValue * rectViewValue = [NSValue valueWithNonretainedObject:rectView];
         rectangleViews[rectViewValue] = feature;
         
@@ -148,15 +169,10 @@
             NSLog(@"Oh Noes!!");
         }
     }
-    
-    // We should probably get the rectangle view from the dictionary, but gestureRecgonizer has a pointer!! :P
-    
 }
 
 -(void)updateSelectedFace:(CIFaceFeature *)faceFeature andView:(TargetRectangleView *)rectView
 {
-
-    NSArray<NSValue *> * keys = [rectangleViews allKeys];
     NSArray * views = self.fullSizeImageView.subviews;
     
     for (UIView * view in views ) {
@@ -187,8 +203,11 @@
     } else {
         
         // We're selecting a new face image.
-        //CIFilter * cropFilter = [CIFilter filterWithName:@"CICrop"];
-        
+        CIImage * inImage = [[CIImage alloc] initWithImage:self.fullSizeImageView.image];
+        NSDictionary * params = @{@"inputImage":inImage, @"inputRectangle":[CIVector vectorWithCGRect:faceFeature.bounds]};
+        CIFilter * cropFilter = [CIFilter filterWithName:@"CICrop" withInputParameters:params];
+        CIImage * croppedImage = cropFilter.outputImage;
+        _selectedFaceImage = croppedImage;
     }
 }
 
