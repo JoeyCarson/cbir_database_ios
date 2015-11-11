@@ -18,4 +18,9 @@ FOUNDATION_EXPORT const unsigned char CBIRDatabaseVersionString[];
 #import "CBIRDatabaseEngine.h"
 #import "CBIRIndexer.h"
 #import "CBIRDocument.h"
+#import "CBIRQuery.h"
 #import "ImageUtil.h"
+#import "CBIRQueryDelegate.h"
+
+// Out of the box implementations.
+#import "FaceQuery.h"

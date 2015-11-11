@@ -136,9 +136,6 @@ CBIRDatabaseEngine * _singletonEngine;
     } else {
         // Add all built in supported indexers.
         [self initBuiltinIndexers];
-        
-        // Trash the database to help with debugging in early stages of development.
-        //[self deleteDatabaseNamed:CBIR_IMAGE_DB_NAME];
     }
     
     while ( !self.isTerminated ) {
@@ -297,6 +294,17 @@ CBIRDatabaseEngine * _singletonEngine;
     NSString * persistentID = params[kCBIRPersistentID];
     CBLDocument * doc = [[self databaseForName:CBIR_IMAGE_DB_NAME] existingDocumentWithID:persistentID];
     params[kCBIROutputDocument] = doc;
+}
+
+
+-(void)execQuery:(CBIRQuery *)query
+{
+    [self performSelector:@selector(execQueryInternal:) onThread:m_dbThread withObject:query waitUntilDone:NO];
+}
+
+-(void)execQueryInternal:(CBIRQuery *)query
+{
+    
 }
 
 

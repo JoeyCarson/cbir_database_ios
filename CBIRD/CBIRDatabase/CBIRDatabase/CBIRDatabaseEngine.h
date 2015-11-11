@@ -9,11 +9,10 @@
 #import <Foundation/Foundation.h>
 #import <Photos/Photos.h>
 
-
+@class CBIRQuery;
 @class CBIRIndexer;
 @class CBIRDocument;
 @class CBIRIndexResult;
-
 @class CBLDocument;
 
 @interface CBIRDatabaseEngine : NSObject
@@ -41,5 +40,9 @@
 -(void)registerIndexer:(CBIRIndexer *)indexer;
 
 -(CBLDocument *)getDocument:(NSString *)persistentID;
+
+
+// Asynchronously runs the given CBIRQuery object.  CBIRQuery shall provide asynchronous callback mechanisms.
+-(void)execQuery:(CBIRQuery *)query;
 
 @end

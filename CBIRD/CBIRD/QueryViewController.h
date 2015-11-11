@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import <CBIRDatabase/CBIRDatabase.h>
 #import "PhotoIndexer.h"
 
 @protocol QueryViewDelegate
@@ -17,7 +18,8 @@
 
 @end
 
-@interface QueryViewController : UIViewController<PhotoIndexerDelegate>
+
+@interface QueryViewController : UIViewController<PhotoIndexerDelegate, CBIRQueryDelegate>
 
 @property (nonatomic, weak) id<QueryViewDelegate> delegate;
 @property (nonatomic) UIProgressView *indexerProgressView;

@@ -6,6 +6,7 @@
 //  Copyright © 2015 Joseph Carson. All rights reserved.
 //
 
+#import <CBIRDatabase/CBIRDatabase.h>
 #import "CaptureFaceViewController.h"
 #import "QueryViewController.h"
 #import "PhotoIndexer.h"
@@ -16,6 +17,7 @@
     PhotoIndexer * m_indexer;
     UILabel * m_progressLabel;
     UIImageView * faceImageView;
+    FaceQuery * faceQuery;
 }
 
 @property (nonatomic) CaptureFaceViewController * faceCaptureController;
@@ -56,6 +58,14 @@
     [selectImageButton addTarget:self action:@selector(onSelectImage:) forControlEvents:UIControlEventTouchUpInside];
     selectImageButton.translatesAutoresizingMaskIntoConstraints = false;
     
+    UIButton * runQueryButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    runQueryButton.frame = CGRectMake(0, 0, 0, 0);
+    [runQueryButton setTitle:@"Run Query" forState:UIControlStateNormal];
+    [runQueryButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    runQueryButton.backgroundColor = [UIColor blackColor];
+    [runQueryButton addTarget:self action:@selector(onRunQuery:) forControlEvents:UIControlEventTouchUpInside];
+    runQueryButton.translatesAutoresizingMaskIntoConstraints = false;
+    
     CGRect screenBounds = [[UIScreen mainScreen] bounds];
     UIScrollView * scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, toolbar.frame.size.height, toolbar.frame.size.width, screenBounds.size.height - toolbar.bounds.size.height)];
     scrollView.backgroundColor = [UIColor grayColor];
@@ -67,22 +77,29 @@
     // TODO: Create a container view to better position elements.
     [scrollView addSubview:selectImageButton];
     [scrollView addSubview:faceImageView];
+    [scrollView addSubview:runQueryButton];
     
-    NSDictionary * viewsDict = NSDictionaryOfVariableBindings(selectImageButton, faceImageView);
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[selectImageButton(<=40)]-10-[faceImageView(==200)]-|"
+    NSDictionary * viewsDict = NSDictionaryOfVariableBindings(selectImageButton, faceImageView, runQueryButton);
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[selectImageButton(==60)]-10-[faceImageView(==200)]-[runQueryButton(==60)]-|"
                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
                                                                       metrics:nil
                                                                         views:viewsDict]];
     
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[selectImageButton(==200)]"
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[selectImageButton(==200)]-|"
                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
                                                                       metrics:nil
-                                                                        views:viewsDict]];
+                                                                         views:viewsDict]];
 
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[faceImageView(==200)]"
+
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[faceImageView(==200)]-|"
                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
                                                                       metrics:nil
                                                                         views:viewsDict]];
+    
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[runQueryButton(==200)]-|"
+                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                       metrics:nil
+                                                                         views:viewsDict]];
 
     
     
@@ -144,6 +161,13 @@
 {
     NSLog(@"onSelectImage! %@", buttonEvent);
     [self presentViewController:self.faceCaptureController animated:YES completion:nil];
+}
+
+-(void)onRunQuery:(UIEvent *)buttonEvent
+{
+    NSLog(@"onRunQuery: %@", buttonEvent);
+    faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage andDelegate:self];
+    [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];
 }
 
 -(void)toggleIndexing:(UIEvent *)obj
