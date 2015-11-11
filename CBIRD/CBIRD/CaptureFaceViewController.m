@@ -9,10 +9,13 @@
 #import "CaptureFaceViewController.h"
 #import "TargetRectangleView.h"
 #import <CBIRDatabase/CBIRDatabase.h>
+#import <CoreImage/CoreImage.h>
 
 @interface CaptureFaceViewController ()
 {
     CGRect viewFrame;
+    NSMutableDictionary<NSValue *, CIFaceFeature *> * rectangleViews;
+    TargetRectangleView * selectedRectView;
 }
 @end
 
@@ -27,8 +30,9 @@
     self = [super init];
     if ( self ) {
         self->viewFrame = frame;
+        rectangleViews = [[NSMutableDictionary alloc] init];
     }
-    //return [super initWithNibName:@"CaptureFaceView" bundle:nil];
+
     return self;
 }
 
@@ -47,6 +51,7 @@
     self.fullSizeImageView.contentMode = UIViewContentModeScaleAspectFit;
     self.fullSizeImageView.backgroundColor = [UIColor greenColor];
     self.fullSizeImageView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.fullSizeImageView.userInteractionEnabled = YES;
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -93,24 +98,101 @@
     
     for ( CIFaceFeature * feature in _faceFeatures ) {
 
+        // Transform the found coordinates to upper right hand corner pixel space.  Then convert that to points.
         CGRect uiKitFaceBounds = CGRectApplyAffineTransform(feature.bounds, transform);;
         CGRect pointRect = [self rectPixelsToPoints:uiKitFaceBounds];
         
+        // scale the point rect into the rendered image scale.
         pointRect.origin.x *= renderedImageScale.width;
         pointRect.origin.y *= renderedImageScale.height;
         pointRect.size.width *= renderedImageScale.width;
         pointRect.size.height *= renderedImageScale.height;
         
+        // Offset the rectangle by any space outside of the image rect.  This is area taken up by the UIImageView
+        // around the image itself.
         pointRect.origin.x += renderedImageRect.origin.x;
         pointRect.origin.y += renderedImageRect.origin.y;
         
+        // Create the rectangle view.
         TargetRectangleView * rectView = [[TargetRectangleView alloc] initWithFrame:pointRect];
         rectView.rectColor = [UIColor yellowColor];
+        
+        UITapGestureRecognizer *tapRecognzier = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onRectSelected:)];
+        tapRecognzier.numberOfTapsRequired = 1;
+        tapRecognzier.numberOfTouchesRequired = 1;
+        [rectView addGestureRecognizer:tapRecognzier];
+        
+        
+        NSValue * rectViewValue = [NSValue valueWithNonretainedObject:rectView];
+        rectangleViews[rectViewValue] = feature;
+        
         
         [self.fullSizeImageView addSubview:rectView];
     }
 
 }
+
+-(void)onRectSelected:(UIGestureRecognizer *)gestureRecognizer
+{
+    NSLog(@"onRectSelected: gestureRecognizer: %@", gestureRecognizer);
+    
+    if ( gestureRecognizer.view.class == TargetRectangleView.class ) {
+        TargetRectangleView * rectView = (TargetRectangleView *)gestureRecognizer.view;
+        
+        NSValue * val = [NSValue valueWithNonretainedObject:(rectView)];
+        CIFaceFeature * faceAssociatedWithView = [rectangleViews objectForKey:val];
+        
+        if ( faceAssociatedWithView ) {
+            [self updateSelectedFace:faceAssociatedWithView andView:rectView];
+        } else {
+            NSLog(@"Oh Noes!!");
+        }
+    }
+    
+    // We should probably get the rectangle view from the dictionary, but gestureRecgonizer has a pointer!! :P
+    
+}
+
+-(void)updateSelectedFace:(CIFaceFeature *)faceFeature andView:(TargetRectangleView *)rectView
+{
+
+    NSArray<NSValue *> * keys = [rectangleViews allKeys];
+    NSArray * views = self.fullSizeImageView.subviews;
+    
+    for (UIView * view in views ) {
+        TargetRectangleView * keyView = (TargetRectangleView *)view;
+        keyView.rectColor = [UIColor yellowColor];
+        [keyView setNeedsDisplay];
+    }
+    
+    if ( rectView == selectedRectView ) {
+        // Unset this view.
+        selectedRectView = nil;
+        [self updateFaceImage:nil];
+    } else {
+        selectedRectView = rectView;
+        rectView.rectColor = [UIColor greenColor];
+        [self updateFaceImage:faceFeature];
+    }
+    
+    [rectView setNeedsDisplay];
+}
+
+-(void)updateFaceImage:(CIFeature *)faceFeature
+{
+    if ( !faceFeature) {
+        // We're unsetting the selected image.
+        _selectedFaceImage = nil;
+        
+    } else {
+        
+        // We're selecting a new face image.
+        //CIFilter * cropFilter = [CIFilter filterWithName:@"CICrop"];
+        
+    }
+}
+
+
 
 // Scales the given rect in pixels to point scale.
 -(CGRect)rectPixelsToPoints:(CGRect)rect

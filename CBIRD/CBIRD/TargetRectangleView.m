@@ -11,14 +11,15 @@
 @implementation TargetRectangleView
 
 
--(instancetype)init
+-(instancetype) initWithFrame:(CGRect)frame
 {
-    self = [super init];
+    self = [super initWithFrame:frame];
     if ( self ) {
         self.opaque = NO;
         self.backgroundColor = [UIColor clearColor];
         self.clearsContextBeforeDrawing = NO;
     }
+    
     return self;
 }
 
