@@ -14,6 +14,6 @@
 
 @property (nonatomic, readonly) CIImage * faceImage;
 
--(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(CBIRQueryDelegate *)delegate NS_DESIGNATED_INITIALIZER;
+-(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 @end

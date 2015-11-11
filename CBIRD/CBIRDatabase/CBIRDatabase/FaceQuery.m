@@ -12,13 +12,13 @@
 
 @synthesize faceImage = _faceImage;
 
--(instancetype)initWithDelegate:(CBIRQueryDelegate *)delegate
+-(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate
 {
     self = [self initWithDelegate:delegate];
     return self;
 }
 
--(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(CBIRQueryDelegate *)delegate
+-(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(id<CBIRQueryDelegate>)delegate
 {
     self = [super initWithDelegate:delegate];
     if ( self ) {

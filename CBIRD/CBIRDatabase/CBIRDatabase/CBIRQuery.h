@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-@class CBIRQueryDelegate;
+#import "CBIRQueryDelegate.h"
 
 @interface CBIRQuery : NSObject
 
-@property (nonatomic, readonly, weak) CBIRQueryDelegate * delegate;
+@property (nonatomic, readonly, weak) id<CBIRQueryDelegate> delegate;
 
--(instancetype)initWithDelegate:(CBIRQueryDelegate *)delegate NS_DESIGNATED_INITIALIZER;
+-(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 
 @end

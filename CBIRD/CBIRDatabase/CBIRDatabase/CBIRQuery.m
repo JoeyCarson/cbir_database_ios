@@ -19,7 +19,7 @@
     return self;
 }
 
--(instancetype)initWithDelegate:(CBIRQueryDelegate *)delegate
+-(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate
 {
     self = [super init];
     if ( self ) {
