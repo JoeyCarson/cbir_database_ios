@@ -11,16 +11,34 @@
 #import <CBIRDatabase/CBIRDatabase.h>
 
 @interface CaptureFaceViewController ()
-
+{
+    CGRect viewFrame;
+}
 @end
 
 @implementation CaptureFaceViewController
 
 @synthesize fullSizeImageView = _fullSizeImageView;
+@synthesize faceFeatures = _faceFeatures;
+@synthesize selectedFaceImage = _selectedFaceImage;
 
--(instancetype)init
+-(instancetype)initWithFrame:(CGRect)frame
 {
-    return [super initWithNibName:@"CaptureFaceView" bundle:nil];
+    self = [super init];
+    if ( self ) {
+        self->viewFrame = frame;
+    }
+    //return [super initWithNibName:@"CaptureFaceView" bundle:nil];
+    return self;
+}
+
+-(void)loadView
+{
+    self.view = [[UIView alloc] initWithFrame:self->viewFrame];
+    CGRect imageFrame = CGRectMake(viewFrame.origin.x + 20, viewFrame.origin.y + 20, viewFrame.size.width - 40, 400);
+    self.fullSizeImageView = [[UIImageView alloc] initWithFrame:imageFrame];
+    
+    [self.view addSubview:self.fullSizeImageView];
 }
 
 - (void)viewDidLoad {
@@ -48,28 +66,66 @@
         [view removeFromSuperview];
     }
     
+    // The dimensions of the actual image that the view is showing.  Note that this is only the size.
+    // Chances are the image in the view is actually offset a bit, so we need to determine that.
+    CGSize imageSizePts = [self sizePixelsToPoints:self.fullSizeImageView.image.size];
+    
+    // The scale factor from of the rendered image inside the ImageView.
+    CGRect viewBounds = self.fullSizeImageView.bounds;
+    CGSize renderedImageScale = CGSizeMake(viewBounds.size.width / imageSizePts.width,
+                                           viewBounds.size.height / imageSizePts.height);
+    
+    // Now that we know the rendered image scale, we can use it to determine the actual image rectangle.
+    CGRect viewRect = self.fullSizeImageView.bounds;
+    CGRect renderedImageRect = CGRectMake((0.5 * viewRect.size.width) - (0.5 * imageSizePts.width * renderedImageScale.width),
+                                          (0.5 * viewRect.size.height) - (0.5 * imageSizePts.height * renderedImageScale.height),
+                                          imageSizePts.width * renderedImageScale.width,
+                                          imageSizePts.height * renderedImageScale.height);
+    
     // Get the faces inside the image.
     CIImage * img = [CIImage imageWithCGImage:self.fullSizeImageView.image.CGImage];
-    NSArray * faceFeatures = [ImageUtil detectFaces:img];
+    _faceFeatures = [ImageUtil detectFaces:img];
     
-    for ( CIFaceFeature * feature in faceFeatures ) {
+    // The face rectangles are coming CoreImage, meaning that they're in the bottom left coordinate
+    // system.  We need to convert from the bottom left to top left.
+    CGAffineTransform transform = CGAffineTransformMakeScale(1, -1);
+    transform = CGAffineTransformTranslate(transform, 0, -self.fullSizeImageView.image.size.height);
+    
+    for ( CIFaceFeature * feature in _faceFeatures ) {
 
-        CGRect rect = [self pixelsToPoints:feature.bounds];
-        CGRect pointRect = [self scaleRectToImage:rect];
+        CGRect uiKitFaceBounds = CGRectApplyAffineTransform(feature.bounds, transform);;
+        CGRect pointRect = [self rectPixelsToPoints:uiKitFaceBounds];
+        
+        pointRect.origin.x *= renderedImageScale.width;
+        pointRect.origin.y *= renderedImageScale.height;
+        pointRect.size.width *= renderedImageScale.width;
+        pointRect.size.height *= renderedImageScale.height;
+        
+        pointRect.origin.x += renderedImageRect.origin.x;
+        pointRect.origin.y += renderedImageRect.origin.y;
         
         TargetRectangleView * rectView = [[TargetRectangleView alloc] initWithFrame:pointRect];
         rectView.rectColor = [UIColor yellowColor];
         
-        //[self.fullSizeImageView addSubview:rectView];
+        [self.fullSizeImageView addSubview:rectView];
     }
 
 }
 
--(CGRect)pixelsToPoints:(CGRect)rect
+// Scales the given rect in pixels to point scale.
+-(CGRect)rectPixelsToPoints:(CGRect)rect
 {
     CGFloat scale = [[UIScreen mainScreen] scale];
     CGRect scaledRect = CGRectMake(rect.origin.x / scale, rect.origin.y / scale, rect.size.width/scale, rect.size.height/scale);
     return scaledRect;
+}
+
+// Scales the given size in pixels to point scale.
+-(CGSize)sizePixelsToPoints:(CGSize)size
+{
+    CGFloat scale = [[UIScreen mainScreen] scale];
+    CGSize scaledSize = CGSizeMake(size.width/scale, size.height/scale);
+    return scaledSize;
 }
 
 // rect is expected to be in points.

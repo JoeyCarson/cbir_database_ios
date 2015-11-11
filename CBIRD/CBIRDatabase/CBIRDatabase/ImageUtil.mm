@@ -41,10 +41,8 @@
     NSLog(@"before detection.");
     NSArray * faces = nil;
     
-    //@autoreleasepool {
-        NSArray * tempf = [detector featuresInImage:img options:options];
-        faces = tempf;
-    //}
+    NSArray * tempf = [detector featuresInImage:img options:options];
+    faces = tempf;
 
     NSLog(@"after detection.  %@", faces);
     return faces;

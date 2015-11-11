@@ -10,7 +10,10 @@
 
 @interface CaptureFaceViewController : UIViewController
 
-@property (strong, nonatomic) IBOutlet UIImageView *fullSizeImageView;
+@property (strong, nonatomic) IBOutlet UIImageView * fullSizeImageView;
+@property (nonatomic, copy) NSArray * faceFeatures;
+@property (nonatomic, readonly) CIImage * selectedFaceImage;
 
+-(instancetype)initWithFrame:(CGRect)frame;
 
 @end

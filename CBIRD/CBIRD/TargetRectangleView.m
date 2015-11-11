@@ -11,16 +11,29 @@
 @implementation TargetRectangleView
 
 
+-(instancetype)init
+{
+    self = [super init];
+    if ( self ) {
+        self.opaque = NO;
+        self.backgroundColor = [UIColor clearColor];
+        self.clearsContextBeforeDrawing = NO;
+    }
+    return self;
+}
+
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
 - (void)drawRect:(CGRect)rect {
-
-    [self.rectColor setStroke];
-    
-    //CGRect pathRect = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     UIBezierPath * path = [UIBezierPath bezierPathWithRect:rect];
-    path.lineWidth = 5.0;
     
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    [[UIColor clearColor] setFill];
+    
+    CGContextClearRect(ctx, rect);
+    
+    [self.rectColor setStroke];
+    path.lineWidth = 5.0;
     [path stroke];
 }
 

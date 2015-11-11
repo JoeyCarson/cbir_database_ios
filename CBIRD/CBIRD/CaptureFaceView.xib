@@ -6,97 +6,63 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CaptureFaceViewController">
             <connections>
-                <outlet property="fullSizeImageView" destination="Aeq-Kx-FMJ" id="mLa-x3-8NW"/>
-                <outlet property="view" destination="4HJ-Eh-gDI" id="2TN-BU-Fv8"/>
+                <outlet property="fullSizeImageView" destination="id2-5X-24E" id="V1J-qH-YBI"/>
+                <outlet property="view" destination="aQ2-SV-qia" id="WJb-XO-iBX"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Gxu-R6-anM">
-            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-            <animations/>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-            <constraints>
-                <constraint firstAttribute="height" constant="50" id="HfC-2M-are"/>
-            </constraints>
-            <variation key="default">
-                <mask key="constraints">
-                    <exclude reference="HfC-2M-are"/>
-                </mask>
-            </variation>
-            <variation key="widthClass=compact">
-                <mask key="constraints">
-                    <include reference="HfC-2M-are"/>
-                </mask>
-            </variation>
-        </tableView>
-        <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="black" id="4HJ-Eh-gDI">
+        <view contentMode="scaleToFill" id="aQ2-SV-qia">
             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
-                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="VD5-z8-akB">
-                    <rect key="frame" x="0.0" y="0.0" width="110" height="200"/>
-                    <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="1" verticalHuggingPriority="1" preservesSuperviewLayoutMargins="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Aeq-Kx-FMJ">
-                            <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
-                            <animations/>
-                            <constraints>
-                                <constraint firstAttribute="height" relation="lessThanOrEqual" constant="500" id="fkL-bM-2ML"/>
-                                <constraint firstAttribute="width" constant="320" id="uYD-da-Lf6"/>
-                            </constraints>
-                            <variation key="default">
-                                <mask key="constraints">
-                                    <exclude reference="fkL-bM-2ML"/>
-                                    <exclude reference="uYD-da-Lf6"/>
-                                </mask>
-                            </variation>
-                            <variation key="widthClass=compact" ambiguous="YES" misplaced="YES">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="500"/>
-                                <mask key="constraints">
-                                    <include reference="fkL-bM-2ML"/>
-                                    <include reference="uYD-da-Lf6"/>
-                                </mask>
-                            </variation>
-                        </imageView>
-                    </subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="id2-5X-24E">
+                    <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                     <animations/>
-                    <variation key="widthClass=compact" ambiguous="YES" misplaced="YES">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="500"/>
+                    <constraints>
+                        <constraint firstAttribute="height" id="ia7-MF-aJc">
+                            <variation key="widthClass=compact" constant="400"/>
+                        </constraint>
+                    </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="ia7-MF-aJc"/>
+                        </mask>
                     </variation>
-                </stackView>
+                    <variation key="widthClass=compact" misplaced="YES">
+                        <rect key="frame" x="20" y="54" width="360" height="500"/>
+                        <mask key="constraints">
+                            <include reference="ia7-MF-aJc"/>
+                        </mask>
+                    </variation>
+                </imageView>
             </subviews>
             <animations/>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="VD5-z8-akB" secondAttribute="trailing" constant="217" id="Dmj-Gw-mJd"/>
-                <constraint firstItem="VD5-z8-akB" firstAttribute="top" secondItem="4HJ-Eh-gDI" secondAttribute="top" id="b6h-U4-LUi"/>
-                <constraint firstAttribute="bottom" secondItem="VD5-z8-akB" secondAttribute="bottom" constant="440" id="hvf-sE-ck3">
-                    <variation key="widthClass=compact" constant="0.0"/>
-                </constraint>
-                <constraint firstItem="VD5-z8-akB" firstAttribute="leading" secondItem="4HJ-Eh-gDI" secondAttribute="leading" id="yip-7X-Srd"/>
+                <constraint firstItem="id2-5X-24E" firstAttribute="leading" secondItem="aQ2-SV-qia" secondAttribute="leading" constant="20" id="XAP-ur-MeD"/>
+                <constraint firstItem="id2-5X-24E" firstAttribute="top" secondItem="aQ2-SV-qia" secondAttribute="top" constant="54" id="gxN-Wa-aYF"/>
+                <constraint firstItem="id2-5X-24E" firstAttribute="centerX" secondItem="aQ2-SV-qia" secondAttribute="centerX" id="l8I-5y-6Z2"/>
             </constraints>
             <variation key="default">
                 <mask key="subviews">
-                    <exclude reference="VD5-z8-akB"/>
+                    <exclude reference="id2-5X-24E"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="Dmj-Gw-mJd"/>
-                    <exclude reference="b6h-U4-LUi"/>
-                    <exclude reference="hvf-sE-ck3"/>
-                    <exclude reference="yip-7X-Srd"/>
+                    <exclude reference="XAP-ur-MeD"/>
+                    <exclude reference="gxN-Wa-aYF"/>
+                    <exclude reference="l8I-5y-6Z2"/>
                 </mask>
             </variation>
-            <variation key="widthClass=compact" ambiguous="YES">
-                <rect key="frame" x="0.0" y="0.0" width="400" height="600"/>
+            <variation key="widthClass=compact">
                 <mask key="subviews">
-                    <include reference="VD5-z8-akB"/>
+                    <include reference="id2-5X-24E"/>
                 </mask>
                 <mask key="constraints">
-                    <include reference="Dmj-Gw-mJd"/>
-                    <include reference="b6h-U4-LUi"/>
-                    <include reference="hvf-sE-ck3"/>
-                    <include reference="yip-7X-Srd"/>
+                    <include reference="XAP-ur-MeD"/>
+                    <include reference="gxN-Wa-aYF"/>
+                    <include reference="l8I-5y-6Z2"/>
                 </mask>
             </variation>
-            <point key="canvasLocation" x="354" y="-43"/>
-        </scrollView>
+        </view>
     </objects>
 </document>

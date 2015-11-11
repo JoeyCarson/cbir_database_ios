@@ -30,8 +30,8 @@
 -(CaptureFaceViewController *)faceCaptureController
 {
     if ( !_faceCaptureController ) {
-        _faceCaptureController = [[CaptureFaceViewController alloc] init];
-        _faceCaptureController.view.frame = CGRectMake(0, 0, 375, 667);
+        
+        _faceCaptureController = [[CaptureFaceViewController alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     }
     
     return _faceCaptureController;
