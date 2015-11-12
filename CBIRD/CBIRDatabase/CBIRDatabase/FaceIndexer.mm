@@ -207,7 +207,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         
                         // Also write the histogramData into the histogram image.
                         memcpy(outputHistoPointer, histogramData.bytes, sizeOfHistogramData);
-                        outputHistoPointer += histoLengthInBytes;
+                        outputHistoPointer += sizeOfHistogramData;
                         
                         // Store the feature ID in the list.
                         [featureIdentifiers addObject:featureID];
