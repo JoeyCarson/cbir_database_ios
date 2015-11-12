@@ -50,8 +50,8 @@
         FaceLBP * faceLBP = [faceIndexer generateLBPFace:self.inputFaceImage fromFeature:self.inputFaceFeature];
         NSAssert(faceLBP != nil, @"Face LBP failed generation for FaceQuery input.");
         
-        NSArray<FaceLBP *> * faces = @[faceLBP];
-        [faceIndexer extractFeatures:faces andPersistTo:tempFaceLBPRevision];
+        // Create the 
+        [faceIndexer extractFeatures:@[faceLBP] andPersistTo:tempFaceLBPRevision];
         
     }
 }

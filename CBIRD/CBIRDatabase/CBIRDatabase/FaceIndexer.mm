@@ -48,9 +48,10 @@ NSString * FACE_KEY_PREFIX = @"face_";
 {
     self = [super init];
     if ( self ) {
-        // Understand that this makes this class no longer immutable.
+        // Understand that this makes this class no longer immutable as the CIFilter is mutable.
         // If you can share across threads in the future, do so..
-        // For instance, if CIKernel does any caching underneath for the same program.
+        // For instance, if CIKernel does any caching underneath for the same program, then we
+        // can create multiple instances of LBPFilter and not worry about performance, then do it.
         // We don't want to pay for recompilation 400 times if we use 400 different instances.
         _lbpFilter = [[LBPFilter alloc] init];
     }

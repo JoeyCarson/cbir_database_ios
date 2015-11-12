@@ -19,6 +19,8 @@
 
 static const NSString * const kCBLOutputDocument = @"outputDocument";
 static const NSString * const kCBIRPersistentID = @"persistentID";
+static const NSString * const kCBIRIndexerName = @"indexerName";
+static const NSString * const kCBIRIndexer = @"indexer";
 
 
 @interface CBIRDatabaseEngine(Private)
@@ -182,8 +184,20 @@ CBIRDatabaseEngine * _singletonEngine;
 
 -(const CBIRIndexer * )getIndexer:(NSString *)indexerName
 {
-    CBIRIndexer * indexer = [m_indexers objectForKey:indexerName];
+    NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
+    params[kCBIRIndexerName] = indexerName;
+    
+    [self performSelector:@selector(getIndexerInternal:) onThread:m_dbThread withObject:params waitUntilDone:YES];
+    
+    CBIRIndexer * indexer = params[kCBIRIndexer];
     return indexer;
+}
+
+-(void)getIndexerInternal:(NSMutableDictionary *)params
+{
+    NSString * indexerName = params[kCBIRIndexerName];
+    CBIRIndexer * indexer = [m_indexers objectForKey:indexerName];
+    params[kCBIRIndexer] = indexer;
 }
 
 -(CBIRIndexResult *)indexImage:(CBIRDocument *)imgDoc
