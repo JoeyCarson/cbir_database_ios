@@ -29,6 +29,8 @@
 
 
 static NSString * const FACE_DATA_LIST_DBKEY = @"face_data_list";
+static const NSString * const kCBIRFaceID = @"faceID";
+static const NSString * const kCBIRFeatureIDList = @"features";
 
 @interface FaceIndexer : CBIRIndexer
 

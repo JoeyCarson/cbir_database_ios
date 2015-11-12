@@ -36,24 +36,21 @@
 -(void)run
 {
     NSLog(@"%s executing.", __FUNCTION__);
-    // Retrieve the desired Indexer.
-    FaceIndexer * faceIndexer = nil;
+    // Retrieve the desired Indexer.  It must be registered and it must be a FaceIndexer, lest we give up.
     const CBIRIndexer * indexer = [[CBIRDatabaseEngine sharedEngine] getIndexer:NSStringFromClass([FaceIndexer class])];
+    NSAssert(indexer != nil && [indexer class] == [FaceIndexer class], @"%s failed to get FaceIndexer resource.  Object: %@", __FUNCTION__, indexer);
+
+    FaceIndexer * faceIndexer = (FaceIndexer *)indexer;
+    NSString * tempQueryID = @"face_query_temp";
+    CBLDocument * dbDocument = [[CBIRDatabaseEngine sharedEngine] newDocument:tempQueryID];
+    CBLUnsavedRevision * tempFaceLBPRevision = [dbDocument newRevision];
     
-    if ( [indexer class] == [FaceIndexer class]) {
-        faceIndexer = (FaceIndexer *)indexer;
-        
-        NSString * tempQueryID = @"face_query_temp";
-        CBLDocument * dbDocument = [[CBIRDatabaseEngine sharedEngine] newDocument:tempQueryID];
-        CBLUnsavedRevision * tempFaceLBPRevision = [dbDocument newRevision];
-        
-        FaceLBP * faceLBP = [faceIndexer generateLBPFace:self.inputFaceImage fromFeature:self.inputFaceFeature];
-        NSAssert(faceLBP != nil, @"Face LBP failed generation for FaceQuery input.");
-        
-        // Create the 
-        [faceIndexer extractFeatures:@[faceLBP] andPersistTo:tempFaceLBPRevision];
-        
-    }
+    // Create an LBP 
+    FaceLBP * faceLBP = [faceIndexer generateLBPFace:self.inputFaceImage fromFeature:self.inputFaceFeature];
+    NSAssert(faceLBP != nil, @"Face LBP failed generation for FaceQuery input.");
+    
+    // Create the descriptor object for the input face using the same method that FaceIndexer does.
+    [faceIndexer extractFeatures:@[faceLBP] andPersistTo:tempFaceLBPRevision];
 }
 
 

@@ -205,8 +205,8 @@ NSString * FACE_KEY_PREFIX = @"face_";
                 }
             }
             
-            faceData[@"id"] = faceUUID;
-            faceData[@"features"] = featureIdentifiers;
+            faceData[kCBIRFaceID] = faceUUID;
+            faceData[kCBIRFeatureIDList] = featureIdentifiers;
             [faceDataList addObject:faceData];
             
             if ( buffer ) {
