@@ -22,7 +22,7 @@
 @end
 
 
-
+// Indexer objects should be immutable such that they can be shared by threads.
 @interface CBIRIndexer : NSObject
 
 -(CBLUnsavedRevision *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc;

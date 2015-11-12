@@ -17,8 +17,9 @@
 #define CBIR_IMAGE_DB_NAME @"cbird_image_db"
 
 
-static const NSString * const kCBIROutputDocument = @"outputDocument";
+static const NSString * const kCBLOutputDocument = @"outputDocument";
 static const NSString * const kCBIRPersistentID = @"persistentID";
+
 
 @interface CBIRDatabaseEngine(Private)
 
@@ -285,7 +286,7 @@ CBIRDatabaseEngine * _singletonEngine;
     
     [self performSelector:@selector(getDocumentInternal:) onThread:m_dbThread withObject:params waitUntilDone:YES];
     
-    CBLDocument * outputDocument = params[kCBIROutputDocument];
+    CBLDocument * outputDocument = params[kCBLOutputDocument];
     return outputDocument;
 }
 
@@ -293,8 +294,28 @@ CBIRDatabaseEngine * _singletonEngine;
 {
     NSString * persistentID = params[kCBIRPersistentID];
     CBLDocument * doc = [[self databaseForName:CBIR_IMAGE_DB_NAME] existingDocumentWithID:persistentID];
-    params[kCBIROutputDocument] = doc;
+    params[kCBLOutputDocument] = doc;
 }
+
+-(CBLDocument *)newDocument:(NSString *)newDocID
+{
+    NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
+    params[kCBIRPersistentID] = newDocID;
+    
+    [self performSelector:@selector(newDocumentInternal:) onThread:m_dbThread withObject:params waitUntilDone:YES];
+    
+    CBLDocument * outputDocument = params[kCBLOutputDocument];
+    return outputDocument;
+
+}
+
+-(void)newDocumentInternal:(NSMutableDictionary *)params
+{
+    NSString * persistentID = params[kCBIRPersistentID];
+    CBLDocument * doc = [[self databaseForName:CBIR_IMAGE_DB_NAME] documentWithID:persistentID];
+    params[kCBLOutputDocument] = doc;
+}
+
 
 
 -(void)execQuery:(CBIRQuery *)query
@@ -304,7 +325,7 @@ CBIRDatabaseEngine * _singletonEngine;
 
 -(void)execQueryInternal:(CBIRQuery *)query
 {
-    
+    [query evaluate];
 }
 
 

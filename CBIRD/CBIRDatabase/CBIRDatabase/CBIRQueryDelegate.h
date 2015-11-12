@@ -8,6 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, CBIR_QUERY_STATE)
+{
+    QUERY_UNKNOWN,
+    QUERY_START,
+    QUERY_COMPLETE,
+    QUERY_ERROR
+};
+
+
 @protocol CBIRQueryDelegate <NSObject>
+
+@optional
+-(void)stateUpdated:(CBIR_QUERY_STATE)state;
 
 @end

@@ -421,7 +421,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "299"
             endingLineNumber = "299"
-            landmarkName = "-getDocumentInternal:"
+            landmarkName = "-newDocument:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -437,7 +437,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "292"
             endingLineNumber = "292"
-            landmarkName = "-getDocument:"
+            landmarkName = "-getDocumentInternal:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

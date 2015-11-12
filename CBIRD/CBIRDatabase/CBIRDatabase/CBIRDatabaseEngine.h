@@ -41,6 +41,10 @@
 
 -(CBLDocument *)getDocument:(NSString *)persistentID;
 
+-(CBLDocument *)newDocument:(NSString *)newDocID;
+
+-(const CBIRIndexer * )getIndexer:(NSString *)indexerName;
+
 
 // Asynchronously runs the given CBIRQuery object.  CBIRQuery shall provide asynchronous callback mechanisms.
 -(void)execQuery:(CBIRQuery *)query;

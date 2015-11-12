@@ -15,5 +15,6 @@
 
 -(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
+-(void) evaluate;
 
 @end

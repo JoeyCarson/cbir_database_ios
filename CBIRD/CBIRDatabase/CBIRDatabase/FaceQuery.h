@@ -12,7 +12,7 @@
 
 @interface FaceQuery : CBIRQuery
 
-@property (nonatomic, readonly) CIImage * faceImage;
+@property (nonatomic, readonly) CIImage * inputFaceImage;
 
 -(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 

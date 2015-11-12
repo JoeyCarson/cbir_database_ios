@@ -17,14 +17,17 @@ typedef void (^PHAssetContentEditingResponseHandler)(PHContentEditingInput * _Nu
 
 typedef void (^PHImageManagerDataResponseHandler)(NSData * _Nullable imageData, NSString  * _Nullable dataUTI, UIImageOrientation orientation, NSDictionary * _Nullable info);
 
-@class PHFetchOptions;
 
+
+@class PHFetchOptions;
 
 @protocol PhotoIndexerDelegate
 
 -(void)progressUpdated:(CGFloat)progress filteredImage:(UIImage * _Nullable)filteredImage;
 
 @end
+
+
 
 /**
  * Utility class used for indexing user images into the CBIRD.

@@ -168,12 +168,16 @@
     NSLog(@"onRunQuery: %@", buttonEvent);
     faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage andDelegate:self];
     [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];
+    
+    
 }
 
 -(void)toggleIndexing:(UIEvent *)obj
 {
     [self.delegate enableIndexing:self.toggle.isOn];
 }
+
+
 
 -(void)progressUpdated:(CGFloat)progress filteredImage:(UIImage *)filteredImage
 {

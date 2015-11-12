@@ -8,6 +8,8 @@
 
 #import "CBIRQuery.h"
 #import "CBIRQueryDelegate.h"
+#import "CBIRDatabase.h"
+
 
 @implementation CBIRQuery
 
@@ -27,6 +29,22 @@
     }
     
     return self;
+}
+
+-(void) evaluate
+{
+    // Tell the delegate.
+    [self.delegate stateUpdated:QUERY_START];
+ 
+    NSLog(@"evaluating the query");
+    [self run];
+    
+}
+
+-(void)run
+{
+    NSLog(@"CBIRQuery derived class must override.");
+    [self doesNotRecognizeSelector:_cmd];
 }
 
 @end

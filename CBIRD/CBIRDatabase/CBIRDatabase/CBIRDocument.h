@@ -13,7 +13,8 @@
 
 enum PERSISTANCE_ID_TYPE {
     UNKNOWN,
-    PH_ASSET
+    PH_ASSET,
+    QUERY_INPUT
 };
 
 @interface CBIRDocument : NSObject
