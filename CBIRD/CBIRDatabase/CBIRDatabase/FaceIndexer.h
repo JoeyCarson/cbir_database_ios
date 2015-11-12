@@ -31,6 +31,7 @@
 static const NSString * const kCBIRFaceDataList = @"face_data_list";
 static const NSString * const kCBIRFaceID = @"faceID";
 static const NSString * const kCBIRFeatureIDList = @"features";
+static const NSString * const kCBIRHistogramImage = @"histogram_image_attachment";
 
 @interface FaceIndexer : CBIRIndexer
 

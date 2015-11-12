@@ -105,10 +105,24 @@ NSString * FACE_KEY_PREFIX = @"face_";
 {
     // Array of face data dictionaries.
     NSMutableArray * faceDataList = [[NSMutableArray alloc] init];
+ 
+    // For each face, we shall also keep a full histogram image.  This is necessary so that the
+    // query operation doesn't have to continually build the buffer.  It also be may be useful
+    // to exclusively use this entire buffer in the future instead of storing the individual
+    // block histograms too.
+    size_t histoLengthInBytes = 256 * sizeof(float);
+    NSUInteger histoImageSize = GRID_HEIGHT_IN_BLOCKS * GRID_WIDTH_IN_BLOCKS * histoLengthInBytes;
+    unsigned char * trainingHistoImageBuffer = (unsigned char *) malloc(histoImageSize);
     
     // For each given face image, we need to build a list of histograms over 8x8 regions.
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         @autoreleasepool {
+            
+            // Prepare for writing this face's histogram image.
+            // Clear the histogram image buffer and point output to [0].
+            memset(trainingHistoImageBuffer, 0, sizeof(*trainingHistoImageBuffer));
+            unsigned char * outputHistoPointer = trainingHistoImageBuffer;
+            
             // Identifier of this particular face.
             NSString * faceUUID = [self generateFaceKey];
             
@@ -189,9 +203,11 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         NSString * featureID = [NSString stringWithFormat:@"%@_%u", faceUUID, (unsigned int)featureIndex];
                         NSUInteger sizeOfHistogramData = lbpHistogram.total() * lbpHistogram.elemSize();
                         NSData * histogramData = [NSData dataWithBytes:lbpHistogram.data length:sizeOfHistogramData];
-                        
-                        // It's a good idea to come up with a way to flush when the histograms become too many.
                         [revision setAttachmentNamed:featureID withContentType:MIME_TYPE_OCTET_STREAM content:histogramData];
+                        
+                        // Also write the histogramData into the histogram image.
+                        memcpy(outputHistoPointer, histogramData.bytes, sizeOfHistogramData);
+                        outputHistoPointer += histoLengthInBytes;
                         
                         // Store the feature ID in the list.
                         [featureIdentifiers addObject:featureID];
@@ -205,15 +221,29 @@ NSString * FACE_KEY_PREFIX = @"face_";
                 }
             }
             
+            NSData * fullHistoImageData = [NSData dataWithBytes:trainingHistoImageBuffer length:histoImageSize];
+            NSString * faceHistoID = [NSString stringWithFormat:@"%@_%@", faceUUID, kCBIRHistogramImage];
+            [revision setAttachmentNamed:faceHistoID withContentType:MIME_TYPE_OCTET_STREAM content:fullHistoImageData];
+            
             faceData[kCBIRFaceID] = faceUUID;
             faceData[kCBIRFeatureIDList] = featureIdentifiers;
+            faceData[kCBIRHistogramImage] = faceHistoID;
+            // TODO: Add the full histo image. kCBIRHistogramImage
             [faceDataList addObject:faceData];
             
             if ( buffer ) {
                 // Why on Earth wouldn't there be a buffer?
                 free(buffer);
+                buffer = NULL;
             }
         }
+    }
+    
+    // This buffer is reused for each face histogram image as they're all the same size.
+    // Clear it when we're done.
+    if ( trainingHistoImageBuffer ) {
+        free(trainingHistoImageBuffer);
+        trainingHistoImageBuffer = NULL;
     }
     
     if ( faceDataList.count > 0 ) {
