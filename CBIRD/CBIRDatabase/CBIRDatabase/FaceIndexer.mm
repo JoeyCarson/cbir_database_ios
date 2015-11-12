@@ -218,7 +218,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     
     if ( faceDataList.count > 0 ) {
         NSMutableDictionary * newProperties = revision.properties;
-        newProperties[FACE_DATA_LIST_DBKEY] = faceDataList;
+        newProperties[kCBIRFaceDataList] = faceDataList;
     }
 }
 

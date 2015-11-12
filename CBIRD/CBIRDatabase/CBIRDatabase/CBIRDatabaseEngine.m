@@ -240,14 +240,14 @@ CBIRDatabaseEngine * _singletonEngine;
     if ( doc ) {
         
         NSDictionary * p = doc.properties;
-        NSArray * faceDataList = p[@"face_data_list"];
+        NSArray * faceDataList = p[kCBIRFaceDataList];
         
         if ( faceDataList ) {
         
             for ( NSUInteger i = 0; i < faceDataList.count; i++ ) {
             
                 NSDictionary * faceDataMap = faceDataList[i];
-                NSArray * featureList = faceDataMap[@"features"];
+                NSArray * featureList = faceDataMap[kCBIRFeatureIDList];
                 
                 if ( featureList.count > 0 ) {
                 
