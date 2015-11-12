@@ -6,6 +6,8 @@
 //  Copyright © 2015 Joseph Carson. All rights reserved.
 //
 
+#import <CouchbaseLite/CouchbaseLite.h>
+
 #import "FaceQuery.h"
 #import "FaceIndexer.h"
 #import "CBIRDocument.h"
@@ -13,6 +15,7 @@
 @implementation FaceQuery
 
 @synthesize inputFaceImage = _inputFaceImage;
+@synthesize inputFaceFeature = _inputFaceFeature;
 
 -(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate
 {
@@ -20,11 +23,12 @@
     return self;
 }
 
--(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(id<CBIRQueryDelegate>)delegate
+-(instancetype)initWithFaceImage:(CIImage *)faceImage withFeature:(CIFaceFeature *)faceFeature andDelegate:(id<CBIRQueryDelegate>)delegate
 {
     self = [super initWithDelegate:delegate];
     if ( self ) {
         _inputFaceImage = faceImage;
+        _inputFaceFeature = faceFeature;
     }
     return self;
 }
@@ -40,9 +44,15 @@
         faceIndexer = (FaceIndexer *)indexer;
         
         NSString * tempQueryID = @"face_query_temp";
-        CBIRDocument * inputDocument = [[CBIRDocument alloc] initWithCIImage:self.inputFaceImage persistentID:tempQueryID type:QUERY_INPUT];
         CBLDocument * dbDocument = [[CBIRDatabaseEngine sharedEngine] newDocument:tempQueryID];
-        [faceIndexer indexImage:inputDocument cblDocument:dbDocument];
+        CBLUnsavedRevision * tempFaceLBPRevision = [dbDocument newRevision];
+        
+        FaceLBP * faceLBP = [faceIndexer generateLBPFace:self.inputFaceImage fromFeature:self.inputFaceFeature];
+        NSAssert(faceLBP != nil, @"Face LBP failed generation for FaceQuery input.");
+        
+        NSArray<FaceLBP *> * faces = @[faceLBP];
+        [faceIndexer extractFeatures:faces andPersistTo:tempFaceLBPRevision];
+        
     }
 }
 

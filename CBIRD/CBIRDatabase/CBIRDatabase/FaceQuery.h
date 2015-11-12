@@ -8,12 +8,15 @@
 
 #import "CBIRQuery.h"
 
-@class CIImage;
+@class CIImage, CIFaceFeature;
 
 @interface FaceQuery : CBIRQuery
 
 @property (nonatomic, readonly) CIImage * inputFaceImage;
+@property (nonatomic, readonly) CIFaceFeature * inputFaceFeature;
 
--(instancetype)initWithFaceImage:(CIImage *)faceImage andDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
+// Initializes the query with the source image (e.g. not the face, but the whole thing) and a face feature
+//
+-(instancetype)initWithFaceImage:(CIImage *)faceImage withFeature:(CIFaceFeature *)faceFeature andDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 @end

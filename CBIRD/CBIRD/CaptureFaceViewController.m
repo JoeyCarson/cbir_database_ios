@@ -24,6 +24,7 @@
 @synthesize fullSizeImageView = _fullSizeImageView;
 @synthesize faceFeatures = _faceFeatures;
 @synthesize selectedFaceImage = _selectedFaceImage;
+@synthesize selectedFaceFeature = _selectedFaceFeature;
 
 -(instancetype)initWithFrame:(CGRect)frame
 {
@@ -194,12 +195,12 @@
     [rectView setNeedsDisplay];
 }
 
--(void)updateFaceImage:(CIFeature *)faceFeature
+-(void)updateFaceImage:(CIFaceFeature *)faceFeature
 {
     if ( !faceFeature) {
         // We're unsetting the selected image.
         _selectedFaceImage = nil;
-        
+        _selectedFaceFeature = nil;
     } else {
         
         // We're selecting a new face image.
@@ -208,6 +209,7 @@
         CIFilter * cropFilter = [CIFilter filterWithName:@"CICrop" withInputParameters:params];
         CIImage * croppedImage = cropFilter.outputImage;
         _selectedFaceImage = croppedImage;
+        _selectedFaceFeature = faceFeature;
     }
 }
 

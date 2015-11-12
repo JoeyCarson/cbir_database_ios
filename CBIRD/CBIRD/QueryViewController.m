@@ -166,10 +166,12 @@
 -(void)onRunQuery:(UIEvent *)buttonEvent
 {
     NSLog(@"onRunQuery: %@", buttonEvent);
-    faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage andDelegate:self];
-    [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];
+    faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage
+                                         withFeature:self.faceCaptureController.selectedFaceFeature
+                                         andDelegate:self];
     
     
+    [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];    
 }
 
 -(void)toggleIndexing:(UIEvent *)obj

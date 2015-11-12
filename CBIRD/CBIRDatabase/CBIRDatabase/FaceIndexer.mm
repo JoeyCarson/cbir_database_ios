@@ -20,16 +20,6 @@
 NSString * FACE_KEY_PREFIX = @"face_";
 
 
-// FaceIndexer internal class to hang onto face related properties.
-@interface FaceLBP : NSObject
-
-@property(nonatomic, readonly, assign) CGRect rect;
-@property(nonatomic, readonly) CIImage * lbpImage;
-
--(instancetype) initWithRect:(CGRect)rect image:(CIImage *)image;
-
-@end
-
 @implementation FaceLBP
 
 @synthesize rect = _rect;
@@ -52,6 +42,22 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 @implementation FaceIndexer
 
+@synthesize lbpFilter = _lbpFilter;
+
+-(instancetype)init
+{
+    self = [super init];
+    if ( self ) {
+        // Understand that this makes this class no longer immutable.
+        // If you can share across threads in the future, do so..
+        // For instance, if CIKernel does any caching underneath for the same program.
+        // We don't want to pay for recompilation 400 times if we use 400 different instances.
+        _lbpFilter = [[LBPFilter alloc] init];
+    }
+    
+    return self;
+}
+
 -(CBLUnsavedRevision *)indexImage:(CBIRDocument *)document cblDocument:(CBLDocument *)cblDoc
 {
     // 1.  Filter the image using the LBP filter.
@@ -69,20 +75,28 @@ NSString * FACE_KEY_PREFIX = @"face_";
     NSMutableArray * lbpFaceImages = [[NSMutableArray alloc] init];
     
     // Instantiate the filter and set the input image to the instance we just created.
-    LBPFilter * lbpf = [[LBPFilter alloc] init];
-    lbpf.inputImage = image;
+
     
     // Apply the filter for each face rectangle.  This generates a different
     // outputImage for each face rectangle.
     NSArray * faceFeatures = [ImageUtil detectFaces:image];
     NSLog(@"generateLBPFaces: %lul", (unsigned long)faceFeatures.count);
     for ( CIFaceFeature * feature in faceFeatures ) {
-        [lbpf applyToExtent:feature.bounds];
-        FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:lbpf.outputImage];
+
+        FaceLBP * f = [self generateLBPFace:image fromFeature:feature];
         [lbpFaceImages addObject:f];
     }
     
     return lbpFaceImages;
+}
+
+-(FaceLBP *)generateLBPFace:(CIImage *)inputImage fromFeature:(CIFaceFeature *)feature
+{
+    _lbpFilter.inputImage = inputImage;
+    [_lbpFilter applyToExtent:feature.bounds];
+    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:_lbpFilter.outputImage];
+    
+    return f;
 }
 
 // Extracts features from each face in the list and save them to the document.

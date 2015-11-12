@@ -34,7 +34,9 @@
 -(void) evaluate
 {
     // Tell the delegate.
-    [self.delegate stateUpdated:QUERY_START];
+    if ( [self.delegate respondsToSelector:@selector(stateUpdated:)] ) {
+        [self.delegate stateUpdated:QUERY_START];
+    }
  
     NSLog(@"evaluating the query");
     [self run];
