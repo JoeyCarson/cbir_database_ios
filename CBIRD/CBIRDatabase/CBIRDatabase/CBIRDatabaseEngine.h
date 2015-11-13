@@ -14,6 +14,7 @@
 @class CBIRDocument;
 @class CBIRIndexResult;
 @class CBLDocument;
+@class CBLQuery;
 
 @interface CBIRDatabaseEngine : NSObject
 
@@ -42,6 +43,8 @@
 -(CBLDocument *)getDocument:(NSString *)persistentID;
 
 -(CBLDocument *)newDocument:(NSString *)newDocID;
+
+-(CBLQuery *) createAllDocsQuery;
 
 -(const CBIRIndexer * )getIndexer:(NSString *)indexerName;
 

@@ -16,7 +16,7 @@
 // The training image.  The image from the training set.
 @property (nonatomic) CIImage * trainingImage;
 
-@property (nonatomic, assign) NSNumber* binCount;
+@property (nonatomic, assign) short binCount;
 
 // The kernel used to compute the absolute squared difference ratio
 // between the expected and training images.

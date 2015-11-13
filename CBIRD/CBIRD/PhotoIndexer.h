@@ -37,7 +37,7 @@ typedef void (^PHImageManagerDataResponseHandler)(NSData * _Nullable imageData, 
 @property (nonatomic, weak) id<PhotoIndexerDelegate> delegate;
 @property (nonatomic, readonly, getter=isRunning) BOOL running;
 
--(instancetype)initWithDelegate:(id<PhotoIndexerDelegate>)delegate;
+-(instancetype)initWithDelegate:(id<PhotoIndexerDelegate> _Nonnull)delegate;
 
 // pauses the indexing operations.
 -(void)pause;

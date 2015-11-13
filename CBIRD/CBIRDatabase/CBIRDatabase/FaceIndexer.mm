@@ -107,10 +107,11 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // to exclusively use this entire buffer in the future instead of storing the individual
     // block histograms too.
     size_t histoLengthInBytes = 256 * sizeof(float);
-    NSUInteger histoImageSize = GRID_HEIGHT_IN_BLOCKS * GRID_WIDTH_IN_BLOCKS * histoLengthInBytes;
+    NSUInteger histoImageSize = FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS * FACE_INDEXER_GRID_WIDTH_IN_BLOCKS * histoLengthInBytes;
     unsigned char * trainingHistoImageBuffer = (unsigned char *) malloc(histoImageSize);
     
     // For each given face image, we need to build a list of histograms over 8x8 regions.
+    // TODO:  CIAreaHistogram looks like a good parallel candidate to replace this manual method with.  Investigate it!
     for ( NSUInteger i = 0; i < faces.count; i++ ) {
         @autoreleasepool {
             
@@ -131,8 +132,8 @@ NSString * FACE_KEY_PREFIX = @"face_";
             NSData * pixelData = [ImageUtil copyPixelData:face.lbpImage];
             
             // The number of blocks we're slicing the image into.
-            UInt32 horizontalBlockCt = GRID_WIDTH_IN_BLOCKS;
-            UInt32 verticalBlockCt   = GRID_HEIGHT_IN_BLOCKS;
+            UInt32 horizontalBlockCt = FACE_INDEXER_GRID_WIDTH_IN_BLOCKS;
+            UInt32 verticalBlockCt   = FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS;
             
             // TODO: Come up with a safe (e.g. not overstepping the array) way to partition
             // the image such that we aren't losing precision in width per block.

@@ -85,7 +85,7 @@ static NSString * const summationCode = @"                                      
                                         "kernel vec4 histogramDiff ( sampler s  )                                     \n"
                                         "{                                                                            \n"
                                         "                                                                             \n"
-                                        "                                                                             \n"
+                                        "     int binCount = %d                                                       \n"
                                         "                                                                             \n"
                                         "                                                                             \n"
                                         "}                                                                            \n";
@@ -99,6 +99,7 @@ static NSString * const summationCode = @"                                      
 @synthesize trainingImage = _trainingImage;
 @synthesize absSquareDiffExpectedRatioKernel = _absSquareDiffExpectedRatioKernel;
 @synthesize histoSumKernel = _histoSumKernel;
+@synthesize binCount = _binCount;
 
 
 -(instancetype)init
@@ -109,6 +110,16 @@ static NSString * const summationCode = @"                                      
     }
     
     return self;
+}
+
+-(void)setBinCount:(short)binCount
+{
+    if ( binCount != _binCount ) {
+        // The bin counts are different, meaning that we must
+        // rebuild histogram sum kernel.
+        _binCount = binCount;
+        _histoSumKernel = nil;
+    }
 }
 
 -(CIKernel *)absSquareDiffExpectedRatioKernel
@@ -123,9 +134,11 @@ static NSString * const summationCode = @"                                      
 
 -(CIKernel *)histoSumKernel
 {
-    if ( _histoSumKernel ) {
+    if ( !_histoSumKernel ) {
         NSLog(@"");
-        _histoSumKernel = [CIKernel kernelWithString:summationCode];
+        NSString * summationKernelCode = [NSString stringWithFormat:summationCode, self.binCount];
+        NSLog(@"summationKernelCode: %@", summationKernelCode);
+        _histoSumKernel = [CIKernel kernelWithString:summationKernelCode];
     }
     
     return _histoSumKernel;
@@ -142,18 +155,19 @@ static NSString * const summationCode = @"                                      
     };
     
     
-    CIImage * absSquareRatio = [self.absSquareDiffExpectedRatioKernel applyWithExtent:self.expectedImage.extent
+    CIImage * absSquareRatioImage = [self.absSquareDiffExpectedRatioKernel applyWithExtent:self.expectedImage.extent
                                                                           roiCallback:roi
                                                                             arguments:@[self.expectedImage, self.trainingImage]];
     
     
-    CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatio.extent
+    CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatioImage.extent
                                                   roiCallback:roi
-                                                    arguments:@[absSquareRatio, self.binCount]];
+                                                    arguments:@[absSquareRatioImage]];
+    
     
     
     // This isn't it.  We still need to apply the other.
-    return absSquareRatio;
+    return absSquareRatioImage;
 }
 
 

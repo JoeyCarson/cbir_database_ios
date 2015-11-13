@@ -21,6 +21,8 @@ static const NSString * const kCBLOutputDocument = @"outputDocument";
 static const NSString * const kCBIRPersistentID = @"persistentID";
 static const NSString * const kCBIRIndexerName = @"indexerName";
 static const NSString * const kCBIRIndexer = @"indexer";
+static const NSString * const kCBLQuery = @"cbl_query";
+static const NSString * const kCBLDBName = @"cbl_db_name";
 
 
 @interface CBIRDatabaseEngine(Private)
@@ -253,7 +255,7 @@ CBIRDatabaseEngine * _singletonEngine;
                 
                     // Put all associated histogram buffers into a single image.
                     size_t histoLengthInBytes = 256 * sizeof(float);
-                    NSUInteger histoImageSize = GRID_HEIGHT_IN_BLOCKS * GRID_WIDTH_IN_BLOCKS * histoLengthInBytes;
+                    NSUInteger histoImageSize = FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS * FACE_INDEXER_GRID_WIDTH_IN_BLOCKS * histoLengthInBytes;
                     unsigned char * trainingHistoImageBuffer = malloc(histoImageSize);
                     void * outputHistoPointer = trainingHistoImageBuffer;
                     
@@ -274,12 +276,12 @@ CBIRDatabaseEngine * _singletonEngine;
                     NSData * histoImageData = [NSData dataWithBytesNoCopy:trainingHistoImageBuffer length:histoImageSize];
                     
                     // The "image" is 256 * number of blocks wide (each of which is a float).
-                    CGSize histoImageDim = CGSizeMake(GRID_WIDTH_IN_BLOCKS * 256, GRID_HEIGHT_IN_BLOCKS);
+                    CGSize histoImageDim = CGSizeMake(FACE_INDEXER_GRID_WIDTH_IN_BLOCKS * 256, FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS);
                     
                     // The kCIFormatRf format equates to each "pixel" being a 32 bit float.  Each pixel should be a float
                     // from the computation 
                     CIImage * histoImage = [[CIImage alloc] initWithBitmapData:histoImageData
-                                                                   bytesPerRow:(GRID_WIDTH_IN_BLOCKS * histoLengthInBytes)
+                                                                   bytesPerRow:(FACE_INDEXER_GRID_WIDTH_IN_BLOCKS * histoLengthInBytes)
                                                                           size:histoImageDim
                                                                         format:kCIFormatRf
                                                                     colorSpace:nil];
@@ -330,7 +332,19 @@ CBIRDatabaseEngine * _singletonEngine;
     params[kCBLOutputDocument] = doc;
 }
 
+-(CBLQuery *) createAllDocsQuery
+{
+    NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
+    
+    [self performSelector:@selector(createAllDocsQueryInternal:) onThread:m_dbThread withObject:params waitUntilDone:YES];
+    
+    return params[kCBLQuery];
+}
 
+-(void) createAllDocsQueryInternal:(NSMutableDictionary *)params
+{
+    params[kCBLQuery] = [[self databaseForName:CBIR_IMAGE_DB_NAME] createAllDocumentsQuery];
+}
 
 -(void)execQuery:(CBIRQuery *)query
 {

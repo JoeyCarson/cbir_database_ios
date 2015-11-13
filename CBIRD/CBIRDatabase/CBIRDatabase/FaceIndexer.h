@@ -23,8 +23,8 @@
 
 
 // The grid size to partition each face into.
-#define GRID_WIDTH_IN_BLOCKS 8
-#define GRID_HEIGHT_IN_BLOCKS 8
+#define FACE_INDEXER_GRID_WIDTH_IN_BLOCKS 8
+#define FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS 8
 
 
 
