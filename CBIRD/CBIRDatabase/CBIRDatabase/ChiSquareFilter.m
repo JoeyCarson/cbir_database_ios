@@ -56,13 +56,6 @@
 //    end = destCoord.x + binCount;
 //    for ( x = destCoord.x; x < end; x++ )
 //
-@implementation ChiSquareFilter
-
-@synthesize expectedImage = _expectedImage;
-@synthesize trainingImage = _trainingImage;
-@synthesize absSquareDiffExpectedRatioKernel = _absSquareDiffExpectedRatioKernel;
-@synthesize histoSumKernel = _histoSumKernel;
-
 
 static NSString * const absSquareDiffCode = @"                                                                            \n"
                                             "                                                                             \n"
@@ -71,17 +64,90 @@ static NSString * const absSquareDiffCode = @"                                  
                                             "                                                                             \n"
                                             "kernel vec4 histogramDiff ( sampler expect, sampler training )               \n"
                                             "{                                                                            \n"
-                                            "    float x = destCoord().x;                                                 \n"
                                             "                                                                             \n"
                                             "                                                                             \n"
+                                            "    // Recall that we're only concerned with the red component.              \n"
+                                            "    float expIntensity = samplerCoord(expect).r;                             \n"
+                                            "    float trainIntensity = samplerCoord(training).r;                         \n"
                                             "                                                                             \n"
+                                            "    float diff = expIntensity - trainIntensity;                              \n"
+                                            "    float diffSquare = diff * diff;                                          \n"
+                                            "    float diffSquareExpRatio = diffSquare / expIntensity                     \n"
                                             "                                                                             \n"
-                                            "                                                                             \n"
-                                            "                                                                             \n"
-                                            "                                                                             \n"
+                                            "    return vec4(diffSquareExpRatio, 0, 0, 0);                                \n"
                                             "}                                                                            \n";
 
+static NSString * const summationCode = @"                                                                            \n"
+                                        "                                                                             \n"
+                                        "                                                                             \n"
+                                        "                                                                             \n"
+                                        "// We need range too!                                                        \n"
+                                        "kernel vec4 histogramDiff ( sampler s  )                                     \n"
+                                        "{                                                                            \n"
+                                        "                                                                             \n"
+                                        "                                                                             \n"
+                                        "                                                                             \n"
+                                        "                                                                             \n"
+                                        "}                                                                            \n";
 
+
+
+@implementation ChiSquareFilter
+
+
+@synthesize expectedImage = _expectedImage;
+@synthesize trainingImage = _trainingImage;
+@synthesize absSquareDiffExpectedRatioKernel = _absSquareDiffExpectedRatioKernel;
+@synthesize histoSumKernel = _histoSumKernel;
+
+
+-(instancetype)init
+{
+    self = [super init];
+    if ( self ) {
+        
+    }
+    
+    return self;
+}
+
+-(CIKernel *)absSquareDiffExpectedRatioKernel
+{
+    if ( !_absSquareDiffExpectedRatioKernel ) {
+        NSLog(@"generating absolute square difference to expected value ratio kernel.");
+        _absSquareDiffExpectedRatioKernel = [CIKernel kernelWithString:absSquareDiffCode];
+    }
+    
+    return _absSquareDiffExpectedRatioKernel;
+}
+
+-(CIKernel *)histoSumKernel
+{
+    if ( _histoSumKernel ) {
+        NSLog(@"");
+        _histoSumKernel = [CIKernel kernelWithString:summationCode];
+    }
+    
+    return _histoSumKernel;
+}
+
+-(CIImage *)outputImage
+{
+    // TODO: Get your ass in gear on setting the roi callbacks.
+    
+    CIImage * absSquareRatio = [self.absSquareDiffExpectedRatioKernel applyWithExtent:self.expectedImage.extent
+                                                                          roiCallback:nil
+                                                                            arguments:@[self.expectedImage, self.trainingImage]];
+    
+    
+    CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatio.extent
+                                                  roiCallback:nil
+                                                    arguments:@[absSquareRatio, self.binCount]];
+    
+    
+    // This isn't it.  We still need to apply the other.
+    return absSquareRatio;
+}
 
 
 
