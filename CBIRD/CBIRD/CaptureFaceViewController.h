@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CaptureFaceViewController : UIViewController
+@interface CaptureFaceViewController : UIViewController<UIImagePickerControllerDelegate>
 
 @property (strong, nonatomic) IBOutlet UIImageView * fullSizeImageView;
 @property (nonatomic, copy) NSArray * faceFeatures;

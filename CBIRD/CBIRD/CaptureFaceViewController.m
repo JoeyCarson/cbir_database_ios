@@ -16,6 +16,7 @@
     CGRect viewFrame;
     NSMutableDictionary<NSValue *, CIFaceFeature *> * rectangleViews;
     TargetRectangleView * selectedRectView;
+    UIImagePickerController * imagePickerController;
 }
 @end
 
@@ -52,15 +53,28 @@
     UIButton * doneButton = [UIButton buttonWithType:UIButtonTypeSystem];
     doneButton.opaque = NO;
     doneButton.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.4];
-    doneButton.frame = CGRectMake(20, 20, 60, 30);
+    doneButton.frame = CGRectMake(20, 20, 80, 40);
     [doneButton setTitle:@"Done" forState:UIControlStateNormal];
     [doneButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     doneButton.backgroundColor = [UIColor whiteColor];
     [doneButton addTarget:self action:@selector(onDone:) forControlEvents:UIControlEventTouchUpInside];
     doneButton.translatesAutoresizingMaskIntoConstraints = false;
     
+    
+    UIButton * cameraButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    cameraButton.opaque = NO;
+    cameraButton.backgroundColor = [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.4];
+    cameraButton.frame = CGRectMake(self.view.bounds.size.width - 100, 20, 80, 40);
+    [cameraButton setTitle:@"Camera" forState:UIControlStateNormal];
+    [cameraButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    cameraButton.backgroundColor = [UIColor whiteColor];
+    [cameraButton addTarget:self action:@selector(onOpenCamera:) forControlEvents:UIControlEventTouchUpInside];
+    cameraButton.translatesAutoresizingMaskIntoConstraints = false;
+
+    
     [self.view addSubview:self.fullSizeImageView];
     [self.view addSubview:doneButton];
+    [self.view addSubview:cameraButton];
 }
 
 -(void)updateMainImage:(UIImage *)image
@@ -81,6 +95,29 @@
 
 -(void)onDone:(UIEvent *)buttonEvent
 {
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(void)onOpenCamera:(UIEvent *)buttonEvent
+{
+    if ( !imagePickerController ) {
+        imagePickerController = [[UIImagePickerController alloc] init];
+        imagePickerController.delegate = self;
+        imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera; // default mediaType is image.
+    }
+    
+    [self presentViewController:imagePickerController animated:YES completion:nil];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
+{
+    NSLog(@"%s info: %@", __FUNCTION__, info);
+    UIImage * capturedImage = info[UIImagePickerControllerOriginalImage];
+    
+    
+    //CIImage * image = CIImage imageWith
+    
+    self.fullSizeImageView.image = capturedImage;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
@@ -109,6 +146,9 @@
     
     // Get the faces inside the image.
     CIImage * img = [CIImage imageWithCGImage:self.fullSizeImageView.image.CGImage];
+    
+    NSLog(@"img properties: %@", img.properties);
+    
     _faceFeatures = [ImageUtil detectFaces:img];
     
     // The face rectangles are coming CoreImage, meaning that they're in the bottom left coordinate
@@ -152,6 +192,7 @@
         [self.fullSizeImageView addSubview:rectView];
     }
 
+    [self.fullSizeImageView setNeedsDisplay];
 }
 
 -(void)onRectSelected:(UIGestureRecognizer *)gestureRecognizer

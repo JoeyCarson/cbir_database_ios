@@ -38,13 +38,12 @@
         options = @{CIDetectorImageOrientation : orientation};
     }
     
-    NSLog(@"before detection.");
     NSArray * faces = nil;
     
     NSArray * tempf = [detector featuresInImage:img options:options];
     faces = tempf;
 
-    NSLog(@"after detection.  %@", faces);
+    NSLog(@"detectFaces.  %@", faces);
     return faces;
 }
 

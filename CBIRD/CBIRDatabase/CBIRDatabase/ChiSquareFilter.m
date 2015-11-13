@@ -134,14 +134,21 @@ static NSString * const summationCode = @"                                      
 -(CIImage *)outputImage
 {
     // TODO: Get your ass in gear on setting the roi callbacks.
+    CIKernelROICallback roi = ^CGRect (int index, CGRect destRect) {
+        if ( CGRectIsInfinite(destRect) ) {
+            return CGRectNull;
+        }
+        else return destRect;
+    };
+    
     
     CIImage * absSquareRatio = [self.absSquareDiffExpectedRatioKernel applyWithExtent:self.expectedImage.extent
-                                                                          roiCallback:nil
+                                                                          roiCallback:roi
                                                                             arguments:@[self.expectedImage, self.trainingImage]];
     
     
     CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatio.extent
-                                                  roiCallback:nil
+                                                  roiCallback:roi
                                                     arguments:@[absSquareRatio, self.binCount]];
     
     
