@@ -75,15 +75,11 @@ NSString * FACE_KEY_PREFIX = @"face_";
 {
     NSMutableArray * lbpFaceImages = [[NSMutableArray alloc] init];
     
-    // Instantiate the filter and set the input image to the instance we just created.
-
-    
     // Apply the filter for each face rectangle.  This generates a different
     // outputImage for each face rectangle.
     NSArray * faceFeatures = [ImageUtil detectFaces:image];
     NSLog(@"generateLBPFaces: %lul", (unsigned long)faceFeatures.count);
     for ( CIFaceFeature * feature in faceFeatures ) {
-
         FaceLBP * f = [self generateLBPFace:image fromFeature:feature];
         [lbpFaceImages addObject:f];
     }
@@ -253,7 +249,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
 }
 
 // Normalizes the values in the histogram such that each bin (lbp intensity) value is the percentage of the occurrence
-// occurence of the color that the bin represents.  This should correct for equal faces at different scales which cause
+// of the color that the bin represents in the region.  This should correct for equal faces at different scales which cause
 // the values of each intensity to be scaled to more or less, despite the images being effectively equal.
 - (void) percentizeHistogram:(cv::Mat *)lbpHistogram blockArea:(size_t)area
 {

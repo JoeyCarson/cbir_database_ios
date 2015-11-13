@@ -143,7 +143,6 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
-    //[UIImage imageNamed:@"ios_icon.png"];
     faceImageView.image = [UIImage imageWithCIImage:self.faceCaptureController.selectedFaceImage];
 }
 
@@ -166,12 +165,15 @@
 -(void)onRunQuery:(UIEvent *)buttonEvent
 {
     NSLog(@"onRunQuery: %@", buttonEvent);
-    faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage
-                                         withFeature:self.faceCaptureController.selectedFaceFeature
-                                         andDelegate:self];
     
+    if ( self.faceCaptureController.selectedFaceFeature && self.faceCaptureController.selectedFaceImage ) {
     
-    [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];    
+        faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage
+                                             withFeature:self.faceCaptureController.selectedFaceFeature
+                                             andDelegate:self];
+        
+        [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];
+    }
 }
 
 -(void)toggleIndexing:(UIEvent *)obj

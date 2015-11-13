@@ -51,6 +51,24 @@
     
     // Create the descriptor object for the input face using the same method that FaceIndexer does.
     [faceIndexer extractFeatures:@[faceLBP] andPersistTo:tempFaceLBPRevision];
+    
+    NSArray * faceList = tempFaceLBPRevision.properties[kCBIRFaceDataList];
+    if ( faceList.count == 1 ) {
+        
+        NSDictionary * faceData = faceList[0];
+        NSString * histoImageID = faceData[kCBIRHistogramImage];
+        if ( [tempFaceLBPRevision.attachmentNames containsObject:histoImageID] ) {
+            
+            CBLAttachment * inputFaceHistoAttachment = [tempFaceLBPRevision attachmentNamed:histoImageID];
+            NSData * inputFaceHistoImageData = inputFaceHistoAttachment.content;
+            
+        } else {
+            NSLog(@"faceData attachments doesn't contain histogram image.");
+        }
+        
+    } else {
+        NSLog(@"faceList of image must contain only a single face. count: %lu", (unsigned long)faceList.count);
+    }
 }
 
 

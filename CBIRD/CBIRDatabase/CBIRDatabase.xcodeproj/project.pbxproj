@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1107E8C91BEE68DA00DAFDAD /* DifferenceFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1107E8C71BEE68DA00DAFDAD /* DifferenceFilter.h */; };
-		1107E8CA1BEE68DA00DAFDAD /* DifferenceFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1107E8C81BEE68DA00DAFDAD /* DifferenceFilter.m */; };
+		1107E8C91BEE68DA00DAFDAD /* ChiSquareFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1107E8C71BEE68DA00DAFDAD /* ChiSquareFilter.h */; };
+		1107E8CA1BEE68DA00DAFDAD /* ChiSquareFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1107E8C81BEE68DA00DAFDAD /* ChiSquareFilter.m */; };
 		112DA0FD1BD5CA9200138127 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 112DA0FC1BD5CA9200138127 /* opencv2.framework */; };
 		112DA1011BD5CB6300138127 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 112DA1001BD5CB6300138127 /* AssetsLibrary.framework */; };
 		114DB5261BCDD7DF00172550 /* ImageUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 114DB5241BCDD7DF00172550 /* ImageUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -58,8 +58,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1107E8C71BEE68DA00DAFDAD /* DifferenceFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DifferenceFilter.h; sourceTree = "<group>"; };
-		1107E8C81BEE68DA00DAFDAD /* DifferenceFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DifferenceFilter.m; sourceTree = "<group>"; };
+		1107E8C71BEE68DA00DAFDAD /* ChiSquareFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChiSquareFilter.h; sourceTree = "<group>"; };
+		1107E8C81BEE68DA00DAFDAD /* ChiSquareFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChiSquareFilter.m; sourceTree = "<group>"; };
 		112DA0FC1BD5CA9200138127 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 		112DA0FE1BD5CAC500138127 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
 		112DA1001BD5CB6300138127 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
@@ -212,8 +212,8 @@
 			children = (
 				11B798DF1BC1994D0040F3A7 /* LBPFilter.h */,
 				11B798E01BC1994D0040F3A7 /* LBPFilter.m */,
-				1107E8C71BEE68DA00DAFDAD /* DifferenceFilter.h */,
-				1107E8C81BEE68DA00DAFDAD /* DifferenceFilter.m */,
+				1107E8C71BEE68DA00DAFDAD /* ChiSquareFilter.h */,
+				1107E8C81BEE68DA00DAFDAD /* ChiSquareFilter.m */,
 			);
 			name = filters;
 			sourceTree = "<group>";
@@ -239,7 +239,7 @@
 				114DB5261BCDD7DF00172550 /* ImageUtil.h in Headers */,
 				11BE08C21BF3B982007385B6 /* FaceQuery.h in Headers */,
 				11BE08C51BF3C004007385B6 /* CBIRQueryDelegate.h in Headers */,
-				1107E8C91BEE68DA00DAFDAD /* DifferenceFilter.h in Headers */,
+				1107E8C91BEE68DA00DAFDAD /* ChiSquareFilter.h in Headers */,
 				11B798581BBB73690040F3A7 /* CBIRDatabase.h in Headers */,
 				11B798E61BC2277C0040F3A7 /* CBIRDocument.h in Headers */,
 				11B7987F1BBB74C30040F3A7 /* CBIRDatabaseEngine.h in Headers */,
@@ -351,7 +351,7 @@
 				11B798871BBB86480040F3A7 /* CBIRIndexer.m in Sources */,
 				114DB52C1BCF5E5D00172550 /* FaceIndexer.mm in Sources */,
 				11B798E21BC1994D0040F3A7 /* LBPFilter.m in Sources */,
-				1107E8CA1BEE68DA00DAFDAD /* DifferenceFilter.m in Sources */,
+				1107E8CA1BEE68DA00DAFDAD /* ChiSquareFilter.m in Sources */,
 				11BE08C31BF3B982007385B6 /* FaceQuery.m in Sources */,
 				11DB57A21BD742210032E206 /* CBLUtil.m in Sources */,
 				11B798E71BC2277C0040F3A7 /* CBIRDocument.m in Sources */,
