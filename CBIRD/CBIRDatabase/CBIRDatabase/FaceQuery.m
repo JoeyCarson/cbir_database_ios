@@ -12,9 +12,22 @@
 #import "FaceIndexer.h"
 #import "CBIRDocument.h"
 
+@interface FaceDataHeapContainer
+
+// The difference sum of this particular face and the source face.
+// This is the order that should be respected by the heap in min heap fashion.
+@property (nonatomic) CGFloat differenceSum;
+
+// The document ID of the image that this face exists in.
+@property (nonatomic) NSString * imageDocumentID;
+
+@end
+
+
 @implementation FaceQuery
 {
-    NSData * inputFaceHistoImageData;
+    NSData * m_inputFaceHistoImageData;
+    CFBinaryHeapRef m_minHeap;
 }
 
 @synthesize inputFaceImage = _inputFaceImage;
@@ -22,8 +35,7 @@
 
 -(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate
 {
-    self = [self initWithDelegate:delegate];
-    return self;
+    return [self initWithFaceImage:nil withFeature:nil andDelegate:delegate];
 }
 
 -(instancetype)initWithFaceImage:(CIImage *)faceImage withFeature:(CIFaceFeature *)faceFeature andDelegate:(id<CBIRQueryDelegate>)delegate
@@ -32,9 +44,37 @@
     if ( self ) {
         _inputFaceImage = faceImage;
         _inputFaceFeature = faceFeature;
+        [self buildMinBinHeap];
     }
     return self;
 }
+
+
+CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2, void *info )
+{
+    FaceDataHeapContainer * faceData1 = (__bridge FaceDataHeapContainer *)ptr1;
+    FaceDataHeapContainer * faceData2 = (__bridge FaceDataHeapContainer *)ptr2;
+    
+    if ( faceData1.differenceSum < faceData2.differenceSum ) {
+        return kCFCompareLessThan; // kCFCompareLessThan if ptr1 is less than ptr2,
+    } else if ( faceData1.differenceSum > faceData2.differenceSum ) {
+        return kCFCompareGreaterThan; // kCFCompareGreaterThan if ptr1 is greater than ptr2.
+    }
+
+    return kCFCompareEqualTo; // kCFCompareEqualTo if ptr1 and ptr2 are equal, or
+}
+
+
+-(void)buildMinBinHeap
+{
+    if( !m_minHeap ) {
+        
+        CFBinaryHeapCallBacks callbackStruct = {.version = 0, .retain = NULL, .release = NULL, .copyDescription = NULL, .compare = binaryHeapCompareCallBack};
+        m_minHeap = CFBinaryHeapCreate(NULL, 0, &callbackStruct, NULL);
+    }
+}
+
+
 
 -(void)run
 {
@@ -64,7 +104,7 @@
             
             // Read the full histo image for the search face and kick off the process to search.
             CBLAttachment * inputFaceHistoAttachment = [tempFaceLBPRevision attachmentNamed:histoImageID];
-            inputFaceHistoImageData = inputFaceHistoAttachment.content;
+            m_inputFaceHistoImageData = inputFaceHistoAttachment.content;
             [self performSearch];
         
             
@@ -87,7 +127,9 @@
 // block in the training histogram image and one block in the expected image.
 //
 //
-// Consider the following approach.  Using two 4x4 block histogram images.
+// Consider the following approach.  Using two 4x4 block histogram images computing the nearest neighbor
+// between e[3] inside the entire histogram training image t[i].  This process can be repeated for each
+// training face against each histogram block in the source image.
 //
 // Expected(e)      Training_i(ti)
 // [3][3][3][3]     [0 ][1 ][2 ][3 ]      [e3 - ti0 ][e3 - ti1 ][e3 - ti2 ][e3 - ti3 ]
@@ -95,18 +137,49 @@
 // [3][3][3][3]     [8 ][9 ][10][11]      [e3 - ti8 ][e3 - ti9 ][e3 - ti10][e3 - ti11]
 // [3][3][3][3]     [12][13][14][15]      [e3 - ti12][e3 - ti13][e3 - ti14][e3 - ti15]
 //
+// 1. Perform the search by iterating through each face list of each image.
+// 2. For each face in the face list of the image, find the nearest neighbor by evaluating
+//    each input face block against the image, and adding the least resultant value to
+//    the running sum (difference) for that face.
+// 3. When all images have been iterated, choose the face with the least difference, and
+//    the image associated with that face is the best match.  Continue pulling those with
+//    the least difference.  Use a CFBinaryHeap and figure out how to use it as a min heap.
+//
+//
+//
 -(NSError *)performSearch
 {
     // Begin by iterating all documents in the database.
     // TODO: Come up with a better way of indexing names so that we're not actually running through every object ever.
-    
+    // It's not a big deal right now since the database only contains faces, but if it were to contain more...
     CBLQuery * allDocsQuery =[[CBIRDatabaseEngine sharedEngine] createAllDocsQuery];
     
     NSError * queryError = nil;
     CBLQueryEnumerator * qEnum = [allDocsQuery run:&queryError];
     
     if ( !queryError ) {
-        //for ( CBLQuery * query in alld)
+        
+        for ( CBLQueryRow * row in qEnum ) {
+            
+            NSDictionary * p = row.document.properties;
+            NSArray * faceDataList = p[kCBIRFaceDataList];
+
+            for ( NSUInteger i = 0; i < faceDataList.count; i++ ) {
+                
+                
+                
+                
+            }
+            
+            NSString * fid = p[kCBIRFaceID];
+            NSString * histoImageAttachmentID = p[kCBIRHistogramImage];
+            CBLAttachment * att = [row.document.currentRevision attachmentNamed:histoImageAttachmentID];
+            
+            // Now we have a hold of the histogram data.
+            NSData * histoImageData = att.content;
+            
+        }
+        
     } else {
         NSLog(@"%s query resulted in error: %@", __FUNCTION__, queryError);
     }
@@ -115,6 +188,8 @@
     
     return queryError;
 }
+
+
 
 
 
