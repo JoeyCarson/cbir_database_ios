@@ -23,6 +23,7 @@
 
 
 // The grid size to partition each face into.
+#define FACE_INDEXER_HISTOGRAM_BIN_COUNT 256
 #define FACE_INDEXER_GRID_WIDTH_IN_BLOCKS 8
 #define FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS 8
 

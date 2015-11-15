@@ -20,9 +20,14 @@
 // contain faces.
 + (NSArray *) detectFaces:(CIImage *)img;
 
+// Wrapper for copyPixelData passing a nil context, which causes the usage
+// of a default context.  Call the other copyPixelData if you require a defined
+// context.
++ (NSData *) copyPixelData:(CIImage *)image;
+
 // Copies the pixel data buffer from the rendered CIImage and transfers
 // ownership to ARC.  Cleans up the rendered CGImageRef memory as well.
-+ (NSData *) copyPixelData:(CIImage *)image;
++ (NSData *) copyPixelData:(CIImage *)image withContext:(CIContext *)ctx;
 
 // Utility function for extracting block features from the given pixel data object.
 // [1 ][2 ][3 ][4 ][5 ]

@@ -72,7 +72,7 @@ static NSString * const absSquareDiffCode = @"                                  
                                             "                                                                             \n"
                                             "    float diff = expIntensity - trainIntensity;                              \n"
                                             "    float diffSquare = diff * diff;                                          \n"
-                                            "    float diffSquareExpRatio = diffSquare / expIntensity                     \n"
+                                            "    float diffSquareExpRatio = diffSquare / expIntensity;                    \n"
                                             "                                                                             \n"
                                             "    return vec4(diffSquareExpRatio, 0, 0, 0);                                \n"
                                             "}                                                                            \n";
@@ -160,9 +160,9 @@ static NSString * const summationCode = @"                                      
                                                                             arguments:@[self.expectedImage, self.trainingImage]];
     
     
-    CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatioImage.extent
-                                                  roiCallback:roi
-                                                    arguments:@[absSquareRatioImage]];
+//    CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatioImage.extent
+//                                                  roiCallback:roi
+//                                                    arguments:@[absSquareRatioImage]];
     
     
     

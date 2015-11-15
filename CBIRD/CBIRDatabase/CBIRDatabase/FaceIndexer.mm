@@ -225,7 +225,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
             faceData[kCBIRFaceID] = faceUUID;
             faceData[kCBIRFeatureIDList] = featureIdentifiers;
             faceData[kCBIRHistogramImage] = faceHistoID;
-            // TODO: Add the full histo image. kCBIRHistogramImage
+
             [faceDataList addObject:faceData];
             
             if ( buffer ) {

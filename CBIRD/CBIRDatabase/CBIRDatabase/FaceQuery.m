@@ -11,8 +11,9 @@
 #import "FaceQuery.h"
 #import "FaceIndexer.h"
 #import "CBIRDocument.h"
+#import "ChiSquareFilter.h"
 
-@interface FaceDataHeapContainer
+@interface FaceDataHeapContainer : NSObject
 
 // The difference sum of this particular face and the source face.
 // This is the order that should be respected by the heap in min heap fashion.
@@ -21,13 +22,30 @@
 // The document ID of the image that this face exists in.
 @property (nonatomic) NSString * imageDocumentID;
 
+@property (nonatomic) NSString * faceUUID;
+
+@end
+
+@implementation FaceDataHeapContainer
+
+@synthesize differenceSum = _differenceSum;
+@synthesize imageDocumentID = _imageDocumentID;
+@synthesize faceUUID = _faceUUID;
+
 @end
 
 
+
+
+// TODO:  This class could use some optimization.  For one, eventually remove the usage of the individual fragments
+// and simply read the associated from the whole histogram image, which will allow us to stop saving the indivudual
+// fragments, saving storage.  In the meantime though, don't let premature optimization tempation slow you down!!
 @implementation FaceQuery
 {
-    NSData * m_inputFaceHistoImageData;
     CFBinaryHeapRef m_minHeap;
+    CBLRevision * m_inputFaceLBPRevision; // An LBP face revision generated for the input face.  DO NOT PERSIST IN DATABASE!!
+    ChiSquareFilter * m_chiSquareFilter;
+    CIContext * m_chiSquareRenderingContext;
 }
 
 @synthesize inputFaceImage = _inputFaceImage;
@@ -68,13 +86,37 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
 -(void)buildMinBinHeap
 {
     if( !m_minHeap ) {
-        
+        // It's possible that we may need to add a backing dictionary to retain pointers.  We'll see.
         CFBinaryHeapCallBacks callbackStruct = {.version = 0, .retain = NULL, .release = NULL, .copyDescription = NULL, .compare = binaryHeapCompareCallBack};
         m_minHeap = CFBinaryHeapCreate(NULL, 0, &callbackStruct, NULL);
     }
 }
 
+-(ChiSquareFilter *)chiSquareFilter
+{
+    if ( !m_chiSquareFilter ) {
+        m_chiSquareFilter = [[ChiSquareFilter alloc] init];
+    }
+    
+    return m_chiSquareFilter;
+}
 
+-(CIContext *)chiSquareRenderingContext
+{
+    if ( !m_chiSquareRenderingContext ) {
+        
+        // Create the rendering context such that it doesn't do any color space
+        // conversions and represent pixel data as a single component floats per pixel.
+        NSDictionary * options = @{kCIContextOutputColorSpace:[NSNull null],
+                                   kCIContextWorkingColorSpace:[NSNull null],
+                                   kCIContextUseSoftwareRenderer:[NSNumber numberWithBool:NO],
+                                   kCIContextWorkingFormat:[NSNumber numberWithInt:kCIFormatRf] };
+
+        m_chiSquareRenderingContext = [CIContext contextWithOptions:options];
+    }
+    
+    return m_chiSquareRenderingContext;
+}
 
 -(void)run
 {
@@ -86,28 +128,25 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
     FaceIndexer * faceIndexer = (FaceIndexer *)indexer;
     NSString * tempQueryID = @"face_query_temp";
     CBLDocument * dbDocument = [[CBIRDatabaseEngine sharedEngine] newDocument:tempQueryID];
-    CBLUnsavedRevision * tempFaceLBPRevision = [dbDocument newRevision];
+    m_inputFaceLBPRevision = [dbDocument newRevision];
     
     // Create an LBP for the input face.
     FaceLBP * faceLBP = [faceIndexer generateLBPFace:self.inputFaceImage fromFeature:self.inputFaceFeature];
     NSAssert(faceLBP != nil, @"Face LBP failed generation for FaceQuery input.");
     
     // Create the descriptor object for the input face using the same method that FaceIndexer does.
-    [faceIndexer extractFeatures:@[faceLBP] andPersistTo:tempFaceLBPRevision];
+    [faceIndexer extractFeatures:@[faceLBP] andPersistTo:m_inputFaceLBPRevision];
     
-    NSArray * faceList = tempFaceLBPRevision.properties[kCBIRFaceDataList];
+    NSArray * faceList = m_inputFaceLBPRevision.properties[kCBIRFaceDataList];
     if ( faceList.count == 1 ) {
         
         NSDictionary * faceData = faceList[0];
         NSString * histoImageID = faceData[kCBIRHistogramImage];
-        if ( [tempFaceLBPRevision.attachmentNames containsObject:histoImageID] ) {
+        if ( [m_inputFaceLBPRevision.attachmentNames containsObject:histoImageID] ) {
             
             // Read the full histo image for the search face and kick off the process to search.
-            CBLAttachment * inputFaceHistoAttachment = [tempFaceLBPRevision attachmentNamed:histoImageID];
-            m_inputFaceHistoImageData = inputFaceHistoAttachment.content;
             [self performSearch];
         
-            
         } else {
             NSLog(@"faceData attachments doesn't contain histogram image.");
         }
@@ -162,21 +201,26 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
         for ( CBLQueryRow * row in qEnum ) {
             
             NSDictionary * p = row.document.properties;
+            NSString * faceID = p[kCBIRFaceID];
             NSArray * faceDataList = p[kCBIRFaceDataList];
-
+            
+            // For each face in the list,
             for ( NSUInteger i = 0; i < faceDataList.count; i++ ) {
                 
+                NSDictionary * faceData = faceDataList[i];
                 
+                // Load the training face histogram image.
+                NSString * histoImageID = faceData[kCBIRHistogramImage];
+                CIImage * trainingFaceHistoImage = [self loadHistoImage:histoImageID fromDocument:row.document];
                 
+                FaceDataHeapContainer * tFace = [[FaceDataHeapContainer alloc] init];
+                tFace.differenceSum = [self computeDifferenceAgainstInput:trainingFaceHistoImage];
+                tFace.imageDocumentID = row.document.documentID;
+                tFace.faceUUID = faceID;
                 
+                // Add the face object into the binary heap.
+                CFBinaryHeapAddValue(m_minHeap, CFBridgingRetain(tFace));
             }
-            
-            NSString * fid = p[kCBIRFaceID];
-            NSString * histoImageAttachmentID = p[kCBIRHistogramImage];
-            CBLAttachment * att = [row.document.currentRevision attachmentNamed:histoImageAttachmentID];
-            
-            // Now we have a hold of the histogram data.
-            NSData * histoImageData = att.content;
             
         }
         
@@ -190,7 +234,90 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
 }
 
 
+// Loads the histogram image associated with the given attachment name from the given CBLDocument.
+-(CIImage *)loadHistoImage:(NSString * )histoImageAttachmentID fromDocument:(CBLDocument *)doc
+{
+    size_t histoBlockSizeInBytes = FACE_INDEXER_HISTOGRAM_BIN_COUNT * sizeof(float);
+    CBLAttachment * att = [[doc currentRevision] attachmentNamed:histoImageAttachmentID];
+    NSData * histoImageData = att.content;
+    CGSize histoImageSize = CGSizeMake(FACE_INDEXER_GRID_WIDTH_IN_BLOCKS, FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS);
+    
+    CIImage * image = [CIImage imageWithBitmapData:histoImageData
+                                       bytesPerRow:(histoBlockSizeInBytes * FACE_INDEXER_GRID_WIDTH_IN_BLOCKS)
+                                              size:histoImageSize
+                                            format:kCIFormatRf
+                                        colorSpace:nil];
+    
+    return image;
+}
 
 
+
+-(CGFloat) computeDifferenceAgainstInput:(CIImage *)trainingImage
+{
+    
+    NSArray * faceList = m_inputFaceLBPRevision.properties[kCBIRFaceDataList];
+    if ( faceList.count > 0 )
+    {
+        NSDictionary * faceData = faceList[0];
+        NSArray * features = faceData[kCBIRFeatureIDList];
+        
+        for ( NSString * featureID in features ) {
+            
+            // First generate the expected image (redundant image for the current featureID block).
+            CIImage * expected = [self loadRedundantBlockHIstoImage:featureID];
+            
+            ChiSquareFilter * csf = [self chiSquareFilter];
+            csf.binCount = FACE_INDEXER_HISTOGRAM_BIN_COUNT;
+            csf.expectedImage = expected;
+            csf.trainingImage = trainingImage;
+            
+            // Compute the difference first.  Then render it.
+            CIImage * csfDifference = csf.outputImage;
+            
+            // Copy the buffer and inspect it.
+            NSData * renderedData = [ImageUtil copyPixelData:csfDifference withContext:[self chiSquareRenderingContext]];
+            
+        }
+        
+    }
+
+    
+    return 0.0;
+}
+
+
+// Loads and returns a CIImage histogram image, such that all blocks are populated with the histogram
+// stored in the input face feature attachments, identified by the given featureID string.
+// TODO: In the future, manually crop the histogram block out of the input histogram image itself
+// instead of reading the fragment from the input data, as we want to not store it during the indexing step
+// to improve storage requirements and indexing performance.
+-(CIImage *) loadRedundantBlockHIstoImage:(NSString *)featureID
+{
+    // Only do all of this if the CIImage isn't already in the cache.
+    CBLAttachment * histogramAttachment = [m_inputFaceLBPRevision attachmentNamed:featureID];
+    NSData * histoData = histogramAttachment.content;
+    size_t histoBlockSizeInBytes = FACE_INDEXER_HISTOGRAM_BIN_COUNT * sizeof(float);
+    size_t bufferSize = FACE_INDEXER_GRID_WIDTH_IN_BLOCKS * FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS * histoBlockSizeInBytes;
+    void * redundantBlockHistoImageBuffer = malloc(bufferSize);
+    void * outputPointer = redundantBlockHistoImageBuffer;
+    
+    NSUInteger totalBlocks = FACE_INDEXER_GRID_WIDTH_IN_BLOCKS * FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS;
+    for ( NSUInteger blockIndex = 0; blockIndex < totalBlocks; blockIndex++ ) {
+        memcpy(outputPointer, histoData.bytes, histoBlockSizeInBytes);
+        outputPointer += histoBlockSizeInBytes;
+    }
+    
+    NSData * outData = [[NSData alloc] initWithBytes:redundantBlockHistoImageBuffer length:bufferSize];
+    CGSize histoImageSize = CGSizeMake(FACE_INDEXER_GRID_WIDTH_IN_BLOCKS, FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS);
+    CIImage * img = [CIImage imageWithBitmapData:outData
+                                     bytesPerRow:(histoBlockSizeInBytes * FACE_INDEXER_GRID_WIDTH_IN_BLOCKS)
+                                            size:histoImageSize
+                                          format:kCIFormatRf
+                                      colorSpace:nil];
+    
+    
+    return img;
+}
 
 @end

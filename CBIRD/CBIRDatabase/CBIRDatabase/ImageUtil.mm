@@ -17,13 +17,17 @@
 
 + (CGImageRef)renderCIImage:(CIImage *)img
 {
-    NSMutableDictionary * options = [[NSMutableDictionary alloc] init];
-    
-    CIContext * ctx = [CIContext contextWithOptions:options];
-    
-    CGImageRef cgImage = [ctx createCGImage:img fromRect:img.extent ]; // format:kCIFormatRG8 colorSpace:cs
+    return [ImageUtil renderCIImage:img withContext:nil];
+}
 
-    return cgImage;
++ (CGImageRef)renderCIImage:(CIImage *)img withContext:(CIContext *)ctx
+{
+    if ( !ctx ) {
+        NSDictionary * options = @{kCIContextOutputColorSpace:[NSNull null], kCIContextWorkingColorSpace:[NSNull null]};
+        ctx = [CIContext contextWithOptions:options];
+    }
+    
+    return [ctx createCGImage:img fromRect:img.extent];
 }
 
 + (NSArray *) detectFaces:(CIImage *)img
@@ -49,10 +53,15 @@
 
 + (NSData *) copyPixelData:(CIImage *)image
 {
+    return [ImageUtil copyPixelData:image withContext:nil];
+}
+
++ (NSData *) copyPixelData:(CIImage *)image withContext:(CIContext *)ctx
+{
     NSData * pixelData = nil;
     
     if( image ) {
-        CGImageRef renderedCGImage = [ImageUtil renderCIImage:image];
+        CGImageRef renderedCGImage = [ImageUtil renderCIImage:image withContext:ctx];
         CFDataRef cfData = CGDataProviderCopyData( CGImageGetDataProvider(renderedCGImage) );
         
         CGImageRelease(renderedCGImage);
