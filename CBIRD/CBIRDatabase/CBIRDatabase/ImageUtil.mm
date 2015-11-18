@@ -62,14 +62,20 @@
     
     if( image ) {
         CGImageRef renderedCGImage = [ImageUtil renderCIImage:image withContext:ctx];
-        CFDataRef cfData = CGDataProviderCopyData( CGImageGetDataProvider(renderedCGImage) );
-        
+        pixelData = [ImageUtil copyPixelDataFromCGImage:renderedCGImage];
         CGImageRelease(renderedCGImage);
-        
-        if ( cfData ) {
-            pixelData = (__bridge_transfer NSData *)cfData;
-        }
-        
+    }
+    
+    return pixelData;
+}
+
++(NSData *)copyPixelDataFromCGImage:(CGImageRef)renderedCGImage
+{
+    CFDataRef cfData = CGDataProviderCopyData( CGImageGetDataProvider(renderedCGImage) );
+    NSData * pixelData = nil;
+    
+    if ( cfData ) {
+        pixelData = (__bridge_transfer NSData *)cfData;
     }
     
     return pixelData;

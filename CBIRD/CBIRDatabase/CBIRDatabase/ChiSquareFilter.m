@@ -62,19 +62,20 @@ static NSString * const absSquareDiffCode = @"                                  
                                             "                                                                             \n"
                                             "                                                                             \n"
                                             "                                                                             \n"
-                                            "kernel vec4 histogramDiff ( sampler expect, sampler training )               \n"
+                                            "kernel vec4 histogramDiff ( sampler expect )               \n"
                                             "{                                                                            \n"
                                             "                                                                             \n"
-                                            "                                                                             \n"
+                                            "    // , sampler training                                                                         \n"
                                             "    // Recall that we're only concerned with the red component.              \n"
-                                            "    float expIntensity = samplerCoord(expect).r;                             \n"
-                                            "    float trainIntensity = samplerCoord(training).r;                         \n"
+                                            "    //float expIntensity = samplerCoord(expect).r;                             \n"
+                                            "    //float trainIntensity = samplerCoord(training).r;                         \n"
                                             "                                                                             \n"
-                                            "    float diff = expIntensity - trainIntensity;                              \n"
-                                            "    float diffSquare = diff * diff;                                          \n"
-                                            "    float diffSquareExpRatio = diffSquare / expIntensity;                    \n"
+                                            "    //float diff = expIntensity - trainIntensity;                              \n"
+                                            "    //float diffSquare = diff * diff;                                          \n"
+                                            "    //float diffSquareExpRatio = diffSquare / expIntensity;                    \n"
                                             "                                                                             \n"
-                                            "    return vec4(diffSquareExpRatio, 0, 0, 0);                                \n"
+                                            "    //return vec4(expIntensity, 0, 0, 1);  //diffSquareExpRatio              \n"
+                                            "    return sample(expect, samplerCoord(expect));                             \n"
                                             "}                                                                            \n";
 
 static NSString * const summationCode = @"                                                                            \n"
@@ -157,7 +158,7 @@ static NSString * const summationCode = @"                                      
     
     CIImage * absSquareRatioImage = [self.absSquareDiffExpectedRatioKernel applyWithExtent:self.expectedImage.extent
                                                                           roiCallback:roi
-                                                                            arguments:@[self.expectedImage, self.trainingImage]];
+                                                                            arguments:@[self.expectedImage/*, self.trainingImage*/]];
     
     
 //    CIImage * histoSum = [self.histoSumKernel applyWithExtent:absSquareRatioImage.extent

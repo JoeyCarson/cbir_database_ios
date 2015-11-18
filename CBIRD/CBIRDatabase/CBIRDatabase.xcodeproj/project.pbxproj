@@ -41,7 +41,7 @@
 		11BE08BE1BF3B900007385B6 /* CBIRQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 11BE08BC1BF3B900007385B6 /* CBIRQuery.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		11BE08BF1BF3B900007385B6 /* CBIRQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 11BE08BD1BF3B900007385B6 /* CBIRQuery.m */; };
 		11BE08C21BF3B982007385B6 /* FaceQuery.h in Headers */ = {isa = PBXBuildFile; fileRef = 11BE08C01BF3B982007385B6 /* FaceQuery.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		11BE08C31BF3B982007385B6 /* FaceQuery.m in Sources */ = {isa = PBXBuildFile; fileRef = 11BE08C11BF3B982007385B6 /* FaceQuery.m */; };
+		11BE08C31BF3B982007385B6 /* FaceQuery.mm in Sources */ = {isa = PBXBuildFile; fileRef = 11BE08C11BF3B982007385B6 /* FaceQuery.mm */; };
 		11BE08C51BF3C004007385B6 /* CBIRQueryDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 11BE08C41BF3C004007385B6 /* CBIRQueryDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		11DB57A11BD742210032E206 /* CBLUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 11DB579F1BD742210032E206 /* CBLUtil.h */; };
 		11DB57A21BD742210032E206 /* CBLUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 11DB57A01BD742210032E206 /* CBLUtil.m */; };
@@ -89,7 +89,7 @@
 		11BE08BC1BF3B900007385B6 /* CBIRQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBIRQuery.h; sourceTree = "<group>"; };
 		11BE08BD1BF3B900007385B6 /* CBIRQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CBIRQuery.m; sourceTree = "<group>"; };
 		11BE08C01BF3B982007385B6 /* FaceQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceQuery.h; sourceTree = "<group>"; };
-		11BE08C11BF3B982007385B6 /* FaceQuery.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FaceQuery.m; sourceTree = "<group>"; };
+		11BE08C11BF3B982007385B6 /* FaceQuery.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceQuery.mm; sourceTree = "<group>"; };
 		11BE08C41BF3C004007385B6 /* CBIRQueryDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBIRQueryDelegate.h; sourceTree = "<group>"; };
 		11DB579F1BD742210032E206 /* CBLUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBLUtil.h; sourceTree = "<group>"; };
 		11DB57A01BD742210032E206 /* CBLUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CBLUtil.m; sourceTree = "<group>"; };
@@ -222,7 +222,7 @@
 			isa = PBXGroup;
 			children = (
 				11BE08C01BF3B982007385B6 /* FaceQuery.h */,
-				11BE08C11BF3B982007385B6 /* FaceQuery.m */,
+				11BE08C11BF3B982007385B6 /* FaceQuery.mm */,
 			);
 			name = query;
 			sourceTree = "<group>";
@@ -352,7 +352,7 @@
 				114DB52C1BCF5E5D00172550 /* FaceIndexer.mm in Sources */,
 				11B798E21BC1994D0040F3A7 /* LBPFilter.m in Sources */,
 				1107E8CA1BEE68DA00DAFDAD /* ChiSquareFilter.m in Sources */,
-				11BE08C31BF3B982007385B6 /* FaceQuery.m in Sources */,
+				11BE08C31BF3B982007385B6 /* FaceQuery.mm in Sources */,
 				11DB57A21BD742210032E206 /* CBLUtil.m in Sources */,
 				11B798E71BC2277C0040F3A7 /* CBIRDocument.m in Sources */,
 			);
