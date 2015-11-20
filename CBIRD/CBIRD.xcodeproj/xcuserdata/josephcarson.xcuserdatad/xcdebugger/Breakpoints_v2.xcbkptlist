@@ -924,16 +924,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/ResultsViewController.m"
-            timestampString = "469692384.009996"
+            timestampString = "469735334.273632"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
-            landmarkName = "-stateUpdated:"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "-collectionView:cellForItemAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -944,12 +944,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/ResultsViewController.m"
-            timestampString = "469692637.235562"
+            timestampString = "469734176.230004"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "134"
-            endingLineNumber = "134"
-            landmarkName = "-collectionView:cellForItemAtIndexPath:"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "-setImage:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

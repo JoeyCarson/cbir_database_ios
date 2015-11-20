@@ -28,7 +28,8 @@
         m_imageView.backgroundColor = [UIColor blueColor];
     }
     
-    m_imageView.image = self.image;
+    _image = image;
+    m_imageView.image = _image;
 }
 
 @end
@@ -82,7 +83,7 @@
             NSMutableArray * localIDs = [[NSMutableArray alloc] init];
             m_faceResultImages = [[NSMutableArray alloc] init];
             
-            // Load 10 images from the results.
+            // Load some images from the results.
             for ( NSUInteger i = 0; i < 30; i++ ) {
                 FaceDataResult * result = [m_faceQuery dequeueResult];
                 NSLog(@"result: %f", result.differenceSum);
@@ -92,7 +93,7 @@
             PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsWithLocalIdentifiers:localIDs options:nil];
             for ( PHAsset * asset in assets ) {
                 
-                PHAssetResponseHandler imageCallback = ^void(UIImage * image, NSDictionary * info) {
+                PHAssetResponseHandler faceImageResultCallback = ^void(UIImage * image, NSDictionary * info) {
                     NSLog(@"imageCallback: %@", info);
                     [m_faceResultImages addObject:image];
                 };
@@ -106,7 +107,7 @@
                                                            targetSize:imageSize
                                                           contentMode:PHImageContentModeAspectFit
                                                               options:options
-                                                        resultHandler:imageCallback];
+                                                        resultHandler:faceImageResultCallback];
             }
             
             
@@ -128,9 +129,10 @@
 {
     NSString * reuseID = NSStringFromClass([FaceQueryResultCell class]);
     FaceQueryResultCell * cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseID forIndexPath:indexPath];
-    cell.image = m_faceResultImages[indexPath.item];
+    cell.image = m_faceResultImages[indexPath.row];
     cell.backgroundColor = [UIColor redColor];
     
+    [cell setNeedsDisplay];
     return cell;
 }
 
