@@ -11,6 +11,7 @@
 #import "CaptureFaceViewController.h"
 #import "QueryViewController.h"
 #import "PhotoIndexer.h"
+#import "ResultsViewController.h"
 
 @interface QueryViewController ()
 {
@@ -18,7 +19,7 @@
     PhotoIndexer * m_indexer;
     UILabel * m_progressLabel;
     UIImageView * faceImageView;
-    FaceQuery * faceQuery;
+    ResultsViewController * m_resultsViewController;
 }
 
 @property (nonatomic) CaptureFaceViewController * faceCaptureController;
@@ -59,6 +60,10 @@
     [selectImageButton addTarget:self action:@selector(onSelectImage:) forControlEvents:UIControlEventTouchUpInside];
     selectImageButton.translatesAutoresizingMaskIntoConstraints = false;
     
+    faceImageView = [[UIImageView alloc] init];
+    faceImageView.backgroundColor = [UIColor greenColor];
+    faceImageView.translatesAutoresizingMaskIntoConstraints = false;
+    
     UIButton * runQueryButton = [UIButton buttonWithType:UIButtonTypeSystem];
     runQueryButton.frame = CGRectMake(0, 0, 0, 0);
     [runQueryButton setTitle:@"Run Query" forState:UIControlStateNormal];
@@ -71,9 +76,6 @@
     UIScrollView * scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, toolbar.frame.size.height, toolbar.frame.size.width, screenBounds.size.height - toolbar.bounds.size.height)];
     scrollView.backgroundColor = [UIColor grayColor];
     
-    faceImageView = [[UIImageView alloc] init];
-    faceImageView.backgroundColor = [UIColor greenColor];
-    faceImageView.translatesAutoresizingMaskIntoConstraints = false;
     
     // TODO: Create a container view to better position elements.
     [scrollView addSubview:selectImageButton];
@@ -181,47 +183,16 @@
     NSLog(@"onRunQuery: %@", buttonEvent);
     
     if ( self.faceCaptureController.selectedFaceFeature && self.faceCaptureController.selectedFaceImage ) {
-    
-        faceQuery = [[FaceQuery alloc] initWithFaceImage:self.faceCaptureController.selectedFaceImage
-                                             withFeature:self.faceCaptureController.selectedFaceFeature
-                                             andDelegate:self];
         
-        [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];
-    }
-}
-
--(void)stateUpdated:(CBIR_QUERY_STATE)state
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        
-        NSLog(@"stateUpdated: %ld", (long)state);
-        if ( state == QUERY_ERROR ) {
-            
-        } else if ( state == QUERY_COMPLETE ){
-            
-            NSMutableArray * localIDs = [[NSMutableArray alloc] init];
-            // Load 10 images from the results.
-            for ( NSUInteger i = 0; i < 10; i++ ) {
-                FaceDataResult * result = [faceQuery dequeueResult];
-                [localIDs addObject:result.imageDocumentID];
-            }
-        
-            PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsWithLocalIdentifiers:localIDs options:nil];
-            for ( PHAsset * asset in assets ) {
-                
-                PHAssetResponseHandler imageCallback = ^void(UIImage * image, NSDictionary * info) {
-                    NSLog(@"imageCallback: %@", info);
-                };
-                
-                CGSize imageSize = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
-                [[PHImageManager defaultManager] requestImageForAsset:asset
-                                                           targetSize:imageSize
-                                                          contentMode:PHImageContentModeAspectFit
-                                                              options:nil
-                                                        resultHandler:imageCallback];
-            }
+        if ( !m_resultsViewController ) {
+            m_resultsViewController = [[ResultsViewController alloc] init];
         }
-    });
+    
+        [self presentViewController:m_resultsViewController animated:YES completion:^void(){
+            [m_resultsViewController executeQuery:self.faceCaptureController.selectedFaceImage
+                                          feature:self.faceCaptureController.selectedFaceFeature];
+        }];
+    }
 }
 
 -(void)toggleIndexing:(UIEvent *)obj
@@ -235,11 +206,7 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         
-        NSLog(@"FirstViewController: progressUpdated to %f retain count: %ld", progress, filteredImage.CGImage ? CFGetRetainCount(filteredImage.CGImage) : 0);
-        
-        if ( filteredImage ) {
-            //self.previewImage.image = filteredImage;
-        }
+        NSLog(@"FirstViewController: progressUpdated to %f", progress);
         
         self.indexerProgressView.progress = progress;
         m_progressLabel.text = [NSString stringWithFormat:@"%.0f %%", progress * 100];

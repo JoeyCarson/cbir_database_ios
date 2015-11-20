@@ -19,7 +19,7 @@
 @end
 
 
-@interface QueryViewController : UIViewController<PhotoIndexerDelegate, CBIRQueryDelegate>
+@interface QueryViewController : UIViewController<PhotoIndexerDelegate>
 
 @property (nonatomic, weak) id<QueryViewDelegate> delegate;
 @property (nonatomic) UIProgressView *indexerProgressView;
