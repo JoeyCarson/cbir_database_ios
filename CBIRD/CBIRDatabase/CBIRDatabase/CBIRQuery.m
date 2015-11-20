@@ -14,6 +14,7 @@
 @implementation CBIRQuery
 
 @synthesize delegate = _delegate;
+@synthesize running = _running;
 
 -(instancetype)init
 {
@@ -33,14 +34,22 @@
 
 -(void) evaluate
 {
+    _running = YES;
     // Tell the delegate.
-    if ( [self.delegate respondsToSelector:@selector(stateUpdated:)] ) {
-        [self.delegate stateUpdated:QUERY_START];
-    }
+    [self updateState:QUERY_START];
  
     NSLog(@"evaluating the query");
     [self run];
     
+    [self updateState:QUERY_COMPLETE];
+    _running = NO;
+}
+
+-(void)updateState:(CBIR_QUERY_STATE)state
+{
+    if ( [self.delegate respondsToSelector:@selector(stateUpdated:)] ) {
+        [self.delegate stateUpdated:state];
+    }
 }
 
 -(void)run

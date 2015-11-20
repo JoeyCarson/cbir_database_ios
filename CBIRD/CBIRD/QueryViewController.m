@@ -7,6 +7,7 @@
 //
 
 #import <CBIRDatabase/CBIRDatabase.h>
+#import <Photos/Photos.h>
 #import "CaptureFaceViewController.h"
 #import "QueryViewController.h"
 #import "PhotoIndexer.h"
@@ -79,33 +80,46 @@
     [scrollView addSubview:faceImageView];
     [scrollView addSubview:runQueryButton];
     
+    
+    // Horizontally center the views.
+    NSLayoutConstraint * horizCenter = [NSLayoutConstraint constraintWithItem:scrollView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:selectImageButton attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    [scrollView addConstraint:horizCenter];
+    
+    horizCenter = [NSLayoutConstraint constraintWithItem:scrollView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:faceImageView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    [scrollView addConstraint:horizCenter];
+    
+    horizCenter = [NSLayoutConstraint constraintWithItem:scrollView attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:runQueryButton attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    [scrollView addConstraint:horizCenter];
+
+    
+    
+    // Size them.
     NSDictionary * viewsDict = NSDictionaryOfVariableBindings(selectImageButton, faceImageView, runQueryButton);
     [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[selectImageButton(==60)]-10-[faceImageView(==200)]-[runQueryButton(==60)]-|"
                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
                                                                       metrics:nil
                                                                         views:viewsDict]];
     
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[selectImageButton(==200)]-|"
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[selectImageButton(==200)]"
                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
                                                                       metrics:nil
                                                                          views:viewsDict]];
 
 
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[faceImageView(==200)]-|"
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[faceImageView(==200)]"
                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
                                                                       metrics:nil
                                                                         views:viewsDict]];
     
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[runQueryButton(==200)]-|"
+    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[runQueryButton(==200)]"
                                                                        options:NSLayoutFormatDirectionLeadingToTrailing
                                                                        metrics:nil
                                                                          views:viewsDict]];
 
     
     
+    // connect.
     [backgroundView addSubview:scrollView];
-    
-    
     self.view = backgroundView;
 }
 
@@ -174,6 +188,40 @@
         
         [[CBIRDatabaseEngine sharedEngine] execQuery:faceQuery];
     }
+}
+
+-(void)stateUpdated:(CBIR_QUERY_STATE)state
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        NSLog(@"stateUpdated: %ld", (long)state);
+        if ( state == QUERY_ERROR ) {
+            
+        } else if ( state == QUERY_COMPLETE ){
+            
+            NSMutableArray * localIDs = [[NSMutableArray alloc] init];
+            // Load 10 images from the results.
+            for ( NSUInteger i = 0; i < 10; i++ ) {
+                FaceDataResult * result = [faceQuery dequeueResult];
+                [localIDs addObject:result.imageDocumentID];
+            }
+        
+            PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsWithLocalIdentifiers:localIDs options:nil];
+            for ( PHAsset * asset in assets ) {
+                
+                PHAssetResponseHandler imageCallback = ^void(UIImage * image, NSDictionary * info) {
+                    NSLog(@"imageCallback: %@", info);
+                };
+                
+                CGSize imageSize = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
+                [[PHImageManager defaultManager] requestImageForAsset:asset
+                                                           targetSize:imageSize
+                                                          contentMode:PHImageContentModeAspectFit
+                                                              options:nil
+                                                        resultHandler:imageCallback];
+            }
+        }
+    });
 }
 
 -(void)toggleIndexing:(UIEvent *)obj

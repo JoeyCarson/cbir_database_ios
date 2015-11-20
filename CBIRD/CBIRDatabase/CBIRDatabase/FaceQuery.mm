@@ -13,24 +13,17 @@
 #import "CBIRDocument.h"
 #import "ChiSquareFilter.h"
 
-@interface FaceDataHeapContainer : NSObject
 
-// The difference sum of this particular face and the source face.
-// This is the order that should be respected by the heap in min heap fashion.
-@property (nonatomic) CGFloat differenceSum;
-
-// The document ID of the image that this face exists in.
-@property (nonatomic) NSString * imageDocumentID;
-
-@property (nonatomic) NSString * faceUUID;
-
-@end
-
-@implementation FaceDataHeapContainer
+@implementation FaceDataResult
 
 @synthesize differenceSum = _differenceSum;
 @synthesize imageDocumentID = _imageDocumentID;
 @synthesize faceUUID = _faceUUID;
+
+-(void)dealloc
+{
+    NSLog(@"%s", __FUNCTION__);
+}
 
 @end
 
@@ -70,8 +63,8 @@
 
 CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2, void *info )
 {
-    FaceDataHeapContainer * faceData1 = (__bridge FaceDataHeapContainer *)ptr1;
-    FaceDataHeapContainer * faceData2 = (__bridge FaceDataHeapContainer *)ptr2;
+    FaceDataResult * faceData1 = (__bridge FaceDataResult *)ptr1;
+    FaceDataResult * faceData2 = (__bridge FaceDataResult *)ptr2;
     
     if ( faceData1.differenceSum < faceData2.differenceSum ) {
         return kCFCompareLessThan; // kCFCompareLessThan if ptr1 is less than ptr2,
@@ -82,50 +75,37 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
     return kCFCompareEqualTo; // kCFCompareEqualTo if ptr1 and ptr2 are equal, or
 }
 
+void release(CFAllocatorRef allocator, const void *ptr)
+{
+    CFBridgingRelease(ptr);
+}
+
 
 -(void)buildMinBinHeap
 {
     if( !m_minHeap ) {
         // It's possible that we may need to add a backing dictionary to retain pointers.  We'll see.
-        CFBinaryHeapCallBacks callbackStruct = {.version = 0, .retain = NULL, .release = NULL, .copyDescription = NULL, .compare = binaryHeapCompareCallBack};
+        CFBinaryHeapCallBacks callbackStruct = {.version = 0, .retain = NULL, .release = release, .copyDescription = NULL, .compare = binaryHeapCompareCallBack};
         m_minHeap = CFBinaryHeapCreate(NULL, 0, &callbackStruct, NULL);
     }
 }
 
--(ChiSquareFilter *)chiSquareFilter
+-(FaceDataResult *)dequeueResult
 {
-    if ( !m_chiSquareFilter ) {
-        m_chiSquareFilter = [[ChiSquareFilter alloc] init];
-    }
+    NSLog(@"dequeue result");
+    const void * resultVP = NULL;
+    CFBinaryHeapGetMinimumIfPresent(m_minHeap, &resultVP);
+    FaceDataResult * result = (__bridge FaceDataResult *)resultVP;
+    CFBinaryHeapRemoveMinimumValue(m_minHeap);
     
-    return m_chiSquareFilter;
-}
-
-// This is the chi square rendering context.  Unfortunately I can't quite figure out
-// how to get the data from CoreImage in single channel format without corrupting the
-// data by doing what looks to be
--(CIContext *)chiSquareRenderingContext
-{
-    if ( !m_chiSquareRenderingContext ) {
-        
-        // Create the rendering context such that it doesn't do any color space
-        // conversions and represent pixel data as a single component floats per pixel.
-        //CGColorSpaceRef ref = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
-        NSDictionary * options = @{//kCIContextOutputColorSpace:CFBridgingRelease(ref),
-                                   kCIContextOutputColorSpace:[NSNull null],
-                                   kCIContextWorkingColorSpace:[NSNull null],
-                                   kCIContextUseSoftwareRenderer:[NSNumber numberWithBool:NO]
-                                    };
-        // kCIContextWorkingFormat:[NSNumber numberWithInt:kCIFormatRf]
-        m_chiSquareRenderingContext = [CIContext contextWithOptions:options];
-    }
-    
-    return m_chiSquareRenderingContext;
+    return result;
 }
 
 -(void)run
 {
     NSLog(@"%s executing.", __FUNCTION__);
+    CFBinaryHeapRemoveAllValues(m_minHeap);
+    
     // Retrieve the desired Indexer.  It must be registered and it must be a FaceIndexer, lest we give up.
     const CBIRIndexer * indexer = [[CBIRDatabaseEngine sharedEngine] getIndexer:NSStringFromClass([FaceIndexer class])];
     NSAssert(indexer != nil && [indexer class] == [FaceIndexer class], @"%s failed to get FaceIndexer resource.  Object: %@", __FUNCTION__, indexer);
@@ -142,15 +122,22 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
     // Create the descriptor object for the input face using the same method that FaceIndexer does.
     [faceIndexer extractFeatures:@[faceLBP] andPersistTo:m_inputFaceLBPRevision];
     
+    
     NSArray * faceList = m_inputFaceLBPRevision.properties[kCBIRFaceDataList];
+    
     if ( faceList.count == 1 ) {
         
+        // If there's at least one face in the input image.
         NSDictionary * faceData = faceList[0];
         NSString * histoImageID = faceData[kCBIRHistogramImage];
+        
         if ( [m_inputFaceLBPRevision.attachmentNames containsObject:histoImageID] ) {
             
             // Read the full histo image for the search face and kick off the process to search.
+            NSDate * beforeSearch = [NSDate date];
             [self performSearch];
+            NSDate * afterSearch = [NSDate date];
+            NSLog(@"face query search takes %f seconds", afterSearch.timeIntervalSince1970 - beforeSearch.timeIntervalSince1970);
         
         } else {
             NSLog(@"faceData attachments doesn't contain histogram image.");
@@ -203,23 +190,24 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
     
     if ( !queryError ) {
         
+        NSUInteger faceIndex = 0;
         for ( CBLQueryRow * row in qEnum ) {
-            
+
             NSDictionary * p = row.document.properties;
             NSString * faceID = p[kCBIRFaceID];
             NSArray * faceDataList = p[kCBIRFaceDataList];
             
             // For each face in the list,
             for ( NSUInteger i = 0; i < faceDataList.count; i++ ) {
-                
+                NSLog(@"faceIndex: %lu", faceIndex++);
                 NSDictionary * faceData = faceDataList[i];
                 
-                FaceDataHeapContainer * tFace = [[FaceDataHeapContainer alloc] init];
+                FaceDataResult * tFace = [[FaceDataResult alloc] init];
                 tFace.differenceSum = [self computeInputFaceDifferenceAgainst:faceData fromDoc:row.document];
                 tFace.imageDocumentID = row.document.documentID;
                 tFace.faceUUID = faceID;
                 
-                // Add the face object into the binary heap.
+                // Add the face object into the binary heap, manually increasing retain count.
                 CFBinaryHeapAddValue(m_minHeap, CFBridgingRetain(tFace));
             }
             
@@ -234,44 +222,46 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
     return queryError;
 }
 
-
-
+// Computes the difference between the input face data against the given trainingFaceData object.
 -(CGFloat) computeInputFaceDifferenceAgainst:(NSDictionary *)trainFaceData fromDoc:(CBLDocument *)trainDoc
 {
     CGFloat difference = 0;
     
-    NSArray * inFaceList = m_inputFaceLBPRevision.properties[kCBIRFaceDataList];
-    NSAssert(inFaceList.count <= 1, @"Input image has more than one face!  Nooo!!");
-    
-    //
-    NSDictionary * inputFaceData = inFaceList[0];
-    NSDictionary * inputFeatureList = inputFaceData[kCBIRFeatureIDList];
-    NSArray * trainingFaceFeatures = trainFaceData[kCBIRFeatureIDList];
-    
-    for ( NSString * featureID in inputFeatureList ) {
+    // This call can get expensive.  Needs an autoreleasepool.
+    @autoreleasepool {
         
-        CBLAttachment * featureAtt = [m_inputFaceLBPRevision attachmentNamed:featureID];
-        NSAssert(featureAtt != nil ,@"One of the feature attributes came out nil??");
-        NSData * currenInputFeatureHisto = featureAtt.content;
-        CGFloat localLeast = 0;
+        NSArray * inFaceList = m_inputFaceLBPRevision.properties[kCBIRFaceDataList];
+        NSAssert(inFaceList.count <= 1, @"Input image has more than one face!  Nooo!!");
         
-        for ( NSString * trainFeatureID in trainingFaceFeatures ) {
+        //
+        NSDictionary * inputFaceData = inFaceList[0];
         
-            CBLAttachment * trainFeature = [trainDoc.currentRevision attachmentNamed:trainFeatureID];
-            NSData * trainingFeatureHisto = trainFeature.content;
-            CGFloat tempDiff = [self diffHistogram:currenInputFeatureHisto againstTraining:trainingFeatureHisto];
+        
+        NSArray * inputFeatureList = inputFaceData[kCBIRFeatureIDList];
+        NSArray * trainingFeatureList = trainFaceData[kCBIRFeatureIDList];
             
-            // Update the localLeast if the new least is less than it is.
-            if ( tempDiff < localLeast ) {
-                localLeast = tempDiff;
+        if ( inputFeatureList.count != trainingFeatureList.count ) {
+            NSLog(@"input feature count different!");
+            
+        } else {
+        
+            for ( NSUInteger featureIndex = 0; featureIndex < inputFeatureList.count; featureIndex++ ) {
+
+                NSString * inputFeatureID = inputFeatureList[featureIndex];
+                CBLAttachment * inFeatureAtt = [m_inputFaceLBPRevision attachmentNamed:inputFeatureID];
+                NSAssert(inFeatureAtt != nil ,@"Input feature is nil??");
+                NSData * inputFeatureHisto = inFeatureAtt.content;
+                
+                NSString * trainFeatureID = trainingFeatureList[featureIndex];
+                CBLAttachment * trainFeatureAtt = [trainDoc.currentRevision attachmentNamed:trainFeatureID];
+                NSAssert(trainFeatureAtt != nil ,@"Training feature is nil??");
+                NSData * trainFeatureHisto = trainFeatureAtt.content;
+                
+                difference += [self diffHistogram:inputFeatureHisto againstTraining:trainFeatureHisto];
             }
         }
-        
-        difference += localLeast;
-        NSLog(@"squirt");
     }
-    
-    
+
     return difference;
 }
 
@@ -282,7 +272,7 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
     cv::Mat  tr(1, FACE_INDEXER_HISTOGRAM_BIN_COUNT, CV_32F, (void*)training.bytes, training.length);
     
     difference = cv::compareHist(exp, tr, CV_COMP_CHISQR);
-    NSLog(@"diffHistogram: %d", difference);
+    //NSLog(@"diffHistogram: %f", difference);
     return difference;
 }
 
@@ -317,8 +307,59 @@ CFComparisonResult binaryHeapCompareCallBack( const void *ptr1, const void *ptr2
 
 
 // Backup of where the parallel chi square implementation was.
+//        NSData * currenInputFeatureHisto = featureAtt.content;
+//        CGFloat localLeast = 0.0;
+//
+//        for ( NSString * trainFeatureID in trainingFaceFeatures ) {
+//
+//            CBLAttachment * trainFeature = [trainDoc.currentRevision attachmentNamed:trainFeatureID];
+//            NSData * trainingFeatureHisto = trainFeature.content;
+//            CGFloat tempDiff = [self diffHistogram:currenInputFeatureHisto againstTraining:trainingFeatureHisto];
+//
+//            // Update the localLeast if the new least is less than it is.
+//            if ( tempDiff < localLeast ) {
+//                localLeast = tempDiff;
+//            }
+//        }
+//        difference += localLeast;
+//NSLog(@"squirt");
 //
 //
+//
+//-(ChiSquareFilter *)chiSquareFilter
+//{
+//    if ( !m_chiSquareFilter ) {
+//        m_chiSquareFilter = [[ChiSquareFilter alloc] init];
+//    }
+//    
+//    return m_chiSquareFilter;
+//}
+//
+//// This is the chi square rendering context.  Unfortunately I can't quite figure out
+//// how to get the data from CoreImage in single channel format without corrupting the
+//// data by doing what looks to be
+//-(CIContext *)chiSquareRenderingContext
+//{
+//    if ( !m_chiSquareRenderingContext ) {
+//        
+//        // Create the rendering context such that it doesn't do any color space
+//        // conversions and represent pixel data as a single component floats per pixel.
+//        //CGColorSpaceRef ref = CGColorSpaceCreateWithName(kCGColorSpaceGenericGray);
+//        NSDictionary * options = @{//kCIContextOutputColorSpace:CFBridgingRelease(ref),
+//                                   kCIContextOutputColorSpace:[NSNull null],
+//                                   kCIContextWorkingColorSpace:[NSNull null],
+//                                   kCIContextUseSoftwareRenderer:[NSNumber numberWithBool:NO]
+//                                   };
+//        // kCIContextWorkingFormat:[NSNumber numberWithInt:kCIFormatRf]
+//        m_chiSquareRenderingContext = [CIContext contextWithOptions:options];
+//    }
+//    
+//    return m_chiSquareRenderingContext;
+//}
+
+
+
+
 
 //-(CGFloat) computeDifferenceAgainstInput:(CIImage *)trainingImage
 //{

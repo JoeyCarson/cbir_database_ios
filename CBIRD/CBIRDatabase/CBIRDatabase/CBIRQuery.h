@@ -12,6 +12,7 @@
 @interface CBIRQuery : NSObject
 
 @property (nonatomic, readonly, weak) id<CBIRQueryDelegate> delegate;
+@property (nonatomic, readonly, getter=isRunning) BOOL running;
 
 -(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 

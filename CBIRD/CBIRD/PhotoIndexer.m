@@ -20,7 +20,7 @@
 
 @synthesize delegate = _delegate;
 
-- (instancetype) initWithDelegate:(id<PhotoIndexerDelegate>)delegate
+- (instancetype) initWithDelegate:(id<PhotoIndexerDelegate> )delegate
 {
     self = [super init];
     if ( self ) {
