@@ -12,6 +12,8 @@
 
 @property (nonatomic) UIImage * image;
 
+@property (nonatomic) NSUInteger index;
+
 @end
 
 @interface ResultsViewController : UICollectionViewController<CBIRQueryDelegate>

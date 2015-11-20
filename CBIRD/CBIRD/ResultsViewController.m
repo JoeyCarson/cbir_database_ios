@@ -15,11 +15,13 @@
 @implementation FaceQueryResultCell
 {
     UIImageView * m_imageView;
+    UILabel * m_indexLabel;
 }
 
 @synthesize image = _image;
+@synthesize index = _index;
 
--(void)setImage:(UIImage *)image
+-(UIImageView *) imageView
 {
     if ( !m_imageView ) {
         m_imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
@@ -28,8 +30,30 @@
         m_imageView.backgroundColor = [UIColor blueColor];
     }
     
+    return m_imageView;
+}
+
+-(UILabel *) labelView
+{
+    if ( !m_indexLabel ) {
+        m_indexLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 40, 20)];
+        m_indexLabel.center = [self imageView].center;
+        m_indexLabel.textColor = [UIColor whiteColor];
+        [[self imageView] addSubview:m_indexLabel];
+    }
+    
+    return m_indexLabel;
+}
+
+-(void)setImage:(UIImage *)image
+{
     _image = image;
-    m_imageView.image = _image;
+    [self imageView].image = _image;
+}
+
+-(void)setIndex:(NSUInteger)index
+{
+    [self labelView].text = [NSString stringWithFormat:@"%lu", index];
 }
 
 @end
@@ -84,7 +108,7 @@
             m_faceResultImages = [[NSMutableArray alloc] init];
             
             // Load some images from the results.
-            for ( NSUInteger i = 0; i < 30; i++ ) {
+            for ( NSUInteger i = 0; i < 200; i++ ) {
                 FaceDataResult * result = [m_faceQuery dequeueResult];
                 NSLog(@"result: %f", result.differenceSum);
                 [localIDs addObject:result.imageDocumentID];
@@ -129,7 +153,9 @@
 {
     NSString * reuseID = NSStringFromClass([FaceQueryResultCell class]);
     FaceQueryResultCell * cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:reuseID forIndexPath:indexPath];
-    cell.image = m_faceResultImages[indexPath.row];
+    NSUInteger index = indexPath.item;
+    cell.image = m_faceResultImages[index];
+    cell.index = index;
     cell.backgroundColor = [UIColor redColor];
     
     [cell setNeedsDisplay];
