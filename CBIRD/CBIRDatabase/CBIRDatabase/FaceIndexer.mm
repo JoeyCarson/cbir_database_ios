@@ -12,6 +12,7 @@
 
 #import "CBIRDocument.h"
 #import "LBPFilter.h"
+#import "DoGFilter.h"
 #import "FaceIndexer.h"
 #import "ImageUtil.h"
 #import "CBLUtil.h"
@@ -41,8 +42,14 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 
 @implementation FaceIndexer
+{
+    CIFilter * _cropFilter;
+    CIFilter * _gammaAdjustFilter;
+    DoGFilter * _dogFilter;
+    LBPFilter * _lbpFilter;
+}
 
-@synthesize lbpFilter = _lbpFilter;
+// Synthesize any properties here.
 
 -(instancetype)init
 {
@@ -53,7 +60,10 @@ NSString * FACE_KEY_PREFIX = @"face_";
         // For instance, if CIKernel does any caching underneath for the same program, then we
         // can create multiple instances of LBPFilter and not worry about performance, then do it.
         // We don't want to pay for recompilation 400 times if we use 400 different instances.
+        _cropFilter = [CIFilter filterWithName:@"CICrop"];
+        _gammaAdjustFilter = [CIFilter filterWithName:@"CIGammaAdjust"];
         _lbpFilter = [[LBPFilter alloc] init];
+        _dogFilter = [[DoGFilter alloc] init];
     }
     
     return self;
@@ -89,11 +99,53 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 -(FaceLBP *)generateLBPFace:(CIImage *)inputImage fromFeature:(CIFaceFeature *)feature
 {
-    _lbpFilter.inputImage = inputImage;
-    [_lbpFilter applyToExtent:feature.bounds];
-    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:_lbpFilter.outputImage];
+    // First crop out the face.
+    [_cropFilter setValue:inputImage forKey:@"inputImage"];
+    [_cropFilter setValue:[CIVector vectorWithCGRect:feature.bounds] forKey:@"inputRectangle"];
+    CIImage * croppedImage = _cropFilter.outputImage;
+    
+    // Perform preprocessing then LBP.
+    
+    // 1. Gamma adjustment.
+    // Maturnana - Gamma correction to enhance the dynamic range of dark regions and compress light areas and highlights. We use =0.2.
+    // Not sure what the f CIAttributeTypeScalar (mentioned in documentation) is.  But float is accepted.
+    NSNumber * gammaExponent = [NSNumber numberWithFloat:0.2];
+    [_gammaAdjustFilter setValue:croppedImage forKey:@"inputImage"];
+    [_gammaAdjustFilter setValue:gammaExponent forKey:@"inputPower"];
+    CIImage * gammaAdjustedImage = _gammaAdjustFilter.outputImage;
+    
+    // 2. DoG.
+    // Maturana - Difference of Gaussians (DoG) filtering that acts as a “band pass”, partially suppressing high frequency
+    // noise and low frequency illumination variation. For the width of the Gaussian kernels we use  0 = 1.0 and  1 = 2.0.
+    _dogFilter.rad1 = 1.0;
+    _dogFilter.rad2 = 2.0;
+    _dogFilter.inputImage = gammaAdjustedImage;
+    CIImage * dogImage = _dogFilter.outputImage;
+    
+    // TODO: Since we need to actually perform multiple preprocessing, let's change this to
+    // Crop the image according to feature.
+    _lbpFilter.inputImage = dogImage;
+    
+    __block CIImage * outImage = _lbpFilter.outputImage;
+    
+    void (^dumpDebugImage)() = ^void(){
+        CGImageRef imgRef = [ImageUtil renderCIImage:outImage];
+        UIImage * uiImage = [UIImage imageWithCGImage:imgRef];
+        
+        UIImageWriteToSavedPhotosAlbum(uiImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    };
+    
+    //dispatch_async(dispatch_get_main_queue(), dumpDebugImage);
+    
+    
+    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
     
     return f;
+}
+
+-(void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
+    NSLog(@"debug LBP output face.  error: %@", error);
 }
 
 // Extracts features from each face in the list and save them to the document.
@@ -261,7 +313,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     for ( int i = 0; i < col.rows; i++ ) {
         float & valRef = col.at<float>(i);
         valRef /= area;
-        valRef *= 10;
+        //valRef *= 10;
         //NSLog(@"valRef is: %f", valRef);
     }
 }

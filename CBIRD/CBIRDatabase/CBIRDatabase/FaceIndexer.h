@@ -22,12 +22,12 @@
 
 
 
+@class CIFilter;
+
 // The grid size to partition each face into.
 #define FACE_INDEXER_HISTOGRAM_BIN_COUNT 256
 #define FACE_INDEXER_GRID_WIDTH_IN_BLOCKS 8
 #define FACE_INDEXER_GRID_HEIGHT_IN_BLOCKS 8
-
-
 
 static const NSString * const kCBIRFaceDataList = @"face_data_list";
 static const NSString * const kCBIRFaceID = @"faceID";
@@ -35,8 +35,6 @@ static const NSString * const kCBIRFeatureIDList = @"features";
 static const NSString * const kCBIRHistogramImage = @"histogram_image_attachment";
 
 @interface FaceIndexer : CBIRIndexer
-
-@property (nonatomic, readonly) LBPFilter * lbpFilter;
 
 -(NSArray<FaceLBP *> *) generateLBPFaces:(CIImage *)image;
 

@@ -20,6 +20,12 @@
 @synthesize imageDocumentID = _imageDocumentID;
 @synthesize faceUUID = _faceUUID;
 
+
+-(NSString *)description
+{
+    return [NSString stringWithFormat:@"FaceDataResult: differenceSum: %f imageDocumentID: %@ faceUUID: %@", _differenceSum, _imageDocumentID, _faceUUID];
+}
+
 -(void)dealloc
 {
     NSLog(@"%s", __FUNCTION__);
@@ -92,10 +98,11 @@ void release(CFAllocatorRef allocator, const void *ptr)
 
 -(FaceDataResult *)dequeueResult
 {
-    NSLog(@"dequeue result");
     const void * resultVP = NULL;
     CFBinaryHeapGetMinimumIfPresent(m_minHeap, &resultVP);
     FaceDataResult * result = (__bridge FaceDataResult *)resultVP;
+    NSLog(@"dequeue result: %@", result);
+    
     CFBinaryHeapRemoveMinimumValue(m_minHeap);
     
     return result;

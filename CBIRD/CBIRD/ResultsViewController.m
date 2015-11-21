@@ -110,7 +110,6 @@
             // Load some images from the results.
             for ( NSUInteger i = 0; i < 200; i++ ) {
                 FaceDataResult * result = [m_faceQuery dequeueResult];
-                NSLog(@"result: %f", result.differenceSum);
                 [localIDs addObject:result.imageDocumentID];
             }
             

@@ -106,11 +106,11 @@ static NSString * const kernelCode = @"                                         
 
 
 // The working standard do almost nothing kernel.
-NSString * kern = @" kernel vec4 moveUpTwoPixels (sampler image) {"
-"    vec2 dc = destCoord();"
-"    vec2 offset = vec2(0.0, 2.0);"
-"    return sample (image, samplerTransform (image, dc + offset));"
-"}";
+//NSString * kern = @" kernel vec4 moveUpTwoPixels (sampler image) {"
+//"    vec2 dc = destCoord();"
+//"    vec2 offset = vec2(0.0, 2.0);"
+//"    return sample (image, samplerTransform (image, dc + offset));"
+//"}";
 
 @implementation LBPFilter
 {

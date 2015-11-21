@@ -17,6 +17,8 @@
 		114DB52B1BCF5E5D00172550 /* FaceIndexer.h in Headers */ = {isa = PBXBuildFile; fileRef = 114DB5291BCF5E5D00172550 /* FaceIndexer.h */; };
 		114DB52C1BCF5E5D00172550 /* FaceIndexer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */; };
 		114DB52D1BCF5E5D00172550 /* FaceIndexer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */; };
+		1183E9141C00E7C300A35C3B /* DoGFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1183E9121C00E7C300A35C3B /* DoGFilter.h */; };
+		1183E9151C00E7C300A35C3B /* DoGFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 1183E9131C00E7C300A35C3B /* DoGFilter.m */; };
 		11B798581BBB73690040F3A7 /* CBIRDatabase.h in Headers */ = {isa = PBXBuildFile; fileRef = 11B798571BBB73690040F3A7 /* CBIRDatabase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		11B7985F1BBB73690040F3A7 /* CBIRDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798541BBB73690040F3A7 /* CBIRDatabase.framework */; };
 		11B798641BBB73690040F3A7 /* CBIRDatabaseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798631BBB73690040F3A7 /* CBIRDatabaseTests.m */; };
@@ -67,6 +69,8 @@
 		114DB5251BCDD7DF00172550 /* ImageUtil.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageUtil.mm; sourceTree = "<group>"; };
 		114DB5291BCF5E5D00172550 /* FaceIndexer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FaceIndexer.h; sourceTree = "<group>"; };
 		114DB52A1BCF5E5D00172550 /* FaceIndexer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FaceIndexer.mm; sourceTree = "<group>"; };
+		1183E9121C00E7C300A35C3B /* DoGFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoGFilter.h; sourceTree = "<group>"; };
+		1183E9131C00E7C300A35C3B /* DoGFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoGFilter.m; sourceTree = "<group>"; };
 		11B798541BBB73690040F3A7 /* CBIRDatabase.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CBIRDatabase.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		11B798571BBB73690040F3A7 /* CBIRDatabase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CBIRDatabase.h; sourceTree = "<group>"; };
 		11B798591BBB73690040F3A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -214,6 +218,8 @@
 				11B798E01BC1994D0040F3A7 /* LBPFilter.m */,
 				1107E8C71BEE68DA00DAFDAD /* ChiSquareFilter.h */,
 				1107E8C81BEE68DA00DAFDAD /* ChiSquareFilter.m */,
+				1183E9121C00E7C300A35C3B /* DoGFilter.h */,
+				1183E9131C00E7C300A35C3B /* DoGFilter.m */,
 			);
 			name = filters;
 			sourceTree = "<group>";
@@ -243,6 +249,7 @@
 				11B798581BBB73690040F3A7 /* CBIRDatabase.h in Headers */,
 				11B798E61BC2277C0040F3A7 /* CBIRDocument.h in Headers */,
 				11B7987F1BBB74C30040F3A7 /* CBIRDatabaseEngine.h in Headers */,
+				1183E9141C00E7C300A35C3B /* DoGFilter.h in Headers */,
 				11B798861BBB86480040F3A7 /* CBIRIndexer.h in Headers */,
 				11DB57A11BD742210032E206 /* CBLUtil.h in Headers */,
 				11B798E11BC1994D0040F3A7 /* LBPFilter.h in Headers */,
@@ -346,6 +353,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				11B798801BBB74C30040F3A7 /* CBIRDatabaseEngine.m in Sources */,
+				1183E9151C00E7C300A35C3B /* DoGFilter.m in Sources */,
 				11BE08BF1BF3B900007385B6 /* CBIRQuery.m in Sources */,
 				114DB5271BCDD7DF00172550 /* ImageUtil.mm in Sources */,
 				11B798871BBB86480040F3A7 /* CBIRIndexer.m in Sources */,

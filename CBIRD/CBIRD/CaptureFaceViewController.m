@@ -18,8 +18,12 @@
 
 @end
 
+
 @implementation UIImage(normalizeImage)
 
+// Credit to http://stackoverflow.com/questions/5427656/ios-uiimagepickercontroller-result-image-orientation-after-upload
+// UIImage (UIKit) and CIImage use different coordinate spaces and this method can be used to normalize the orientation.
+// This is the same problem when computing the scaled face recangle offsets in the rendered UIImage.
 - (UIImage *)normalizedImage {
     if (self.imageOrientation == UIImageOrientationUp) return self;
     

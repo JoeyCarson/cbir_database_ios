@@ -11,6 +11,7 @@
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {
+        setenv("CG_CONTEXT_SHOW_BACKTRACE", "", 1);
         int returnCode = UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
         return returnCode;
     }
