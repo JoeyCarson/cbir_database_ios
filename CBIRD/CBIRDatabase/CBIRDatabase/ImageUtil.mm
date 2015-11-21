@@ -32,20 +32,30 @@
 
 + (NSArray *) detectFaces:(CIImage *)img
 {
+    return [ImageUtil detectFaces:img overrideOpts:nil];
+}
+
++ (NSArray *) detectFaces:(CIImage *)img overrideOpts:(NSDictionary *)overrideOpts
+{
     static CIContext * ctx = [CIContext contextWithOptions:nil];
-    NSDictionary<NSString *, id> * options = @{CIDetectorAccuracy: CIDetectorAccuracyHigh};
-    
-    CIDetector * detector = [CIDetector detectorOfType:CIDetectorTypeFace context:ctx options:options];
+    NSMutableDictionary<NSString *, id> * options = [NSMutableDictionary new];
+    options[CIDetectorAccuracy] = CIDetectorAccuracyHigh;
     
     NSNumber * orientation = [[img properties] valueForKey:((__bridge NSString *)kCGImagePropertyOrientation)];
     if ( orientation ) {
-        options = @{CIDetectorImageOrientation : orientation};
+        options[CIDetectorImageOrientation] = orientation;
     }
     
-    NSArray * faces = nil;
+    // Use override orientation if it's given.
+    if ( overrideOpts[CIDetectorImageOrientation] ) {
+        options[CIDetectorImageOrientation] = overrideOpts[CIDetectorImageOrientation];
+    }
     
-    NSArray * tempf = [detector featuresInImage:img options:options];
-    faces = tempf;
+    
+    
+    NSArray * faces = nil;
+    CIDetector * detector = [CIDetector detectorOfType:CIDetectorTypeFace context:ctx options:options];
+    faces = [detector featuresInImage:img options:options];
 
     NSLog(@"detectFaces.  %@", faces);
     return faces;

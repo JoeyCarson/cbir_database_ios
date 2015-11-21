@@ -189,7 +189,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         cv::calcHist( &channels[0], 1, 0, cv::Mat(), lbpHistogram, 1, &histSize, &histRange, true, false );
                         
                         // Normalize all gray levels to their overall percentage in the region.
-                        [self percentizeHistogram:&lbpHistogram blockArea:(block_height * block_width)];
+                        //[self percentizeHistogram:&lbpHistogram blockArea:(block_height * block_width)];
                         
                         // We need to be cognizant of the type of underlying data that OpenCV is producing in the histogram.
                         // We're only aware of 32bit floats.
@@ -261,6 +261,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     for ( int i = 0; i < col.rows; i++ ) {
         float & valRef = col.at<float>(i);
         valRef /= area;
+        valRef *= 10;
         //NSLog(@"valRef is: %f", valRef);
     }
 }

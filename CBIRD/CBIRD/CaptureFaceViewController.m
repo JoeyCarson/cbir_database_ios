@@ -11,12 +11,35 @@
 #import <CBIRDatabase/CBIRDatabase.h>
 #import <CoreImage/CoreImage.h>
 
+
+@interface UIImage(normalizeImage)
+
+- (UIImage *)normalizedImage;
+
+@end
+
+@implementation UIImage(normalizeImage)
+
+- (UIImage *)normalizedImage {
+    if (self.imageOrientation == UIImageOrientationUp) return self;
+    
+    UIGraphicsBeginImageContextWithOptions(self.size, NO, self.scale);
+    [self drawInRect:(CGRect){0, 0, self.size}];
+    UIImage *normalizedImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return normalizedImage;
+}
+
+@end
+
+
 @interface CaptureFaceViewController ()
 {
     CGRect viewFrame;
     NSMutableDictionary<NSValue *, CIFaceFeature *> * rectangleViews;
     TargetRectangleView * selectedRectView;
     UIImagePickerController * imagePickerController;
+    NSNumber * orientationOfCameraImage;
 }
 @end
 
@@ -112,13 +135,57 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info
 {
     NSLog(@"%s info: %@", __FUNCTION__, info);
-    UIImage * capturedImage = info[UIImagePickerControllerOriginalImage];
-    
+    UIImage * capturedImage = [info[UIImagePickerControllerOriginalImage] normalizedImage] ;
     
     //CIImage * image = CIImage imageWith
+    NSDictionary *metadataDict = info[UIImagePickerControllerMediaMetadata];
+    orientationOfCameraImage = metadataDict[@"Orientation"];
+    orientationOfCameraImage = [self convertUIImageOrientationToCIImageOrientation:capturedImage ];
+    
+    
+    
+    
+    
     
     self.fullSizeImageView.image = capturedImage;
     [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+-(NSNumber *)convertUIImageOrientationToCIImageOrientation:(UIImageOrientation)inputOrientation
+{
+    NSUInteger exifOrientation = 1;
+    
+    
+    switch ( inputOrientation ) {
+        case UIImageOrientationUp:
+            exifOrientation = 1;
+            break;
+        case UIImageOrientationDown:
+            exifOrientation = 3;
+            break;
+        case UIImageOrientationLeft:
+            exifOrientation = 8;
+            break;
+        case UIImageOrientationRight:
+            exifOrientation = 6;
+            break;
+        case UIImageOrientationUpMirrored:
+            exifOrientation = 2;
+            break;
+        case UIImageOrientationDownMirrored:
+            exifOrientation = 4;
+            break;
+        case UIImageOrientationLeftMirrored:
+            exifOrientation = 5;
+            break;
+        case UIImageOrientationRightMirrored:
+            exifOrientation = 7;
+            break;
+        default:
+            break;
+    }
+
+    return [NSNumber numberWithUnsignedInteger:exifOrientation];
 }
 
 -(void)markFaceRectangles
@@ -149,7 +216,9 @@
     
     NSLog(@"img properties: %@", img.properties);
     
-    _faceFeatures = [ImageUtil detectFaces:img];
+    
+    NSDictionary * overrideOptions = orientationOfCameraImage ? @{CIDetectorImageOrientation:orientationOfCameraImage} : nil;
+    _faceFeatures = [ImageUtil detectFaces:img overrideOpts:overrideOptions];
     
     // The face rectangles are coming CoreImage, meaning that they're in the bottom left coordinate
     // system.  We need to convert from the bottom left to top left.
@@ -197,9 +266,9 @@
 
 -(void)onRectSelected:(UIGestureRecognizer *)gestureRecognizer
 {
-    NSLog(@"onRectSelected: gestureRecognizer: %@", gestureRecognizer);
+    //NSLog(@"onRectSelected: gestureRecognizer: %@", gestureRecognizer);
     
-    if ( gestureRecognizer.view.class == TargetRectangleView.class ) {
+    if ( gestureRecognizer.view.class == [TargetRectangleView class] ) {
         TargetRectangleView * rectView = (TargetRectangleView *)gestureRecognizer.view;
         
         NSValue * val = [NSValue valueWithNonretainedObject:(rectView)];
@@ -228,6 +297,7 @@
         selectedRectView = nil;
         [self updateFaceImage:nil];
     } else {
+        NSLog(@"selecting faceFeature: %@", NSStringFromCGRect(faceFeature.bounds));
         selectedRectView = rectView;
         rectView.rectColor = [UIColor greenColor];
         [self updateFaceImage:faceFeature];

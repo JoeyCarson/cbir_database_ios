@@ -16,9 +16,16 @@
 // releasing the CGImageRef when it's no longer necessary.
 + (CGImageRef)renderCIImage:(CIImage *)img;
 
+// Renders a CIImage to given context.
++ (CGImageRef)renderCIImage:(CIImage *)img withContext:(CIContext *)ctx;
+
 // Utilizes Apple's face detection API to return rectangles that should
 // contain faces.
 + (NSArray *) detectFaces:(CIImage *)img;
+
+// Utilizes Apple's face detection API to return rectangles that should
+// contain faces.  Pass any options to override the default face detection options.
++ (NSArray *) detectFaces:(CIImage *)img overrideOpts:(NSDictionary *)overrideOpts;
 
 // Wrapper for copyPixelData passing a nil context, which causes the usage
 // of a default context.  Call the other copyPixelData if you require a defined
