@@ -90,6 +90,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     NSArray * faceFeatures = [ImageUtil detectFaces:image];
     NSLog(@"generateLBPFaces: %lul", (unsigned long)faceFeatures.count);
     for ( CIFaceFeature * feature in faceFeatures ) {
+        NSLog(@"genearting with feature: angle: %f", feature.faceAngle);
         FaceLBP * f = [self generateLBPFace:image fromFeature:feature];
         [lbpFaceImages addObject:f];
     }
@@ -125,35 +126,17 @@ NSString * FACE_KEY_PREFIX = @"face_";
     _dogFilter.inputImage = gammaAdjustedImage;
     CIImage * dogImage = _dogFilter.outputImage;
     
-    // 3. Step number 3, I can't understand for the life of me.  Not sure if it relates to the incorrect results or if it's even necessary.
+    // 3. Step number 3, I can't understand for the life of me.  .Not sure if it relates to the incorrect results or if it's even necessary.
     // See Maturana's algorithm.
     
     // Apply the LBP filter.
     _lbpFilter.inputImage = dogImage;
     __block CIImage * outImage = croppedImage;//_lbpFilter.outputImage;
-    __block NSDictionary * p = inputImage.properties;
     
-    void (^dumpDebugImage)() = ^void(){
-        CGImageRef imgRef = [ImageUtil renderCIImage:outImage];
-        UIImage * uiImage = [UIImage imageWithCGImage:imgRef];
-        
-        NSLog(@"LBP Output image properties: %@", p.description);
-        //NSNumber * orientation = p ? [p valueForKey:((__bridge NSString *)kCGImagePropertyOrientation)] : nil;
-        NSLog(@"dumping debug image descritptor to Photo Album. outImage orientation: %@", uiImage.imageOrientation);
-        UIImageWriteToSavedPhotosAlbum(uiImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
-    };
-    
-    // Only use for debugging!!  Beware dumping shit tons of new images into the photo album!!
-    dispatch_async(dispatch_get_main_queue(), dumpDebugImage);
-    
+    [ImageUtil dumpDebugImage:outImage];
     FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
     
     return f;
-}
-
--(void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
-{
-    NSLog(@"debug LBP output face.  error: %@", error);
 }
 
 // Extracts features from each face in the list and save them to the document.
@@ -244,7 +227,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         // Calculate the histogram.
                         cv::Mat lbpHistogram;
                         int histSize = 256;
-                        float range[] = { -0.1, 256 }; // [0, 255]
+                        float range[] = { -0.1, 255.000001 }; // [0, 255]
                         const float* histRange = { range };
                         cv::calcHist( &channels[0], 1, 0, cv::Mat(), lbpHistogram, 1, &histSize, &histRange, true, false );
                         

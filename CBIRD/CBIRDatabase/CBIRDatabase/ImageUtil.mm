@@ -5,7 +5,7 @@
 //  Created by Joseph Carson on 10/13/15.
 //  Copyright © 2015 Joseph Carson. All rights reserved.
 //
-
+#import <UIKit/UIKit.h>
 #import <CoreImage/CoreImage.h>
 #import <ImageIO/ImageIO.h>
 
@@ -18,6 +18,25 @@
 + (CGImageRef)renderCIImage:(CIImage *)img
 {
     return [ImageUtil renderCIImage:img withContext:nil];
+}
+
++(void)dumpDebugImage:(CIImage *)img
+{
+    void (^dumpDebugImage)() = ^void(){
+        CGImageRef imgRef = [ImageUtil renderCIImage:img];
+        UIImage * uiImage = [UIImage imageWithCGImage:imgRef];
+        
+        NSLog(@"dumping debug image descritptor to Photo Album.");
+        UIImageWriteToSavedPhotosAlbum(uiImage, [ImageUtil class], @selector(image:didFinishSavingWithError:contextInfo:), nil);
+    };
+    
+    // Only use for debugging!!  Beware dumping shit tons of new images into the photo album!!
+    dispatch_async(dispatch_get_main_queue(), dumpDebugImage);
+}
+
++(void)image:(UIImage *)image didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo
+{
+    NSLog(@"debug LBP output face.  error: %@", error);
 }
 
 + (CGImageRef)renderCIImage:(CIImage *)img withContext:(CIContext *)ctx

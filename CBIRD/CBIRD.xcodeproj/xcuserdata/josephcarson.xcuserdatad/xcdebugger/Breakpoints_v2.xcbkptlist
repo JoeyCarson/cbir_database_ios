@@ -168,11 +168,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469850393.974725"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "303"
-            endingLineNumber = "303"
+            startingLineNumber = "286"
+            endingLineNumber = "286"
             landmarkName = "-extractFeatures:andPersistTo:"
             landmarkType = "5">
          </BreakpointContent>
@@ -386,11 +386,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469762989.21443"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "109"
-            endingLineNumber = "109"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
             landmarkName = "+extractRect:fromData:ofSize:intoBuffer:"
             landmarkType = "5">
          </BreakpointContent>
@@ -482,11 +482,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469850393.974725"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "270"
-            endingLineNumber = "270"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
             landmarkName = "-extractFeatures:andPersistTo:"
             landmarkType = "5">
          </BreakpointContent>
@@ -498,11 +498,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469850393.974725"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "266"
-            endingLineNumber = "266"
+            startingLineNumber = "249"
+            endingLineNumber = "249"
             landmarkName = "-extractFeatures:andPersistTo:"
             landmarkType = "5">
          </BreakpointContent>
@@ -514,11 +514,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469850393.974725"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "317"
-            endingLineNumber = "317"
+            startingLineNumber = "300"
+            endingLineNumber = "300"
             landmarkName = "-percentizeHistogram:blockArea:"
             landmarkType = "5">
          </BreakpointContent>
@@ -546,11 +546,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
+            timestampString = "469855641.869927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "358"
-            endingLineNumber = "358"
+            startingLineNumber = "353"
+            endingLineNumber = "353"
             landmarkName = "-scaleRectToImage:"
             landmarkType = "5">
          </BreakpointContent>
@@ -562,11 +562,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
+            timestampString = "469855641.869927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "252"
-            endingLineNumber = "252"
+            startingLineNumber = "247"
+            endingLineNumber = "247"
             landmarkName = "-markFaceRectangles"
             landmarkType = "5">
          </BreakpointContent>
@@ -578,11 +578,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
+            timestampString = "469855641.869927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "204"
-            endingLineNumber = "204"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
             landmarkName = "-markFaceRectangles"
             landmarkType = "5">
          </BreakpointContent>
@@ -610,11 +610,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
+            timestampString = "469855641.869927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "293"
-            endingLineNumber = "293"
+            startingLineNumber = "288"
+            endingLineNumber = "288"
             landmarkName = "-updateSelectedFace:andView:"
             landmarkType = "5">
          </BreakpointContent>
@@ -658,11 +658,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
+            timestampString = "469855641.869927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "274"
-            endingLineNumber = "274"
+            startingLineNumber = "269"
+            endingLineNumber = "269"
             landmarkName = "-onRectSelected:"
             landmarkType = "5">
          </BreakpointContent>
@@ -674,11 +674,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469850393.974725"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "282"
-            endingLineNumber = "282"
+            startingLineNumber = "265"
+            endingLineNumber = "265"
             landmarkName = "-extractFeatures:andPersistTo:"
             landmarkType = "5">
          </BreakpointContent>
@@ -718,22 +718,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "154"
-            endingLineNumber = "154"
-            landmarkName = "-imagePickerController:didFinishPickingMediaWithInfo:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
@@ -754,11 +738,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469474162.850974"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
             landmarkName = "+renderCIImage:withContext:"
             landmarkType = "5">
          </BreakpointContent>
@@ -802,11 +786,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469423102.414368"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
             landmarkName = "+renderCIImage:withContext:"
             landmarkType = "5">
          </BreakpointContent>
@@ -940,28 +924,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469763032.611849"
+            timestampString = "469862328.585624"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "61"
-            endingLineNumber = "61"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
             landmarkName = "+detectFaces:overrideOpts:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "147"
-            endingLineNumber = "147"
-            landmarkName = "-imagePickerController:didFinishPickingMediaWithInfo:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -972,11 +940,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/CaptureFaceViewController.m"
-            timestampString = "469817417.843636"
+            timestampString = "469855641.869927"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "225"
-            endingLineNumber = "225"
+            startingLineNumber = "220"
+            endingLineNumber = "220"
             landmarkName = "-markFaceRectangles"
             landmarkType = "5">
          </BreakpointContent>
@@ -1003,22 +971,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469846554.67843"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
-            landmarkName = "-generateLBPFace:fromFeature:"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/DoGFilter.m"
             timestampString = "469846576.840165"
             startingColumnNumber = "9223372036854775807"
@@ -1035,13 +987,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "CBIRDatabase/CBIRDatabase/FaceIndexer.mm"
-            timestampString = "469851077.026349"
+            filePath = "CBIRD/CaptureFaceViewController.m"
+            timestampString = "469855687.860504"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
-            landmarkName = "-generateLBPFace:fromFeature:"
+            startingLineNumber = "149"
+            endingLineNumber = "149"
+            landmarkName = "-imagePickerController:didFinishPickingMediaWithInfo:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

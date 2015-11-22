@@ -36,6 +36,8 @@
 // ownership to ARC.  Cleans up the rendered CGImageRef memory as well.
 + (NSData *) copyPixelData:(CIImage *)image withContext:(CIContext *)ctx;
 
++ (void) dumpDebugImage:(CIImage *)img;
+
 +(NSData *)copyPixelDataFromCGImage:(CGImageRef)renderedCGImage;
 
 // Utility function for extracting block features from the given pixel data object.

@@ -144,12 +144,7 @@
     //CIImage * image = CIImage imageWith
     NSDictionary *metadataDict = info[UIImagePickerControllerMediaMetadata];
     orientationOfCameraImage = metadataDict[@"Orientation"];
-    orientationOfCameraImage = [self convertUIImageOrientationToCIImageOrientation:capturedImage ];
-    
-    
-    
-    
-    
+    orientationOfCameraImage = [self convertUIImageOrientationToCIImageOrientation:capturedImage.imageOrientation ];
     
     self.fullSizeImageView.image = capturedImage;
     [self dismissViewControllerAnimated:YES completion:nil];
