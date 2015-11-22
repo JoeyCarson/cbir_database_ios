@@ -99,6 +99,9 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 -(FaceLBP *)generateLBPFace:(CIImage *)inputImage fromFeature:(CIFaceFeature *)feature
 {
+    // We might need to consier potentially rotating the face image so that we're always matching from (0, 0).
+    // The facial rotation is given as CIFaceFeature.faceAngle.
+    
     // First crop out the face.
     [_cropFilter setValue:inputImage forKey:@"inputImage"];
     [_cropFilter setValue:[CIVector vectorWithCGRect:feature.bounds] forKey:@"inputRectangle"];
@@ -122,21 +125,26 @@ NSString * FACE_KEY_PREFIX = @"face_";
     _dogFilter.inputImage = gammaAdjustedImage;
     CIImage * dogImage = _dogFilter.outputImage;
     
-    // TODO: Since we need to actually perform multiple preprocessing, let's change this to
-    // Crop the image according to feature.
-    _lbpFilter.inputImage = dogImage;
+    // 3. Step number 3, I can't understand for the life of me.  Not sure if it relates to the incorrect results or if it's even necessary.
+    // See Maturana's algorithm.
     
-    __block CIImage * outImage = _lbpFilter.outputImage;
+    // Apply the LBP filter.
+    _lbpFilter.inputImage = dogImage;
+    __block CIImage * outImage = croppedImage;//_lbpFilter.outputImage;
+    __block NSDictionary * p = inputImage.properties;
     
     void (^dumpDebugImage)() = ^void(){
         CGImageRef imgRef = [ImageUtil renderCIImage:outImage];
         UIImage * uiImage = [UIImage imageWithCGImage:imgRef];
         
+        NSLog(@"LBP Output image properties: %@", p.description);
+        //NSNumber * orientation = p ? [p valueForKey:((__bridge NSString *)kCGImagePropertyOrientation)] : nil;
+        NSLog(@"dumping debug image descritptor to Photo Album. outImage orientation: %@", uiImage.imageOrientation);
         UIImageWriteToSavedPhotosAlbum(uiImage, self, @selector(image:didFinishSavingWithError:contextInfo:), nil);
     };
     
-    //dispatch_async(dispatch_get_main_queue(), dumpDebugImage);
-    
+    // Only use for debugging!!  Beware dumping shit tons of new images into the photo album!!
+    dispatch_async(dispatch_get_main_queue(), dumpDebugImage);
     
     FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
     
@@ -241,7 +249,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
                         cv::calcHist( &channels[0], 1, 0, cv::Mat(), lbpHistogram, 1, &histSize, &histRange, true, false );
                         
                         // Normalize all gray levels to their overall percentage in the region.
-                        //[self percentizeHistogram:&lbpHistogram blockArea:(block_height * block_width)];
+                        [self percentizeHistogram:&lbpHistogram blockArea:(block_height * block_width)];
                         
                         // We need to be cognizant of the type of underlying data that OpenCV is producing in the histogram.
                         // We're only aware of 32bit floats.
