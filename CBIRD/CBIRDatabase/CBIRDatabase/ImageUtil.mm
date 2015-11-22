@@ -13,6 +13,38 @@
 
 #import "ImageUtil.h"
 
+@implementation CIImage(Affine)
+
+// Implement rotation of the image.
+- (CIImage *)rotateDegrees:(float)aDegrees
+{
+    CIImage *im = self;
+    if (aDegrees > 0.0 && aDegrees < 360.0)
+    {
+//        CIFilter *f
+//        = [CIFilter filterWithName:@"CIAffineTransform"];
+//        NSAffineTransform *t = [NSAffineTransform transform];
+//        [t rotateByDegrees:aDegrees];
+//        [f setValue:t forKey:@"inputTransform"];
+//        [f setValue:im forKey:@"inputImage"];
+//        im = [f valueForKey:@"outputImage"];
+    }
+    return im;
+}
+
+-(NSNumber *) getOrientation
+{
+    NSNumber * orientation = [[self properties] valueForKey:((__bridge NSString *)kCGImagePropertyOrientation)];
+    return orientation;
+}
+
+@end
+
+
+
+
+
+
 @implementation ImageUtil
 
 + (CGImageRef)renderCIImage:(CIImage *)img
@@ -26,7 +58,7 @@
         CGImageRef imgRef = [ImageUtil renderCIImage:img];
         UIImage * uiImage = [UIImage imageWithCGImage:imgRef];
         
-        NSLog(@"dumping debug image descritptor to Photo Album.");
+        NSLog(@"dumping debug image descritptor to Photo Album. TIFF orientation: %@", [img getOrientation]);
         UIImageWriteToSavedPhotosAlbum(uiImage, [ImageUtil class], @selector(image:didFinishSavingWithError:contextInfo:), nil);
     };
     
@@ -138,7 +170,99 @@
     }
 }
 
++ (CGFloat)resolveRotationAngle:(CIImage *)image
+{
+    NSUInteger tiffOrientation = TIFF_TOP_LEFT;
+    NSNumber * orientationNum = [image getOrientation];
+    if ( orientationNum ) {
+        tiffOrientation = [orientationNum integerValue];
+    }
+    
+    NSAssert(tiffOrientation >= 1 && tiffOrientation <= 6, @"Fatal: TIFF orientation invalid.");
+    
+    // Angles are anti-clockwise.
+    CGFloat rotationDeg;
+    
+    switch (tiffOrientation)
+    {
+        // 1 = The 0th row represents the visual top of the image, and the 0th column represents the visual left-hand side.
+        // This means (0, 0) is at the bottom left.  Normal CI coordinate system.  No change.
+        //     t
+        // l |---
+        //   |
+        case TIFF_TOP_LEFT:
+            rotationDeg = 0;
+            break;
+            
+        // 2 = The 0th row represents the visual top of the image, and the 0th column represents the visual right-hand side.
+        // Top Left Mirrored about y-axis.  Effectively the angle of the front camera.
+        // This means (0, 0) is at the bottom left.  Normal CI coordinate system.  No change.
+        //     t
+        // r |---
+        //   |
+        case TIFF_TOP_RIGHT:
+            rotationDeg = 0;
+            break;
+            
 
+        // 3 = The 0th row represents the visual bottom of the image, and the 0th column represents the visual right-hand side.
+        // This means (0, 0) is at the top right.
+        //     b
+        // r |---
+        //   |
+        case TIFF_BOTTOM_RIGHT:
+            rotationDeg = -180;
+            break;
+            
+        // 4 = The 0th row represents the visual bottom of the image, and the 0th column represents the visual left-hand side.
+        // This means (0, 0) is actually at the top left.
+        //     b
+        // l |---
+        //   |
+        case TIFF_BOTTOM_LEFT:
+            rotationDeg = -180;
+            break;
+            
+        // 5 = The 0th row represents the visual left-hand side of the image, and the 0th column represents the visual top.
+        // This means
+        //     l
+        // t |---
+        //   |
+        case TIFF_LEFT_TOP:
+            rotationDeg = -90;
+            break;
+            
+        // 6 = The 0th row represents the visual right-hand side of the image, and the 0th column represents the visual top.
+        //     r
+        // t |---
+        //   |
+        case TIFF_RIGHT_TOP:
+            rotationDeg = -90;
+            break;
+
+        // 7 = The 0th row represents the visual right-hand side of the image, and the 0th column represents the visual bottom.
+        //     r
+        // b |---
+        //   |
+        case TIFF_RIGHT_BOTTOM:
+            rotationDeg = 90;
+            break;
+        
+        // 8 = The 0th row represents the visual left-hand side of the image, and the 0th column represents the visual bottom.
+        //     l
+        // b |---
+        //   |
+        case TIFF_LEFT_BOTTOM:
+            rotationDeg = 90;
+            break;
+            
+        default: rotationDeg = 0;
+    }
+    
+    
+    
+    return 0;
+}
 
 
 @end

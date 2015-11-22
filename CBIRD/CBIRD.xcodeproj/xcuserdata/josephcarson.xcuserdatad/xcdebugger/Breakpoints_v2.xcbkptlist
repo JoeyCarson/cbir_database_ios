@@ -386,12 +386,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469862328.585624"
+            timestampString = "469862953.060152"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
-            landmarkName = "+extractRect:fromData:ofSize:intoBuffer:"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
+            landmarkName = "+copyPixelData:withContext:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -738,12 +738,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469862328.585624"
+            timestampString = "469862953.060152"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "50"
-            endingLineNumber = "50"
-            landmarkName = "+renderCIImage:withContext:"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
+            landmarkName = "+renderCIImage:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -786,13 +786,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469862328.585624"
+            timestampString = "469862953.060152"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
-            landmarkName = "+renderCIImage:withContext:"
-            landmarkType = "5">
+            startingLineNumber = "45"
+            endingLineNumber = "45">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -924,12 +922,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ImageUtil.mm"
-            timestampString = "469862328.585624"
+            timestampString = "469862953.060152"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "81"
-            endingLineNumber = "81"
-            landmarkName = "+detectFaces:overrideOpts:"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
+            landmarkName = "+renderCIImage:withContext:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

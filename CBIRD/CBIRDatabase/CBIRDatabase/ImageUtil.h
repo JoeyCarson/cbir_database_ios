@@ -10,6 +10,39 @@
 
 @class CIImage;
 
+// Categories.
+@interface CIImage(Affine)
+
+- (NSNumber *) getOrientation;
+
+- (CIImage *)rotateDegrees:(float)aDegrees;
+
+@end
+// End Categories.
+
+
+// TIFF orientation values.
+// Rather outdated, but still valid info page.  http://www.awaresystems.be/imaging/tiff/tifftags/orientation.html
+//1 = The 0th row represents the visual top of the image, and the 0th column represents the visual left-hand side.
+//2 = The 0th row represents the visual top of the image, and the 0th column represents the visual right-hand side.
+//3 = The 0th row represents the visual bottom of the image, and the 0th column represents the visual right-hand side.
+//4 = The 0th row represents the visual bottom of the image, and the 0th column represents the visual left-hand side.
+//5 = The 0th row represents the visual left-hand side of the image, and the 0th column represents the visual top.
+//6 = The 0th row represents the visual right-hand side of the image, and the 0th column represents the visual top.
+//7 = The 0th row represents the visual right-hand side of the image, and the 0th column represents the visual bottom.
+//8 = The 0th row represents the visual left-hand side of the image, and the 0th column represents the visual bottom.
+static const NSUInteger TIFF_TOP_LEFT = 1;
+static const NSUInteger TIFF_TOP_RIGHT = 2;
+static const NSUInteger TIFF_BOTTOM_RIGHT = 3;
+static const NSUInteger TIFF_BOTTOM_LEFT = 4;
+static const NSUInteger TIFF_LEFT_TOP = 5;
+static const NSUInteger TIFF_RIGHT_TOP = 6;
+static const NSUInteger TIFF_RIGHT_BOTTOM = 7;
+static const NSUInteger TIFF_LEFT_BOTTOM = 8;
+
+
+
+
 @interface ImageUtil : NSObject
 
 // Renders a CIImage to a CGImageRef.  The caller is responsible for
@@ -36,9 +69,14 @@
 // ownership to ARC.  Cleans up the rendered CGImageRef memory as well.
 + (NSData *) copyPixelData:(CIImage *)image withContext:(CIContext *)ctx;
 
+// Render the given CIImage write it to the photo album as a visual aid in debugging image operations.
 + (void) dumpDebugImage:(CIImage *)img;
 
-+(NSData *)copyPixelDataFromCGImage:(CGImageRef)renderedCGImage;
+// Copies the pixel data from the given CGImageRef.
++ (NSData *)copyPixelDataFromCGImage:(CGImageRef)renderedCGImage;
+
+// Resolve the given angle that the CIImage must be rotated by (in anti-clockwise degrees) in order to be oriented as expected.
++ (CGFloat)resolveRotationAngle:(CIImage *)image;
 
 // Utility function for extracting block features from the given pixel data object.
 // [1 ][2 ][3 ][4 ][5 ]

@@ -131,9 +131,9 @@ NSString * FACE_KEY_PREFIX = @"face_";
     
     // Apply the LBP filter.
     _lbpFilter.inputImage = dogImage;
-    __block CIImage * outImage = croppedImage;//_lbpFilter.outputImage;
+    CIImage * outImage = _lbpFilter.outputImage;
     
-    [ImageUtil dumpDebugImage:outImage];
+    [ImageUtil dumpDebugImage:inputImage];
     FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
     
     return f;
