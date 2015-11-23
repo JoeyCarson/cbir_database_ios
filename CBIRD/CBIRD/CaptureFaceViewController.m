@@ -210,8 +210,9 @@
                                           imageSizePts.width * renderedImageScale.width,
                                           imageSizePts.height * renderedImageScale.height);
     
-    // Get the faces inside the image.
+    // Get the faces inside the image.  As of today, the CGImage is oriented as expected to be. No rotation necessary.
     CIImage * img = [CIImage imageWithCGImage:self.fullSizeImageView.image.CGImage];
+    //[ImageUtil dumpDebugImage:img];
     
     NSLog(@"img properties: %@", img.properties);
     

@@ -110,7 +110,7 @@
                     PHImageManagerDataResponseHandler imageDataCallback = ^void(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info)
                     {
                         static UInt32 i = 0;
-                        NSLog(@"imageData callback. %u %@", ++i, info.description);
+                        //NSLog(@"imageData callback. %u %@", ++i, info.description);
                         NSError * error = info[PHImageErrorKey];
                         
                         if ( error ) {
@@ -119,7 +119,7 @@
                         }
                         
                         NSURL * url = info[@"PHImageFileURLKey"];
-                        NSLog(@"imageData callback.  url: %@", url);
+                        //NSLog(@"imageData callback.  url: %@", url);
                         
                         
                         if ( imageData ) {

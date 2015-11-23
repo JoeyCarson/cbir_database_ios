@@ -58,7 +58,7 @@
         CGImageRef imgRef = [ImageUtil renderCIImage:img];
         UIImage * uiImage = [UIImage imageWithCGImage:imgRef];
         
-        NSLog(@"dumping debug image descritptor to Photo Album. TIFF orientation: %@", [img getOrientation]);
+        //NSLog(@"dumping debug image descritptor to Photo Album. TIFF orientation: %@", [img getOrientation]);
         UIImageWriteToSavedPhotosAlbum(uiImage, [ImageUtil class], @selector(image:didFinishSavingWithError:contextInfo:), nil);
     };
     
@@ -93,16 +93,13 @@
     options[CIDetectorAccuracy] = CIDetectorAccuracyHigh;
     
     NSNumber * orientation = [[img properties] valueForKey:((__bridge NSString *)kCGImagePropertyOrientation)];
-    if ( orientation ) {
-        options[CIDetectorImageOrientation] = orientation;
-    }
     
     // Use override orientation if it's given.
+    // Note that if the image is oriented properly, the orientation shouldn't be passed in.
+    // This allows the caller to pass in additional arguments.
     if ( overrideOpts[CIDetectorImageOrientation] ) {
         options[CIDetectorImageOrientation] = overrideOpts[CIDetectorImageOrientation];
     }
-    
-    
     
     NSArray * faces = nil;
     CIDetector * detector = [CIDetector detectorOfType:CIDetectorTypeFace context:ctx options:options];
@@ -261,7 +258,12 @@
     
     
     
-    return 0;
+    return rotationDeg;
+}
+
++ (CGFloat)degreesToRadians:(CGFloat)degrees
+{
+    return degrees * (M_PI / 180);
 }
 
 

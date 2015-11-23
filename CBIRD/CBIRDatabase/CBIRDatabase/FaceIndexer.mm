@@ -43,6 +43,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 @implementation FaceIndexer
 {
+    CIFilter * _affineFilter;
     CIFilter * _cropFilter;
     CIFilter * _gammaAdjustFilter;
     DoGFilter * _dogFilter;
@@ -60,6 +61,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
         // For instance, if CIKernel does any caching underneath for the same program, then we
         // can create multiple instances of LBPFilter and not worry about performance, then do it.
         // We don't want to pay for recompilation 400 times if we use 400 different instances.
+        _affineFilter = [CIFilter filterWithName:@"CIAffineTransform"];
         _cropFilter = [CIFilter filterWithName:@"CICrop"];
         _gammaAdjustFilter = [CIFilter filterWithName:@"CIGammaAdjust"];
         _lbpFilter = [[LBPFilter alloc] init];
@@ -85,13 +87,22 @@ NSString * FACE_KEY_PREFIX = @"face_";
 {
     NSMutableArray * lbpFaceImages = [[NSMutableArray alloc] init];
     
+    // Before we retrieve face rectangles, we need to properly orient the image.
+    // TODO: Refactor this into an ImageUtil method?
+    CGFloat rotationAngle = [ImageUtil resolveRotationAngle:image];
+    CGAffineTransform rotateXForm = CGAffineTransformMakeRotation([ImageUtil degreesToRadians:rotationAngle]);
+    NSValue * encodedTransform = [NSValue valueWithBytes:&rotateXForm objCType:@encode(CGAffineTransform)];
+    [_affineFilter setValue:encodedTransform forKey:@"inputTransform"];
+    [_affineFilter setValue:image forKey:@"inputImage"];
+    CIImage * rotatedImage = _affineFilter.outputImage;
+    
     // Apply the filter for each face rectangle.  This generates a different
     // outputImage for each face rectangle.
-    NSArray * faceFeatures = [ImageUtil detectFaces:image];
+    NSArray * faceFeatures = [ImageUtil detectFaces:rotatedImage];
     NSLog(@"generateLBPFaces: %lul", (unsigned long)faceFeatures.count);
     for ( CIFaceFeature * feature in faceFeatures ) {
         NSLog(@"genearting with feature: angle: %f", feature.faceAngle);
-        FaceLBP * f = [self generateLBPFace:image fromFeature:feature];
+        FaceLBP * f = [self generateLBPFace:rotatedImage fromFeature:feature];
         [lbpFaceImages addObject:f];
     }
     
@@ -108,13 +119,30 @@ NSString * FACE_KEY_PREFIX = @"face_";
     [_cropFilter setValue:[CIVector vectorWithCGRect:feature.bounds] forKey:@"inputRectangle"];
     CIImage * croppedImage = _cropFilter.outputImage;
     
-    // Perform preprocessing then LBP.
     
+    // Rotate the image according to the face angle.
+    CGAffineTransform rotateXForm = CGAffineTransformMakeRotation([ImageUtil degreesToRadians:feature.faceAngle]);
+    NSValue * encodedTransform = [NSValue valueWithBytes:&rotateXForm objCType:@encode(CGAffineTransform)];
+    [_affineFilter setValue:encodedTransform forKey:@"inputTransform"];
+    [_affineFilter setValue:croppedImage forKey:@"inputImage"];
+    CIImage * faceRotatedImage = _affineFilter.outputImage;
+    
+//    NSArray * faces = [ImageUtil detectFaces:faceRotatedImage];
+//    if ( faces.count > 0 ) {
+//        CIFaceFeature * postFeature = faces[0];
+//        [_cropFilter setValue:faceRotatedImage forKey:@"inputImage"];
+//        [_cropFilter setValue:[CIVector vectorWithCGRect:postFeature.bounds] forKey:@"inputRectangle"];
+//        faceRotatedImage = _cropFilter.outputImage;
+//        [ImageUtil dumpDebugImage:faceRotatedImage];
+//    }
+
+    
+    // Perform preprocessing then LBP.
     // 1. Gamma adjustment.
     // Maturnana - Gamma correction to enhance the dynamic range of dark regions and compress light areas and highlights. We use =0.2.
     // Not sure what the f CIAttributeTypeScalar (mentioned in documentation) is.  But float is accepted.
     NSNumber * gammaExponent = [NSNumber numberWithFloat:0.2];
-    [_gammaAdjustFilter setValue:croppedImage forKey:@"inputImage"];
+    [_gammaAdjustFilter setValue:faceRotatedImage forKey:@"inputImage"];
     [_gammaAdjustFilter setValue:gammaExponent forKey:@"inputPower"];
     CIImage * gammaAdjustedImage = _gammaAdjustFilter.outputImage;
     
@@ -132,8 +160,8 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Apply the LBP filter.
     _lbpFilter.inputImage = dogImage;
     CIImage * outImage = _lbpFilter.outputImage;
+    //[ImageUtil dumpDebugImage:outImage];
     
-    [ImageUtil dumpDebugImage:inputImage];
     FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
     
     return f;

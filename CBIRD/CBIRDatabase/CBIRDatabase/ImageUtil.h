@@ -78,6 +78,8 @@ static const NSUInteger TIFF_LEFT_BOTTOM = 8;
 // Resolve the given angle that the CIImage must be rotated by (in anti-clockwise degrees) in order to be oriented as expected.
 + (CGFloat)resolveRotationAngle:(CIImage *)image;
 
++ (CGFloat)degreesToRadians:(CGFloat)degrees;
+
 // Utility function for extracting block features from the given pixel data object.
 // [1 ][2 ][3 ][4 ][5 ]
 // [6 ][7 ][8 ][9 ][10]
