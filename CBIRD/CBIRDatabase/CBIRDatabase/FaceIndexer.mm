@@ -113,19 +113,21 @@ NSString * FACE_KEY_PREFIX = @"face_";
 {
     // We might need to consier potentially rotating the face image so that we're always matching from (0, 0).
     // The facial rotation is given as CIFaceFeature.faceAngle.
-    
-    // First crop out the face.
-    [_cropFilter setValue:inputImage forKey:@"inputImage"];
-    [_cropFilter setValue:[CIVector vectorWithCGRect:feature.bounds] forKey:@"inputRectangle"];
-    CIImage * croppedImage = _cropFilter.outputImage;
-    
-    
     // Rotate the image according to the face angle.
     CGAffineTransform rotateXForm = CGAffineTransformMakeRotation([ImageUtil degreesToRadians:feature.faceAngle]);
     NSValue * encodedTransform = [NSValue valueWithBytes:&rotateXForm objCType:@encode(CGAffineTransform)];
     [_affineFilter setValue:encodedTransform forKey:@"inputTransform"];
-    [_affineFilter setValue:croppedImage forKey:@"inputImage"];
+    [_affineFilter setValue:inputImage forKey:@"inputImage"];
     CIImage * faceRotatedImage = _affineFilter.outputImage;
+    
+    CGRect rotatedRect = CGRectApplyAffineTransform(feature.bounds, rotateXForm);
+    // First crop out the face.
+    [_cropFilter setValue:faceRotatedImage forKey:@"inputImage"];
+    [_cropFilter setValue:[CIVector vectorWithCGRect:rotatedRect] forKey:@"inputRectangle"];
+    CIImage * croppedImage = _cropFilter.outputImage;
+    
+    
+
     
 //    NSArray * faces = [ImageUtil detectFaces:faceRotatedImage];
 //    if ( faces.count > 0 ) {
@@ -142,7 +144,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Maturnana - Gamma correction to enhance the dynamic range of dark regions and compress light areas and highlights. We use =0.2.
     // Not sure what the f CIAttributeTypeScalar (mentioned in documentation) is.  But float is accepted.
     NSNumber * gammaExponent = [NSNumber numberWithFloat:0.2];
-    [_gammaAdjustFilter setValue:faceRotatedImage forKey:@"inputImage"];
+    [_gammaAdjustFilter setValue:croppedImage forKey:@"inputImage"];
     [_gammaAdjustFilter setValue:gammaExponent forKey:@"inputPower"];
     CIImage * gammaAdjustedImage = _gammaAdjustFilter.outputImage;
     
@@ -160,7 +162,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Apply the LBP filter.
     _lbpFilter.inputImage = dogImage;
     CIImage * outImage = _lbpFilter.outputImage;
-    //[ImageUtil dumpDebugImage:outImage];
+    [ImageUtil dumpDebugImage:outImage];
     
     FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
     
