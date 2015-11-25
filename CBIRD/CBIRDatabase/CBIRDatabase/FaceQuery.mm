@@ -33,6 +33,26 @@
 
 @end
 
+// Spatial map of weights to apply to differences as certain blocks are of more
+// significance than others, e.g. the eyes are weighted by 4 whereas the lips are
+// weighted by 2.
+// [0 ][1 ][2 ][3 ][4 ][5 ][6 ][7 ]
+// [8 ][9 ][10][11][12][13][14][15]
+// [16][17][18][19][20][21][22][23]
+// [24][25][26][27][28][29][30][31] => Spatial mapping is according to feature index in buffer.
+// [32][33][34][35][36][37][38][39]
+// [40][41][42][43][44][45][46][47]
+// [48][49][50][51][52][53][54][55]
+// [56][57][58][59][60][61][62][63]
+const NSUInteger SPATIAL_WEIGHT_MAP[] = {2, 1, 1, 1, 1, 1, 1, 2,
+                                         2, 4, 4, 2, 2, 4, 4, 2,
+                                         2, 4, 4, 2, 2, 4, 4, 2,
+                                         1, 1, 1, 0, 0, 1, 1, 1,
+                                         0, 1, 1, 0, 0, 1, 1, 0,
+                                         0, 1, 1, 2, 2, 1, 1, 0,
+                                         0, 1, 1, 2, 2, 1, 1, 0,
+                                         0, 1, 1, 1, 1, 1, 1, 0
+                                        };
 
 
 
@@ -262,18 +282,24 @@ void release(CFAllocatorRef allocator, const void *ptr)
         } else {
         
             for ( NSUInteger featureIndex = 0; featureIndex < inputFeatureList.count; featureIndex++ ) {
+                
+                NSUInteger blockWeight = SPATIAL_WEIGHT_MAP[featureIndex];
 
-                NSString * inputFeatureID = inputFeatureList[featureIndex];
-                CBLAttachment * inFeatureAtt = [m_inputFaceLBPRevision attachmentNamed:inputFeatureID];
-                NSAssert(inFeatureAtt != nil ,@"Input feature is nil??");
-                NSData * inputFeatureHisto = inFeatureAtt.content;
+                // Optimize by not even computing histo block differences when they weigh nothing!
+                if ( blockWeight != 0 ) {
                 
-                NSString * trainFeatureID = trainingFeatureList[featureIndex];
-                CBLAttachment * trainFeatureAtt = [trainDoc.currentRevision attachmentNamed:trainFeatureID];
-                NSAssert(trainFeatureAtt != nil ,@"Training feature is nil??");
-                NSData * trainFeatureHisto = trainFeatureAtt.content;
-                
-                difference += [self diffHistogram:inputFeatureHisto againstTraining:trainFeatureHisto];
+                    NSString * inputFeatureID = inputFeatureList[featureIndex];
+                    CBLAttachment * inFeatureAtt = [m_inputFaceLBPRevision attachmentNamed:inputFeatureID];
+                    NSAssert(inFeatureAtt != nil ,@"Input feature is nil??");
+                    NSData * inputFeatureHisto = inFeatureAtt.content;
+                    
+                    NSString * trainFeatureID = trainingFeatureList[featureIndex];
+                    CBLAttachment * trainFeatureAtt = [trainDoc.currentRevision attachmentNamed:trainFeatureID];
+                    NSAssert(trainFeatureAtt != nil ,@"Training feature is nil??");
+                    NSData * trainFeatureHisto = trainFeatureAtt.content;
+                    
+                    difference += (blockWeight * [self diffHistogram:inputFeatureHisto againstTraining:trainFeatureHisto]);
+                }
             }
         }
     }
