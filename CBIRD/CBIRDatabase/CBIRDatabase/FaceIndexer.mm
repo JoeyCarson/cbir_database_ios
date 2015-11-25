@@ -153,16 +153,8 @@ NSString * FACE_KEY_PREFIX = @"face_";
     CIImage * outImage = _lbpFilter.outputImage;
     
     
-    
-    // Finally, take a snap of just the associated face and store it
-    [_cropFilter setValue:inputImage forKey:@"inputImage"];
-    [_cropFilter setValue:[CIVector vectorWithCGRect:feature.bounds] forKey:@"inputRectangle"];
-    CIImage * croppedOriginalImage = _cropFilter.outputImage;
-    
-    
-    //[ImageUtil dumpDebugImage:outImage];
-    
-    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage croppedFaceImage:croppedOriginalImage];
+    //[ImageUtil dumpDebugImage:croppedImage];
+    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage croppedFaceImage:croppedImage];
     
     return f;
 }
