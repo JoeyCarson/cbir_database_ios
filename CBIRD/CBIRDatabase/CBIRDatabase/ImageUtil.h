@@ -80,6 +80,8 @@ static const NSUInteger TIFF_LEFT_BOTTOM = 8;
 
 + (CGFloat)degreesToRadians:(CGFloat)degrees;
 
++(CGRect)rectPixelsToPoints:(CGRect)rect;
+
 // Utility function for extracting block features from the given pixel data object.
 // [1 ][2 ][3 ][4 ][5 ]
 // [6 ][7 ][8 ][9 ][10]

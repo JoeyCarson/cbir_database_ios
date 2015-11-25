@@ -125,6 +125,7 @@ void release(CFAllocatorRef allocator, const void *ptr)
     // Create an LBP for the input face.
     FaceLBP * faceLBP = [faceIndexer generateLBPFace:self.inputFaceImage fromFeature:self.inputFaceFeature];
     NSAssert(faceLBP != nil, @"Face LBP failed generation for FaceQuery input.");
+    //[ImageUtil dumpDebugImage:faceLBP.lbpImage];
     
     // Create the descriptor object for the input face using the same method that FaceIndexer does.
     [faceIndexer extractFeatures:@[faceLBP] andPersistTo:m_inputFaceLBPRevision];
@@ -213,6 +214,14 @@ void release(CFAllocatorRef allocator, const void *ptr)
                 tFace.differenceSum = [self computeInputFaceDifferenceAgainst:faceData fromDoc:row.document];
                 tFace.imageDocumentID = row.document.documentID;
                 tFace.faceUUID = faceID;
+                
+                
+                NSString * faceJPEGAttName = faceData[kCBIRSourceFaceImage];
+                CBLAttachment * att = [[row.document currentRevision] attachmentNamed:faceJPEGAttName];
+                tFace.faceJPEGData = att.content;
+                
+                NSString * rectString = faceData[kCBIRFaceRect];
+                tFace.faceRect = CGRectFromString(rectString);
                 
                 // Add the face object into the binary heap, manually increasing retain count.
                 CFBinaryHeapAddValue(m_minHeap, CFBridgingRetain(tFace));

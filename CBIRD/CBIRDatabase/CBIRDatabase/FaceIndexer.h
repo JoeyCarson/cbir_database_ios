@@ -12,10 +12,11 @@
 
 @interface FaceLBP : NSObject
 
-@property(nonatomic, readonly, assign) CGRect rect;
+@property(nonatomic, readonly) CGRect faceRect;
 @property(nonatomic, readonly) CIImage * lbpImage;
+@property(nonatomic, readonly) CIImage * croppedFaceImage;
 
--(instancetype) initWithRect:(CGRect)rect image:(CIImage *)image;
+-(instancetype) initWithRect:(CGRect)rect image:(CIImage *)lbpImage croppedFaceImage:(CIImage *)croppedFaceImage;
 
 @end
 
@@ -33,6 +34,8 @@ static const NSString * const kCBIRFaceDataList = @"face_data_list";
 static const NSString * const kCBIRFaceID = @"faceID";
 static const NSString * const kCBIRFeatureIDList = @"features";
 static const NSString * const kCBIRHistogramImage = @"histogram_image_attachment";
+static const NSString * const kCBIRFaceRect = @"face_rect";
+static const NSString * const kCBIRSourceFaceImage = @"source_face_image";
 
 @interface FaceIndexer : CBIRIndexer
 

@@ -228,8 +228,8 @@
     for ( CIFaceFeature * feature in _faceFeatures ) {
 
         // Transform the found coordinates to upper right hand corner pixel space.  Then convert that to points.
-        CGRect uiKitFaceBounds = CGRectApplyAffineTransform(feature.bounds, transform);;
-        CGRect pointRect = [self rectPixelsToPoints:uiKitFaceBounds];
+        CGRect uiKitFaceBounds = CGRectApplyAffineTransform(feature.bounds, transform);
+        CGRect pointRect = [ImageUtil rectPixelsToPoints:uiKitFaceBounds];
         
         // scale the point rect into the rendered image scale.
         pointRect.origin.x *= renderedImageScale.width;
@@ -319,19 +319,12 @@
         NSDictionary * params = @{@"inputImage":inImage, @"inputRectangle":[CIVector vectorWithCGRect:faceFeature.bounds]};
         CIFilter * cropFilter = [CIFilter filterWithName:@"CICrop" withInputParameters:params];
         CIImage * croppedImage = cropFilter.outputImage;
+        
+        //[ImageUtil dumpDebugImage:croppedImage];
+        
         _selectedFaceImage = croppedImage;
         _selectedFaceFeature = faceFeature;
     }
-}
-
-
-
-// Scales the given rect in pixels to point scale.
--(CGRect)rectPixelsToPoints:(CGRect)rect
-{
-    CGFloat scale = [[UIScreen mainScreen] scale];
-    CGRect scaledRect = CGRectMake(rect.origin.x / scale, rect.origin.y / scale, rect.size.width/scale, rect.size.height/scale);
-    return scaledRect;
 }
 
 // Scales the given size in pixels to point scale.

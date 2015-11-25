@@ -23,15 +23,17 @@ NSString * FACE_KEY_PREFIX = @"face_";
 
 @implementation FaceLBP
 
-@synthesize rect = _rect;
+@synthesize faceRect = _faceRect;
 @synthesize lbpImage = _lbpImage;
+@synthesize croppedFaceImage = _croppedFaceImage;
 
--(instancetype) initWithRect:(CGRect)rect image:(CIImage *)image
+-(instancetype) initWithRect:(CGRect)rect image:(CIImage *)lbpImage croppedFaceImage:(CIImage *)croppedFaceImage
 {
     self = [super init];
     if ( self ) {
-        _rect = rect;
-        _lbpImage = image;
+        _faceRect = rect;
+        _lbpImage = lbpImage;
+        _croppedFaceImage = croppedFaceImage;
     }
     return self;
 }
@@ -112,7 +114,6 @@ NSString * FACE_KEY_PREFIX = @"face_";
 -(FaceLBP *)generateLBPFace:(CIImage *)inputImage fromFeature:(CIFaceFeature *)feature
 {
     // We might need to consier potentially rotating the face image so that we're always matching from (0, 0).
-    // The facial rotation is given as CIFaceFeature.faceAngle.
     // Rotate the image according to the face angle.
     CGAffineTransform rotateXForm = CGAffineTransformMakeRotation([ImageUtil degreesToRadians:feature.faceAngle]);
     NSValue * encodedTransform = [NSValue valueWithBytes:&rotateXForm objCType:@encode(CGAffineTransform)];
@@ -125,18 +126,6 @@ NSString * FACE_KEY_PREFIX = @"face_";
     [_cropFilter setValue:faceRotatedImage forKey:@"inputImage"];
     [_cropFilter setValue:[CIVector vectorWithCGRect:rotatedRect] forKey:@"inputRectangle"];
     CIImage * croppedImage = _cropFilter.outputImage;
-    
-    
-
-    
-//    NSArray * faces = [ImageUtil detectFaces:faceRotatedImage];
-//    if ( faces.count > 0 ) {
-//        CIFaceFeature * postFeature = faces[0];
-//        [_cropFilter setValue:faceRotatedImage forKey:@"inputImage"];
-//        [_cropFilter setValue:[CIVector vectorWithCGRect:postFeature.bounds] forKey:@"inputRectangle"];
-//        faceRotatedImage = _cropFilter.outputImage;
-//        [ImageUtil dumpDebugImage:faceRotatedImage];
-//    }
 
     
     // Perform preprocessing then LBP.
@@ -162,9 +151,18 @@ NSString * FACE_KEY_PREFIX = @"face_";
     // Apply the LBP filter.
     _lbpFilter.inputImage = dogImage;
     CIImage * outImage = _lbpFilter.outputImage;
-    [ImageUtil dumpDebugImage:outImage];
     
-    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage];
+    
+    
+    // Finally, take a snap of just the associated face and store it
+    [_cropFilter setValue:inputImage forKey:@"inputImage"];
+    [_cropFilter setValue:[CIVector vectorWithCGRect:feature.bounds] forKey:@"inputRectangle"];
+    CIImage * croppedOriginalImage = _cropFilter.outputImage;
+    
+    
+    //[ImageUtil dumpDebugImage:outImage];
+    
+    FaceLBP * f = [[FaceLBP alloc] initWithRect:feature.bounds image:outImage croppedFaceImage:croppedOriginalImage];
     
     return f;
 }
@@ -295,9 +293,22 @@ NSString * FACE_KEY_PREFIX = @"face_";
             NSString * faceHistoID = [NSString stringWithFormat:@"%@_%@", faceUUID, kCBIRHistogramImage];
             [revision setAttachmentNamed:faceHistoID withContentType:MIME_TYPE_OCTET_STREAM content:fullHistoImageData];
             
+            
+            CIImage * croppedFace = face.croppedFaceImage;
+            CGImageRef faceRef = [ImageUtil renderCIImage:croppedFace];
+            UIImage * tempUIImage = [[UIImage alloc] initWithCGImage:faceRef];
+            NSData * jpegData = UIImageJPEGRepresentation(tempUIImage, 0.8);
+            NSString * faceCropID = [NSString stringWithFormat:@"%@_%@", faceUUID, kCBIRSourceFaceImage];
+            [revision setAttachmentNamed:faceCropID withContentType:MIME_TYPE_OCTET_STREAM content:jpegData];
+            CGImageRelease(faceRef);
+            
+            
+            // Load up all data.
+            faceData[kCBIRFaceRect] = NSStringFromCGRect(face.faceRect);
             faceData[kCBIRFaceID] = faceUUID;
             faceData[kCBIRFeatureIDList] = featureIdentifiers;
             faceData[kCBIRHistogramImage] = faceHistoID;
+            faceData[kCBIRSourceFaceImage] = faceCropID;
 
             [faceDataList addObject:faceData];
             
@@ -334,7 +345,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     for ( int i = 0; i < col.rows; i++ ) {
         float & valRef = col.at<float>(i);
         valRef /= area;
-        //valRef *= 10;
+        valRef *= 2;
         //NSLog(@"valRef is: %f", valRef);
     }
 }

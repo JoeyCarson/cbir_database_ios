@@ -23,6 +23,10 @@
 
 @property (nonatomic) NSString * faceUUID;
 
+@property (nonatomic) CGRect faceRect;
+
+@property (nonatomic) NSData * faceJPEGData;
+
 @end
 
 

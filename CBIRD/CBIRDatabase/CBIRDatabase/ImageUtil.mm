@@ -266,5 +266,13 @@
     return degrees * (M_PI / 180);
 }
 
+// Scales the given rect in pixels to point scale.
++(CGRect)rectPixelsToPoints:(CGRect)rect
+{
+    CGFloat scale = [[UIScreen mainScreen] scale];
+    CGRect scaledRect = CGRectMake(rect.origin.x / scale, rect.origin.y / scale, rect.size.width/scale, rect.size.height/scale);
+    return scaledRect;
+}
+
 
 @end

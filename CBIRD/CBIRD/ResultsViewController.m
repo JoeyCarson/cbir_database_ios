@@ -104,34 +104,54 @@
             
         } else if ( state == QUERY_COMPLETE ){
             
-            NSMutableArray * localIDs = [[NSMutableArray alloc] init];
             m_faceResultImages = [[NSMutableArray alloc] init];
             
             // Load some images from the results.
-            for ( NSUInteger i = 0; i < 200; i++ ) {
+            for ( NSUInteger i = 0; i < 10; i++ ) {
                 FaceDataResult * result = [m_faceQuery dequeueResult];
-                [localIDs addObject:result.imageDocumentID];
+                [m_faceResultImages addObject:[UIImage imageWithData:result.faceJPEGData]];
             }
             
-            PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsWithLocalIdentifiers:localIDs options:nil];
-            for ( PHAsset * asset in assets ) {
-                
-                PHAssetResponseHandler faceImageResultCallback = ^void(UIImage * image, NSDictionary * info) {
-                    NSLog(@"imageCallback: %@", info);
-                    [m_faceResultImages addObject:image];
-                };
-
-                PHImageRequestOptions * options = [[PHImageRequestOptions alloc] init];
-                options.networkAccessAllowed = NO;
-                options.synchronous = YES;
-                
-                CGSize imageSize = CGSizeMake(80, 80);
-                [[PHImageManager defaultManager] requestImageForAsset:asset
-                                                           targetSize:imageSize
-                                                          contentMode:PHImageContentModeAspectFit
-                                                              options:options
-                                                        resultHandler:faceImageResultCallback];
-            }
+//            CIFilter * cropFilter = [CIFilter filterWithName:@"CICrop"];
+//            PHFetchResult<PHAsset *> * assets = [PHAsset fetchAssetsWithLocalIdentifiers:localIDs options:nil];
+//            for ( NSUInteger i = 0; i < assets.count; i++ ) {
+//                
+//                PHAsset * asset = assets[i];
+//                PHAssetResponseHandler faceImageResultCallback = ^void(UIImage * image, NSDictionary * info) {
+//                    //NSLog(@"imageCallback: %@", info);
+//
+//                    // Crop the face in CIImage land.
+//                    CGRect faceRect = [faceRects[i] CGRectValue];
+//                    CIImage * inImg = [[CIImage alloc] initWithCGImage:image.CGImage options:nil];
+//                    
+//                    [cropFilter setValue:[CIVector vectorWithCGRect:faceRect] forKey:@"inputRectangle"];
+//                    [cropFilter setValue:inImg forKey:@"inputImage"];
+//                    CIImage * outImage = cropFilter.outputImage;
+//                    CGImageRef imageRef = [ImageUtil renderCIImage:outImage];
+//                    
+//                    //CGAffineTransform transform = CGAffineTransformMakeScale(1, -1);
+//                    ////transform = CGAffineTransformTranslate(transform, 0, -image.size.height);
+//                    //CGRect transformedPixRect = CGRectApplyAffineTransform(faceRect, transform);
+//                    //CGRect uiKitFaceBounds = [ImageUtil rectPixelsToPoints:transformedPixRect];
+//                    //CGImageRef imageRef = CGImageCreateWithImageInRect([image CGImage], uiKitFaceBounds);
+//                    //if ( imageRef) {
+//                        //[m_faceResultImages addObject:[UIImage imageWithCGImage:imageRef]];
+//                    [m_faceResultImages addObject:image];
+//                        CGImageRelease(imageRef);
+//                    //}
+//                };
+//
+//                PHImageRequestOptions * options = [[PHImageRequestOptions alloc] init];
+//                options.networkAccessAllowed = NO;
+//                options.synchronous = YES;
+//                
+//                CGSize imageSize = CGSizeMake(asset.pixelWidth, asset.pixelHeight);
+//                [[PHImageManager defaultManager] requestImageForAsset:asset
+//                                                           targetSize:imageSize
+//                                                          contentMode:PHImageContentModeAspectFit
+//                                                              options:options
+//                                                        resultHandler:faceImageResultCallback];
+//            }
             
             
             [self.collectionView reloadData];
