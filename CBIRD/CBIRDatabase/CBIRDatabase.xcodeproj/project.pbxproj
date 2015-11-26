@@ -32,8 +32,6 @@
 		11B798CF1BC1877B0040F3A7 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798CE1BC1877B0040F3A7 /* libz.tbd */; };
 		11B798D11BC1879B0040F3A7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798D01BC1879B0040F3A7 /* SystemConfiguration.framework */; };
 		11B798D31BC187DB0040F3A7 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798D21BC187DB0040F3A7 /* libsqlite3.tbd */; };
-		11B798D51BC18EC30040F3A7 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798D41BC18EC30040F3A7 /* GPUImage.framework */; };
-		11B798D61BC18EC30040F3A7 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B798D41BC18EC30040F3A7 /* GPUImage.framework */; };
 		11B798E11BC1994D0040F3A7 /* LBPFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 11B798DF1BC1994D0040F3A7 /* LBPFilter.h */; };
 		11B798E21BC1994D0040F3A7 /* LBPFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798E01BC1994D0040F3A7 /* LBPFilter.m */; };
 		11B798E31BC1994D0040F3A7 /* LBPFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 11B798E01BC1994D0040F3A7 /* LBPFilter.m */; };
@@ -85,7 +83,6 @@
 		11B798CE1BC1877B0040F3A7 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		11B798D01BC1879B0040F3A7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		11B798D21BC187DB0040F3A7 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
-		11B798D41BC18EC30040F3A7 /* GPUImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GPUImage.framework; path = GPUImage/build/GPUImage.framework; sourceTree = "<group>"; };
 		11B798DF1BC1994D0040F3A7 /* LBPFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LBPFilter.h; sourceTree = "<group>"; };
 		11B798E01BC1994D0040F3A7 /* LBPFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LBPFilter.m; sourceTree = "<group>"; };
 		11B798E41BC2277C0040F3A7 /* CBIRDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CBIRDocument.h; sourceTree = "<group>"; };
@@ -107,7 +104,6 @@
 				112DA1011BD5CB6300138127 /* AssetsLibrary.framework in Frameworks */,
 				112DA0FD1BD5CA9200138127 /* opencv2.framework in Frameworks */,
 				11B798D31BC187DB0040F3A7 /* libsqlite3.tbd in Frameworks */,
-				11B798D51BC18EC30040F3A7 /* GPUImage.framework in Frameworks */,
 				11B798D11BC1879B0040F3A7 /* SystemConfiguration.framework in Frameworks */,
 				11B798CF1BC1877B0040F3A7 /* libz.tbd in Frameworks */,
 				11B798781BBB73AE0040F3A7 /* CouchbaseLite.framework in Frameworks */,
@@ -119,7 +115,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				11B7985F1BBB73690040F3A7 /* CBIRDatabase.framework in Frameworks */,
-				11B798D61BC18EC30040F3A7 /* GPUImage.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,7 +138,6 @@
 				112DA1001BD5CB6300138127 /* AssetsLibrary.framework */,
 				112DA0FE1BD5CAC500138127 /* OpenAL.framework */,
 				112DA0FC1BD5CA9200138127 /* opencv2.framework */,
-				11B798D41BC18EC30040F3A7 /* GPUImage.framework */,
 				11B798D21BC187DB0040F3A7 /* libsqlite3.tbd */,
 				11B798D01BC1879B0040F3A7 /* SystemConfiguration.framework */,
 				11B798CE1BC1877B0040F3A7 /* libz.tbd */,

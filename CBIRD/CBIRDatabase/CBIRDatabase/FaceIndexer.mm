@@ -337,7 +337,7 @@ NSString * FACE_KEY_PREFIX = @"face_";
     for ( int i = 0; i < col.rows; i++ ) {
         float & valRef = col.at<float>(i);
         valRef /= area;
-        valRef *= 2;
+        valRef *= 100;
         //NSLog(@"valRef is: %f", valRef);
     }
 }
