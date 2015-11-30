@@ -155,21 +155,12 @@ void release(CFAllocatorRef allocator, const void *ptr)
     
     if ( faceList.count == 1 ) {
         
-        // If there's at least one face in the input image.
-        NSDictionary * faceData = faceList[0];
-        NSString * histoImageID = faceData[kCBIRHistogramImage];
+        // Read the full histo image for the search face and kick off the process to search.
+        NSDate * beforeSearch = [NSDate date];
+        [self performSearch];
+        NSDate * afterSearch = [NSDate date];
+        NSLog(@"face query search takes %f seconds", afterSearch.timeIntervalSince1970 - beforeSearch.timeIntervalSince1970);
         
-        if ( [m_inputFaceLBPRevision.attachmentNames containsObject:histoImageID] ) {
-            
-            // Read the full histo image for the search face and kick off the process to search.
-            NSDate * beforeSearch = [NSDate date];
-            [self performSearch];
-            NSDate * afterSearch = [NSDate date];
-            NSLog(@"face query search takes %f seconds", afterSearch.timeIntervalSince1970 - beforeSearch.timeIntervalSince1970);
-        
-        } else {
-            NSLog(@"faceData attachments doesn't contain histogram image.");
-        }
         
     } else {
         NSLog(@"faceList of image must contain only a single face. count: %lu", (unsigned long)faceList.count);
@@ -227,7 +218,7 @@ void release(CFAllocatorRef allocator, const void *ptr)
             
             // For each face in the list,
             for ( NSUInteger i = 0; i < faceDataList.count; i++ ) {
-                NSLog(@"faceIndex: %lu", faceIndex++);
+                NSLog(@"faceIndex: %lu", (unsigned long)faceIndex++);
                 NSDictionary * faceData = faceDataList[i];
                 
                 FaceDataResult * tFace = [[FaceDataResult alloc] init];

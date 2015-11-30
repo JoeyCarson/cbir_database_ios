@@ -4,36 +4,8 @@
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>64</x>
-      <y>528</y>
-      <w>144</w>
-      <h>48</h>
-    </coordinates>
-    <panel_attributes>SimpleQuery
---
-criterion</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Note</type>
-    <coordinates>
-      <x>672</x>
-      <y>544</y>
-      <w>248</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>CBIRQuery - A query processor that
-accepts input and parameters. When
-executed it processes input image(s) for
-query parameters and searches the
-persisted indices for matching criterion.</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Class</type>
-    <coordinates>
-      <x>224</x>
-      <y>528</y>
+      <x>160</x>
+      <y>536</y>
       <w>144</w>
       <h>48</h>
     </coordinates>
@@ -43,22 +15,99 @@ complexParams</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
+    <type>com.umlet.element.Note</type>
+    <coordinates>
+      <x>608</x>
+      <y>552</y>
+      <w>256</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>CBIRQuery - A query processor that
+accepts input and parameters. When
+executed it processes input image(s) for
+query parameters and searches the
+persisted descriptors for matching criterion.</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>192</x>
+      <y>472</y>
+      <w>40</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>24;24;24;64</additional_attributes>
+  </element>
+  <element>
+    <type>com.umlet.element.SequenceDiagram</type>
+    <coordinates>
+      <x>40</x>
+      <y>24</y>
+      <w>920</w>
+      <h>424</h>
+    </coordinates>
+    <panel_attributes>title: Database Interaction
+_cns:QueryConsumer~cns_|_q:CBIRQuery~q_|_db:CBIRDatabaseEngine~db_|_i:CBIRIndexer~i_|_s:CBLDatabase~s_
+cns-&gt;db:cns,db:indexImage()
+iframe{:foreach image and indexer
+db-&gt;i:db,i:generateIndex(image)
+iframe}
+cns-&gt;q:cns,q:new()
+cns-&gt;q:cns,q:setInput(img, params)
+cns-&gt;db:cns,db:execQuery( q )
+db-&gt;q:db,q:evalute( )
+q-&gt;q:q,db:run( )
+q-&gt;q:q,db:extractParams(this.image)
+q-&gt;db:q,db:createQuery( )
+db-&gt;s:q,db,s:createQuery( )
+q-&gt;q:q,db:generateResults( )
+cns-&gt;q:cns,q:readResult()</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Relation</type>
+    <coordinates>
+      <x>72</x>
+      <y>472</y>
+      <w>40</w>
+      <h>80</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>24;24;24;64</additional_attributes>
+  </element>
+  <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>432</x>
-      <y>448</y>
-      <w>192</w>
-      <h>40</h>
+      <x>480</x>
+      <y>536</y>
+      <w>112</w>
+      <h>48</h>
     </coordinates>
-    <panel_attributes>/CBIRIndexer/
---</panel_attributes>
+    <panel_attributes>EdgeHistogram
+--
+</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>384</x>
-      <y>528</y>
+      <x>0</x>
+      <y>536</y>
+      <w>144</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>SimpleQuery
+--
+criterion</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>320</x>
+      <y>536</y>
       <w>128</w>
       <h>48</h>
     </coordinates>
@@ -71,8 +120,8 @@ colorSpace</panel_attributes>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>256</x>
-      <y>464</y>
+      <x>496</x>
+      <y>472</y>
       <w>40</w>
       <h>80</h>
     </coordinates>
@@ -80,48 +129,37 @@ colorSpace</panel_attributes>
     <additional_attributes>24;24;24;64</additional_attributes>
   </element>
   <element>
-    <type>com.umlet.element.Class</type>
+    <type>com.umlet.element.Note</type>
     <coordinates>
-      <x>544</x>
-      <y>528</y>
-      <w>112</w>
-      <h>48</h>
+      <x>608</x>
+      <y>464</y>
+      <w>272</w>
+      <h>72</h>
     </coordinates>
-    <panel_attributes>EdgeHistogram
---
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.SequenceDiagram</type>
-    <coordinates>
-      <x>104</x>
-      <y>32</y>
-      <w>824</w>
-      <h>400</h>
-    </coordinates>
-    <panel_attributes>title: Database Interaction
-_cns:QueryConsumer~cns_|_q:CBIRQuery~q_|_db:CBIRDataBase~db_|_i:CBIRIndexer~i_|_s:Store~s_
-cns-&gt;db:cns,db:index()
-iframe{:foreach image and indexer
-db-&gt;i:db,i:generateIndex(image)
-db-&gt;s:db,s:persistIndex(index, image)
-iframe}
-cns-&gt;q:cns,q:new()
-cns-&gt;q:cns,q:setInput(img, params)
-cns-&gt;db:cns,db:execQuery( q )
-db-&gt;q:db,q:evalute( s )
-q-&gt;q:q:extractParams(this.image)
-q-&gt;s:q,s:searchPersistentIndices(params)
-q-&gt;q:q:determineResultByQueryLogic()
-cns-&gt;q:cns,q:readResult()</panel_attributes>
+    <panel_attributes>CBIRIndexer - An object that computes
+a kind of indexing descriptor(s), similar
+to a hash.  The descriptor output is persisted 
+so that query processors can look for similar
+values.</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
     <type>com.umlet.element.Class</type>
     <coordinates>
-      <x>128</x>
-      <y>448</y>
+      <x>368</x>
+      <y>456</y>
+      <w>192</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>/CBIRIndexer/
+--</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.umlet.element.Class</type>
+    <coordinates>
+      <x>64</x>
+      <y>456</y>
       <w>192</w>
       <h>40</h>
     </coordinates>
@@ -132,45 +170,8 @@ cns-&gt;q:cns,q:readResult()</panel_attributes>
   <element>
     <type>com.umlet.element.Relation</type>
     <coordinates>
-      <x>560</x>
-      <y>464</y>
-      <w>40</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>24;24;24;64</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>432</x>
-      <y>464</y>
-      <w>40</w>
-      <h>80</h>
-    </coordinates>
-    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
-    <additional_attributes>24;24;24;64</additional_attributes>
-  </element>
-  <element>
-    <type>com.umlet.element.Note</type>
-    <coordinates>
-      <x>672</x>
-      <y>456</y>
-      <w>272</w>
-      <h>72</h>
-    </coordinates>
-    <panel_attributes>CBIRIndexer - An object that computes
-a kind of of indexing criterion value, similar
-to a hash.  The indexer output is persisted 
-so that query processors can look for similar
-values.</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <type>com.umlet.element.Relation</type>
-    <coordinates>
-      <x>136</x>
-      <y>464</y>
+      <x>368</x>
+      <y>472</y>
       <w>40</w>
       <h>80</h>
     </coordinates>
