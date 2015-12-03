@@ -159,6 +159,7 @@
 
 -(void)viewWillAppear:(BOOL)animated
 {
+    m_resultsViewController = nil;
     faceImageView.image = [UIImage imageWithCIImage:self.faceCaptureController.selectedFaceImage];
 }
 

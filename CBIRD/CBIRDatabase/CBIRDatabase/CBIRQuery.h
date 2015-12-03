@@ -13,9 +13,12 @@
 
 @property (nonatomic, readonly, weak) id<CBIRQueryDelegate> delegate;
 @property (nonatomic, readonly, getter=isRunning) BOOL running;
+@property (nonatomic, readonly) BOOL isCanceled;
+@property (nonatomic, readonly) CBIR_QUERY_STATE state;
 
 -(instancetype)initWithDelegate:(id<CBIRQueryDelegate>)delegate NS_DESIGNATED_INITIALIZER;
 
 -(void) evaluate;
+-(void) cancel;
 
 @end

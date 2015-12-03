@@ -79,8 +79,65 @@
 
 -(void)viewDidLoad
 {
-    self.view.backgroundColor = [UIColor blackColor];
+    self.view.backgroundColor = [UIColor orangeColor];
     [self.collectionView registerClass: [FaceQueryResultCell class] forCellWithReuseIdentifier:NSStringFromClass([FaceQueryResultCell class])];
+    
+    UIButton * cancelButton = [self createCancelButton];
+    [cancelButton setTitle:@"Dismiss" forState:UIControlStateNormal];
+    [cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+
+    [self.collectionView addSubview:cancelButton];
+    [self.collectionView bringSubviewToFront:cancelButton];
+    
+    
+    
+    NSDictionary * viewsDict = NSDictionaryOfVariableBindings(cancelButton);
+    NSLayoutConstraint * horizCenter = [NSLayoutConstraint constraintWithItem:self.collectionView
+                                                                    attribute:NSLayoutAttributeCenterX
+                                                                    relatedBy:NSLayoutRelationEqual
+                                                                       toItem:cancelButton
+                                                                    attribute:NSLayoutAttributeCenterX
+                                                                   multiplier:1
+                                                                     constant:0];
+    
+    [self.collectionView addConstraint:horizCenter];
+    //[self.collectionView addConstraint:vertBottom];
+    
+    [self.collectionView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[cancelButton(==200)]"
+                                                                       options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                       metrics:nil
+                                                                         views:viewsDict]];
+    
+    [self.collectionView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[cancelButton(==100)]-|"
+                                                                                options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                                metrics:nil
+                                                                                  views:viewsDict]];
+
+    
+    
+    [self.collectionView setContentSize:CGSizeMake(self.collectionView.frame.size.width, self.collectionView.frame.size.height + cancelButton.frame.size.height)];
+    [self.collectionView setContentInset:UIEdgeInsetsMake(cancelButton.frame.size.height, 0, 0, 0)];
+
+}
+
+-(UIButton *)createCancelButton
+{
+    UIButton * button = [[UIButton alloc] initWithFrame:CGRectMake(self.collectionView.bounds.size.width/2 - 300/2, 600, 300, 100)];
+    button.backgroundColor = [UIColor blueColor];
+    [button addTarget:self action:@selector(onDismiss:) forControlEvents:UIControlEventTouchUpInside];
+    button.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+    button.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    return button;
+}
+
+-(void)onDismiss:(UIEvent *)buttonEvent
+{
+    if ( m_faceQuery.isRunning ) {
+        [m_faceQuery cancel];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 -(void)executeQuery:(CIImage *)faceImage feature:(CIFaceFeature *)feature
@@ -115,6 +172,9 @@
             }
             
             [self.collectionView reloadData];
+            
+        } else if ( state == QUERY_CANCEL ) {
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
     });
 }

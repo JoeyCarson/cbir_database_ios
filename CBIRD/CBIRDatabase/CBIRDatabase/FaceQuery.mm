@@ -212,6 +212,12 @@ void release(CFAllocatorRef allocator, const void *ptr)
         NSUInteger faceIndex = 0;
         for ( CBLQueryRow * row in qEnum ) {
 
+            if ( self.isCanceled ) {
+                NSLog(@"%s cancelling processing.", __FUNCTION__);
+                
+                break;
+            }
+            
             NSDictionary * p = row.document.properties;
             NSString * faceID = p[kCBIRFaceID];
             NSArray * faceDataList = p[kCBIRFaceDataList];

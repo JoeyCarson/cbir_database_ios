@@ -15,6 +15,8 @@
 
 @synthesize delegate = _delegate;
 @synthesize running = _running;
+@synthesize isCanceled = _isCanceled;
+@synthesize state = _state;
 
 -(instancetype)init
 {
@@ -27,9 +29,17 @@
     self = [super init];
     if ( self ) {
         _delegate = delegate;
+        _running = NO;
+        _isCanceled = NO;
+        _state = QUERY_INIT;
     }
     
     return self;
+}
+
+-(void) cancel
+{
+    _isCanceled = YES;
 }
 
 -(void) evaluate
@@ -41,14 +51,21 @@
     NSLog(@"evaluating the query");
     [self run];
     
-    [self updateState:QUERY_COMPLETE];
+    if ( self.isCanceled ) {
+        [self updateState:QUERY_CANCEL];
+    } else {
+        [self updateState:QUERY_COMPLETE];
+    }
     _running = NO;
 }
 
 -(void)updateState:(CBIR_QUERY_STATE)state
 {
-    if ( [self.delegate respondsToSelector:@selector(stateUpdated:)] ) {
-        [self.delegate stateUpdated:state];
+    if ( _state != state ) {
+        _state = state;
+        if ( [self.delegate respondsToSelector:@selector(stateUpdated:)] ) {
+            [self.delegate stateUpdated:state];
+        }
     }
 }
 

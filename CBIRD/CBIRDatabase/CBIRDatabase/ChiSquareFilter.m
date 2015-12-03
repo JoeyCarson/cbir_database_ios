@@ -55,27 +55,25 @@
 // if ( destCoord().x % binCount == 0 )
 //    end = destCoord.x + binCount;
 //    for ( x = destCoord.x; x < end; x++ )
-//
+//        sum += sample(s, samplerTransform(s, vec2(x, destCoord.y)));
 
 static NSString * const absSquareDiffCode = @"                                                                            \n"
                                             "                                                                             \n"
                                             "                                                                             \n"
                                             "                                                                             \n"
                                             "                                                                             \n"
-                                            "kernel vec4 histogramDiff ( sampler expect )               \n"
+                                            "kernel vec4 histogramDiff ( sampler expect, sampler training )               \n"
                                             "{                                                                            \n"
                                             "                                                                             \n"
-                                            "    // , sampler training                                                                         \n"
                                             "    // Recall that we're only concerned with the red component.              \n"
-                                            "    //float expIntensity = samplerCoord(expect).r;                             \n"
-                                            "    //float trainIntensity = samplerCoord(training).r;                         \n"
+                                            "    float expIntensity = samplerCoord(expect).r;                             \n"
+                                            "    float trainIntensity = samplerCoord(training).r;                         \n"
                                             "                                                                             \n"
-                                            "    //float diff = expIntensity - trainIntensity;                              \n"
-                                            "    //float diffSquare = diff * diff;                                          \n"
-                                            "    //float diffSquareExpRatio = diffSquare / expIntensity;                    \n"
+                                            "    float diff = expIntensity - trainIntensity;                              \n"
+                                            "    float diffSquare = diff * diff;                                          \n"
+                                            "    float diffSquareExpRatio = diffSquare / expIntensity;                    \n"
                                             "                                                                             \n"
-                                            "    //return vec4(expIntensity, 0, 0, 1);  //diffSquareExpRatio              \n"
-                                            "    return sample(expect, samplerCoord(expect));                             \n"
+                                            "    return vec4(diffSquareExpRatio, 0, 0, 1);                                \n"
                                             "}                                                                            \n";
 
 static NSString * const summationCode = @"                                                                            \n"

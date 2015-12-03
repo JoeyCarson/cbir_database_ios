@@ -354,11 +354,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/PhotoIndexer.m"
-            timestampString = "468437667.323397"
+            timestampString = "470677512.601048"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "186"
-            endingLineNumber = "186"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
             landmarkName = "-writeAssetToTmp:date:"
             landmarkType = "5">
          </BreakpointContent>
@@ -466,11 +466,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/QueryViewController.m"
-            timestampString = "469689695.649382"
+            timestampString = "470877431.836797"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "203"
-            endingLineNumber = "203"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
             landmarkName = "@implementation QueryViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -530,11 +530,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/QueryViewController.m"
-            timestampString = "469689695.649382"
+            timestampString = "470877431.836797"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "176"
-            endingLineNumber = "176"
+            startingLineNumber = "177"
+            endingLineNumber = "177"
             landmarkName = "-onSelectImage:"
             landmarkType = "5">
          </BreakpointContent>
@@ -626,11 +626,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRD/QueryViewController.m"
-            timestampString = "469689695.649382"
+            timestampString = "470877431.836797"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "184"
-            endingLineNumber = "184"
+            startingLineNumber = "185"
+            endingLineNumber = "185"
             landmarkName = "-onRunQuery:"
             landmarkType = "5">
          </BreakpointContent>
@@ -784,11 +784,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/ChiSquareFilter.m"
-            timestampString = "469427324.624608"
+            timestampString = "470870248.430905"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "159"
-            endingLineNumber = "159"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
             landmarkName = "-outputImage"
             landmarkType = "5">
          </BreakpointContent>
@@ -816,11 +816,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CBIRDatabase/CBIRDatabase/FaceQuery.mm"
-            timestampString = "470173958.206104"
+            timestampString = "470877300.022399"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "317"
-            endingLineNumber = "317"
+            startingLineNumber = "314"
+            endingLineNumber = "314"
             landmarkName = "-diffHistogram:againstTraining:"
             landmarkType = "5">
          </BreakpointContent>
@@ -870,22 +870,6 @@
             startingLineNumber = "128"
             endingLineNumber = "128"
             landmarkName = "-dequeueResult"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CBIRD/ResultsViewController.m"
-            timestampString = "470173958.206104"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "136"
-            endingLineNumber = "136"
-            landmarkName = "-collectionView:cellForItemAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1040,6 +1024,54 @@
             startingLineNumber = "289"
             endingLineNumber = "289"
             landmarkName = "-extractFeatures:andPersistTo:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CBIRD/ResultsViewController.m"
+            timestampString = "470877300.022399"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
+            landmarkName = "-collectionView:cellForItemAtIndexPath:"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CBIRD/ResultsViewController.m"
+            timestampString = "470873188.541977"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
+            landmarkName = "-viewDidLoad"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CBIRD/ResultsViewController.m"
+            timestampString = "470877312.060433"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "-onDismiss:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
